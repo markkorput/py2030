@@ -68,11 +68,11 @@ pyhoh:
       omxvideo:
         verbose: true
         playlist:
-          - '/home/pi/videos/vid1.mov'
-          - '/home/pi/videos/vid2.mov'
-          - '/home/pi/videos/vid3.mov'
-          - '/home/pi/videos/vid4.mov'
-          - '/home/pi/videos/vid5.mov'
+          - '/home/pi/hoh/hoh-right-v07.mov'
+          - '/home/pi/hoh/hoh-right-v07.mov'
+          - '/home/pi/hoh/hoh-right-v07.mov'
+          - '/home/pi/hoh/hoh-right-v07.mov'
+          - '/home/pi/hoh/hoh-right-v07.mov'
 
       omxsyncer:
         master: true
@@ -108,11 +108,11 @@ pyhoh:
       omxvideo:
         verbose: true
         playlist:
-          - '/home/pi/videos/vid1.mov'
-          - '/home/pi/videos/vid2.mov'
-          - '/home/pi/videos/vid3.mov'
-          - '/home/pi/videos/vid4.mov'
-          - '/home/pi/videos/vid5.mov'
+          - '/home/pi/hoh/hoh-right-v07.mov'
+          - '/home/pi/hoh/hoh-right-v07.mov'
+          - '/home/pi/hoh/hoh-right-v07.mov'
+          - '/home/pi/hoh/hoh-right-v07.mov'
+          - '/home/pi/hoh/hoh-right-v07.mov'
 
       omxsyncer:
         slave: true

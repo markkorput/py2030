@@ -67,12 +67,14 @@ class OmxSyncer:
         if self.isMaster():
             if Broadcaster:
                 self.broadcaster = Broadcaster(player, self.options)
+                self.broadcaster.setup()
             else:
                 self.logger.warning("omxsync not loaded, can't create Broadcaster instance")
             return
 
         if Receiver:
             self.receiver = Receiver(player, self.options)
+            self.receiver.setup()
         else:
             self.logger.warning("omxsync not loaded, can't create Receiver instance")
 

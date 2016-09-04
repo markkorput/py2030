@@ -1,13 +1,6 @@
 pyhoh:
   profiles:
     default:
-      # osc input that takes video control commands
-      omxvideo_osc_inputs:
-        self:
-          ip: ''
-          port: 2030
-          verbose: true
-
       # send osc messages
       osc_outputs:
         bcast_and_local:
@@ -26,18 +19,14 @@ pyhoh:
           - '/home/pi/videos/vid4.mov'
           - '/home/pi/videos/vid5.mov'
 
-      omxsyncer:
-        master: true
-        verbose: true
-
       midi_inputs:
-        vidmidi:
+        akai:
           port: 1
           verbose: true
 
       midi_to_osc:
         # akai pads (prog1)
-        vidmidi:
+        akai:
           144: # midi message type; note on
             36: '/pyhoh/vid/start/0' # prog1, pad1
             37: '/pyhoh/vid/start/1'
@@ -48,6 +37,37 @@ pyhoh:
             42: '/pyhoh/vid/stop'
             43: '/pyhoh/vid/stop'
 
+      midi_to_omx:
+        # akai pads (prog1)
+        akai:
+          verbose: true
+          144: # midi message type; note on
+            36:
+              action: 'start'
+              params:
+                - 0
+            37:
+              action: 'start'
+              params:
+                - 1
+            38:
+              action: 'start'
+              params:
+                - 2
+            39:
+              action: 'start'
+              params:
+                - 3
+            40:
+              action: 'start'
+              params:
+                - 4
+            41:
+              action: 'pause'
+            42:
+              action: 'stop'
+            43:
+              action: 'stop'
     master:
       # osc input that takes video control commands
       omxvideo_osc_inputs:

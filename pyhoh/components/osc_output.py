@@ -118,5 +118,5 @@ class OscOutput:
                 self.logger.error(str(err))
                 # self.stop()
 
-        self.logger.debug('osc-out {0}:{1} - {2} [{3}]'.format(self.host(), self.port(), addr, ", ".join(data)))
+        self.logger.debug('osc-out {0}:{1} - {2} [{3}]'.format(self.host(), self.port(), addr, ", ".join(map(lambda x: str(x), data))))
         self.messageEvent(msg, self)

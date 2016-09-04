@@ -26,7 +26,15 @@ class OmxVideo:
 
     # events
     self.loadEvent = Event()
+    self.loadIndexEvent = Event()
     self.unloadEvent = Event()
+    self.startEvent = Event()
+    self.stopEvent = Event()
+    self.playEvent = Event()
+    self.pauseEvent = Event()
+    self.toggleEvent = Event()
+    self.seekEvent = Event()
+    self.speedEvent = Event()
 
   def __del__(self):
       self.destroy()
@@ -53,7 +61,9 @@ class OmxVideo:
           self.logger.warning('invalid video number: {0}'.format(vidNumber))
           return False
 
-      return self._loadPath(path)
+      result = self._loadPath(path)
+      self.loadIndexEvent(self, vidNumber)
+      return result
 
   def play(self):
     if not self.player:
@@ -61,11 +71,13 @@ class OmxVideo:
         return
 
     self.player.play()
+    self.playEvent(self)
     self.logger.debug('video playback started')
 
   def start(self, vidNumber):
       self.load(vidNumber)
       self.play()
+      self.startEvent(self, vidNumber)
 
   def pause(self):
     if not self.player:
@@ -73,7 +85,17 @@ class OmxVideo:
       return
 
     self.player.pause()
+    self.pauseEvent(self)
     self.logger.debug("video playback paused")
+
+  def toggle(self):
+    if not self.player:
+      self.logger.warning("can't toggle play/pause video playback, no video loaded")
+      return
+
+    self.player.play_pause()
+    self.toggleEvent(self)
+    self.logger.debug('toggle; video playback {0}'.format('resumed' if self.player.playback_status() == 'Playing' else 'paused'))
 
   def stop(self):
     if not self.player:
@@ -81,6 +103,7 @@ class OmxVideo:
       return
 
     self.player.stop()
+    self.stopEvent(self)
     self.logger.debug('video playback stopped')
 
   def seek(self, pos):
@@ -95,6 +118,7 @@ class OmxVideo:
         return
 
     self.player.set_position(pos)
+    self.seekEvent(self, pos)
     self.logger.debug('video payback position changed to {0}'.format(pos))
 
   def speed(self, speed):
@@ -107,11 +131,13 @@ class OmxVideo:
 
     if speed == -1:
       self.player.action(1)
+      self.speedEvent(self, -1)
       self.logger.debug("video playback slower")
       return
 
     if speed == 1:
       self.player.action(2)
+      self.speedEvent(self, 1)
       self.logger.debug("video playback faster")
       return
 
@@ -130,7 +156,7 @@ class OmxVideo:
     self.logger.debug('loading player with: {0}'.format(videoPath))
     # start omx player without osd and sending audio through analog jack
     self.player = OMXPlayer(videoPath, args=['--no-osd', '--adev', 'local', '-b'])
-    self.loadEvent(self)
+    self.loadEvent(self, videoPath)
 
   def _getVidPath(self, number):
     # make sure we have an int

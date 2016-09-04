@@ -70,8 +70,7 @@ class ComponentManager:
 
             del OmxVideoOscInput
 
-        if omxvideo:
-            if 'omxsyncer' in profile_data:
+        if omxvideo and 'omxsyncer' in profile_data:
                 from components.omxsyncer import OmxSyncer
                 comp = OmxSyncer(profile_data['omxsyncer'])
                 comp.setup(omxvideo)
@@ -89,15 +88,16 @@ class ComponentManager:
 
             del OscInput
 
-        osc_outputs = []
+        osc_outputs = {}
         if 'osc_outputs' in profile_data:
             from components.osc_output import OscOutput
             # loop over each osc_output profile
-            for data in profile_data['osc_outputs'].values():
+            for name in profile_data['osc_outputs']:
+                data = profile_data['osc_outputs'][name]
                 comp = OscOutput(data)
                 comp.setup()
                 self._add_component(comp) # auto-starts
-                osc_outputs.append(comp)
+                osc_outputs[name] = comp
             del OscOutput
 
         midi_inputs = {}
@@ -120,9 +120,31 @@ class ComponentManager:
 
                 data = profile_data['midi_to_osc'][name]
                 comp = MidiToOsc(data)
-                comp.setup(midi_inputs[name], osc_outputs) # give it a midi_input component and all the osc_output components
+                comp.setup(midi_inputs[name], osc_outputs.values()) # give it a midi_input component and all the osc_output components
                 self._add_component(comp)
             del MidiToOsc
+
+        if omxvideo and 'midi_to_omx' in profile_data:
+            from components.midi_to_omx import MidiToOmx
+            for name in profile_data['midi_to_omx']:
+                if not name in midi_inputs:
+                    self.logger.warning('unknown midi_input name: {0}'.format(name))
+                    continue
+                comp = MidiToOmx(profile_data['midi_to_omx'][name])
+                comp.setup(midi_inputs[name], omxvideo)
+                self._add_component(comp)
+            del MidiToOmx
+
+        if omxvideo and 'omx_osc_output' in profile_data:
+            from components.omx_osc_output import OmxOscOutput
+            for name in profile_data['omx_osc_output']:
+                if not name in osc_outputs:
+                    self.logger.warning('unknown osc_output name: {0}'.format(name))
+                    continue
+                comp = OmxOscOutput(profile_data['omx_osc_output'][name])
+                comp.setup(omxvideo, osc_outputs[name])
+                self._add_component(comp)
+            del OmxOscOutput
 
     def _add_component(self, comp):
         if hasattr(comp, 'update') and type(comp.update).__name__ == 'instancemethod':

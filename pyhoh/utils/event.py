@@ -26,7 +26,7 @@ class Event:
             self.handlers.remove(handler)
         except:
             # raise ValueError("Handler is not handling this event, so cannot unhandle it.")
-            logger.error('Event.unhandle got unknown handler')
+            logger.warning('Event.unhandle got unknown handler')
             # traceback.print_exc()
             # traceback.print_stack()
 

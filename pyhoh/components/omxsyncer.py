@@ -80,7 +80,7 @@ class OmxSyncer:
         else:
             self.logger.warning("omxsync not loaded, can't create Receiver instance")
 
-    def _onLoad(self, omxvideo):
+    def _onLoad(self, omxvideo, path):
         self.set_player(omxvideo.player)
 
     def _onUnload(self, omxvideo):

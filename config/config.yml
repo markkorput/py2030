@@ -1,14 +1,6 @@
 pyhoh:
   profiles:
     default:
-      # send osc messages
-      osc_outputs:
-        bcast_and_local:
-          verbose: true
-          ip: 192.168.2.255
-          # hostname: 'rpi4.local'
-          port: 2030
-
       # video playback component
       omxvideo:
         verbose: true
@@ -19,23 +11,25 @@ pyhoh:
           - '/home/pi/videos/vid4.mov'
           - '/home/pi/videos/vid5.mov'
 
+      # send osc messages
+      osc_outputs:
+        bcast_and_local:
+          verbose: true
+          ip: 192.168.2.255
+          # hostname: 'rpi4.local'
+          port: 2030
+
+      omx_osc_output:
+        bcast_and_local:
+          verbose: true
+          start: '/pyhoh/vid/start'
+          pause: '/pyhoh/vid/pause'
+          stop: '/pyhoh/vid/stop'
+
       midi_inputs:
         akai:
           port: 1
           verbose: true
-
-      midi_to_osc:
-        # akai pads (prog1)
-        akai:
-          144: # midi message type; note on
-            36: '/pyhoh/vid/start/0' # prog1, pad1
-            37: '/pyhoh/vid/start/1'
-            38: '/pyhoh/vid/start/2'
-            39: '/pyhoh/vid/start/3'
-            40: '/pyhoh/vid/start/4'
-            41: '/pyhoh/vid/pause'
-            42: '/pyhoh/vid/stop'
-            43: '/pyhoh/vid/stop'
 
       midi_to_omx:
         # akai pads (prog1)

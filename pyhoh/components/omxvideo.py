@@ -26,7 +26,9 @@ class OmxVideo:
 
     # events
     self.loadEvent = Event()
+    self.loadIndexEvent = Event()
     self.unloadEvent = Event()
+    self.startEvent = Event()
     self.stopEvent = Event()
     self.playEvent = Event()
     self.pauseEvent = Event()
@@ -58,7 +60,9 @@ class OmxVideo:
           self.logger.warning('invalid video number: {0}'.format(vidNumber))
           return False
 
-      return self._loadPath(path)
+      result = self._loadPath(path)
+      self.loadIndexEvent(self, vidNumber)
+      return result
 
   def play(self):
     if not self.player:
@@ -72,6 +76,7 @@ class OmxVideo:
   def start(self, vidNumber):
       self.load(vidNumber)
       self.play()
+      self.startEvent(self, vidNumber)
 
   def pause(self):
     if not self.player:
@@ -141,7 +146,7 @@ class OmxVideo:
     self.logger.debug('loading player with: {0}'.format(videoPath))
     # start omx player without osd and sending audio through analog jack
     self.player = OMXPlayer(videoPath, args=['--no-osd', '--adev', 'local', '-b'])
-    self.loadEvent(self)
+    self.loadEvent(self, videoPath)
 
   def _getVidPath(self, number):
     # make sure we have an int

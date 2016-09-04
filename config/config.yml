@@ -1,14 +1,18 @@
 pyhoh:
   profiles:
     default:
+      # osc input that takes video control commands
       omxvideo_osc_inputs:
         self:
           ip: ''
           port: 2030
           verbose: true
+      # video playback component
       omxvideo:
         verbose: true
         playlist:
           - '/home/pi/videos/vid1.mov'
           - '/home/pi/videos/vid2.mov'
           - '/home/pi/videos/vid3.mov'
+      omxslave:
+        verbose: true

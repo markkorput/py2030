@@ -32,7 +32,7 @@ class MidiInput:
         # (we'll poll for new message in the update method)
         self._connect()
         # reset timer
-        self.time = 0
+        # self.time = 0
 
     def destroy(self):
         if self.midiin:
@@ -78,7 +78,7 @@ class MidiInput:
             if len(msg) > 0 and len(msg[0]) > 2 and msg[0][2] == 0 or msg[0][0] == 128:
                 continue
 
-            self.time += msg[1]
+            # self.time += msg[1]
             self.messageEvent(msg)
             self.logger.debug('midi message: {0}'.format(msg))
 

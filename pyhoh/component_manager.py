@@ -10,21 +10,24 @@ class ComponentManager:
     def __init__(self, options = {}):
         # config
         self.options = options
-        self.profile = self.options['profile'] if 'profile' in self.options else 'default'
+        self.logger = logging.getLogger(__name__)
+        if self.options.verbose:
+            self.logger.setLevel(logging.DEBUG)
 
         # attributes
+        self.profile = self.options.profile
         self.config_file = ConfigFile('config/config.yml')
         self.components = []
         self.update_components = []
         self.destroy_components = []
-
-        self.logger = logging.getLogger(__name__)
         self.running = True
 
     def __del__(self):
         self.destroy()
 
     def setup(self):
+        self.logger.debug('profile: {0}'.format(self.profile))
+
         # read config file content
         self.config_file.load()
 
@@ -67,12 +70,13 @@ class ComponentManager:
 
             del OmxVideoOscInput
 
-        if 'omxsync' in profile_data:
-            from components.omxsync import OmxSync
-            comp = OmxSync(profile_data['omxsync'])
-            comp.setup(omxvideo)
-            self._add_component(comp)
-            del OmxSync
+        if omxvideo:
+            if 'omxsyncer' in profile_data:
+                from components.omxsyncer import OmxSyncer
+                comp = OmxSyncer(profile_data['omxsyncer'])
+                comp.setup(omxvideo)
+                self._add_component(comp)
+                del OmxSyncer
 
         if 'osc_inputs' in profile_data:
             from components.osc_input import OscInput

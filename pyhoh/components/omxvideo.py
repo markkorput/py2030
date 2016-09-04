@@ -4,7 +4,6 @@ except:
     print "Could not load OMXPlayer"
     OMXPlayer = None
 
-import os
 import logging
 
 from utils.event import Event
@@ -61,7 +60,6 @@ class OmxVideo:
         self.logger.warning("can't start playback, no video loaded")
         return
 
-    os.system('clear')
     self.player.play()
     self.logger.debug('video playback started')
 
@@ -82,9 +80,7 @@ class OmxVideo:
       self.logger.warning("can't stop video playback, no video loaded")
       return
 
-    os.system('clear')
     self.player.stop()
-    os.system('clear')
     self.logger.debug('video playback stopped')
 
   def seek(self, pos):

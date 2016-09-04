@@ -32,6 +32,10 @@ class OmxVideoOscInput(OscInput):
                 self.omxvideo.pause()
                 return
 
+            if addr == '/pyhoh/vid/toggle':
+                self.omxvideo.toggle()
+                return
+
             if addr == '/pyhoh/vid/seek' and len(data) == 1:
                 self.omxvideo.seek(data[0])
                 return

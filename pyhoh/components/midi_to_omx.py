@@ -59,6 +59,9 @@ class MidiToOmx:
             self.omxvideo.pause()
             return
 
+        if action == 'toggle':
+            self.omxvideo.toggle()
+
         if action == 'seek' and len(params) > 0:
             self.omxvideo.seek(params[0])
             return

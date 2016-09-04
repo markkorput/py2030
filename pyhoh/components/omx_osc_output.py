@@ -17,6 +17,7 @@ class OmxOscOutput:
         self.msgStop = None
         self.msgPlay = None
         self.msgPause = None
+        self.msgToggle = None
         self.msgSeek = None
         self.msgSpeed = None
 
@@ -40,6 +41,7 @@ class OmxOscOutput:
         self.msgStop = self._getOption('stop')
         self.msgPlay = self._getOption('play')
         self.msgPause = self._getOption('pause')
+        self.msgToggle = self._getOption('toggle')
         self.msgSeek = self._getOption('seek')
         self.msgSpeed = self._getOption('speed')
 
@@ -59,6 +61,8 @@ class OmxOscOutput:
                 self.omxvideo.playEvent += self._onPlay
             if self.msgPause:
                 self.omxvideo.pauseEvent += self._onPause
+            if self.msgToggle:
+                self.omxvideo.toggleEvent += self._onToggle
             if self.msgSeek:
                 self.omxvideo.seekEvent += self._onSeek
             if self.msgSpeed:
@@ -82,6 +86,8 @@ class OmxOscOutput:
                 self.omxvideo.playEvent -= self._onPlay
             if self.msgPause:
                 self.omxvideo.pauseEvent -= self._onPause
+            if self.msgToggle:
+                self.omxvideo.toggleEvent -= self._onToggle
             if self.msgSeek:
                 self.omxvideo.seekEvent -= self._onSeek
             if self.msgSpeed:
@@ -110,6 +116,9 @@ class OmxOscOutput:
 
     def _onPause(self, omxvideo):
         self.osc_output.sendMessage(self.msgPause)
+
+    def _onToggle(self, omxvideo):
+        self.osc_output.sendMessage(self.msgToggle)
 
     def _onSeek(self, omxvideo, pos):
         self.osc_output.sendMessage(self.msgSeek, [pos])

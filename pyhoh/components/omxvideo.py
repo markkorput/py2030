@@ -32,6 +32,7 @@ class OmxVideo:
     self.stopEvent = Event()
     self.playEvent = Event()
     self.pauseEvent = Event()
+    self.toggleEvent = Event())
     self.seekEvent = Event()
     self.speedEvent = Event()
 
@@ -86,6 +87,10 @@ class OmxVideo:
     self.player.pause()
     self.pauseEvent(self)
     self.logger.debug("video playback paused")
+
+  def toggle(self):
+    self.player.play_pause()
+    self.toggleEvent(self)
 
   def stop(self):
     if not self.player:

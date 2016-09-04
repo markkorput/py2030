@@ -2,7 +2,7 @@ import copy
 from datetime import datetime
 import logging
 logging.basicConfig(level=logging.WARNING)
-logger = logging.getLogger(__name__)
+
 
 from utils.config_file import ConfigFile
 
@@ -18,6 +18,7 @@ class ComponentManager:
         self.update_components = []
         self.destroy_components = []
 
+        self.logger = logging.getLogger(__name__)
         self.running = True
 
     def __del__(self):
@@ -95,16 +96,29 @@ class ComponentManager:
                 osc_outputs.append(comp)
             del OscOutput
 
-        midi_inputs = []
+        midi_inputs = {}
         if 'midi_inputs' in profile_data:
             from components.midi_input import MidiInput
-            for data in profile_data['midi_inputs'].values():
+            for name in profile_data['midi_inputs']
+                data = profile_data['midi_inputs'][name]
                 comp = MidiInput(data)
                 comp.setup()
                 self._add_component(comp)
-                midi_inputs.append(comp)
+                midi_inputs[name] = comp
             del MidiInput
 
+        if 'midi_to_osc' in profile_data:
+            from components.midi_to_osc import MidiToOsc
+            for name in profile_data['midi_to_osc']
+                if not name in midi_inputs:
+                    self.logger.warning('unknown midi_input name: {0}'.format(name))
+                    continue
+
+                data = profile_data['midi_to_osc'][name]
+                comp = MidiToOsc(data)
+                comp.setup(midi_inputs[name], osc_outputs) # give it a midi_input component and all the osc_output components
+                self._add_component(comp)
+            del MidiInput
 
     def _add_component(self, comp):
         if hasattr(comp, 'update') and type(comp.update).__name__ == 'instancemethod':

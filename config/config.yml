@@ -32,3 +32,16 @@ pyhoh:
         vidmidi:
           port: 1
           verbose: true
+
+      midi_to_osc:
+        # akai pads (prog1)
+        vidmidi:
+          144: # midi message type; note on
+            36: '/hoh/start/0' # prog1, pad1
+            37: '/hoh/start/1'
+            38: '/hoh/start/2'
+            39: '/hoh/start/3'
+            40: '/hoh/pause'
+            41: '/hoh/pause'
+            42: '/hoh/stop'
+            43: '/hoh/stop'

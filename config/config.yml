@@ -4,7 +4,7 @@ pyhoh:
       # send osc messages
       osc_outputs:
         bcast:
-          verbose: true
+          # verbose: true
           ip: 192.168.2.255
           # hostname: 'rpi4.local'
           port: 2030
@@ -26,7 +26,7 @@ pyhoh:
       midi_inputs:
         akai:
           port: 1
-          verbose: true
+          # verbose: true
 
       # for controlling the slaves
       midi_to_osc:
@@ -46,7 +46,7 @@ pyhoh:
       midi_to_omx:
         # akai pads (prog1)
         akai:
-          verbose: true
+          # verbose: true
           144: # midi message type; note on
             36:
               action: 'start'
@@ -81,7 +81,7 @@ pyhoh:
         self:
           ip: ''
           port: 2030
-          verbose: true
+          # verbose: true
 
       # video playback component
       omxvideo:

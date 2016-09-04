@@ -95,6 +95,17 @@ class ComponentManager:
                 osc_outputs.append(comp)
             del OscOutput
 
+        midi_inputs = []
+        if 'midi_inputs' in profile_data:
+            from components.midi_input import MidiInput
+            for data in profile_data['midi_inputs'].values():
+                comp = MidiInput(data)
+                comp.setup()
+                self._add_component(comp)
+                midi_inputs.append(comp)
+            del MidiInput
+
+
     def _add_component(self, comp):
         if hasattr(comp, 'update') and type(comp.update).__name__ == 'instancemethod':
             self.update_components.append(comp)

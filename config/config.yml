@@ -7,16 +7,7 @@ pyhoh:
           ip: ''
           port: 2030
           verbose: true
-      # video playback component
-      omxvideo:
-        verbose: true
-        playlist:
-          - '/home/pi/videos/vid1.mov'
-          - '/home/pi/videos/vid2.mov'
-          - '/home/pi/videos/vid3.mov'
-      omxsync:
-        master: true
-        verbose: true
+
       # send osc messages
       osc_outputs:
         bcast_and_local:
@@ -24,3 +15,20 @@ pyhoh:
           ip: 192.168.2.255
           # hostname: 'rpi4.local'
           port: 2030
+
+      # video playback component
+      omxvideo:
+        verbose: true
+        playlist:
+          - '/home/pi/videos/vid1.mov'
+          - '/home/pi/videos/vid2.mov'
+          - '/home/pi/videos/vid3.mov'
+
+      omxsync:
+        master: true
+        verbose: true
+
+      midi_inputs:
+        vidmidi:
+          port: 1
+          verbose: true

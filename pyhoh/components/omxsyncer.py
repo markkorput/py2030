@@ -44,13 +44,15 @@ class OmxSyncer:
         # unregister from any previous omxvideo
         if self.omxvideo:
             self.omxvideo.loadEvent -= self._onLoad
+            self.omxvideo.unloadEvent -= self._onUnload
 
         # register with new omxvideo
         self.omxvideo = omxvideo
         if self.omxvideo:
             self.omxvideo.loadEvent += self._onLoad
+            self.omxvideo.unloadEvent += self._onUnload
             # loads player
-            self._onLoad(self.omxvideo)
+            self.set_player(self.omxvideo.player)
 
     def set_player(self, player):
         if self.receiver:
@@ -80,3 +82,6 @@ class OmxSyncer:
 
     def _onLoad(self, omxvideo):
         self.set_player(omxvideo.player)
+
+    def _onUnload(self, omxvideo):
+        self.set_player(None)

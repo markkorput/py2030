@@ -19,9 +19,9 @@ pyhoh:
           - '/home/pi/hoh/hoh-right-v07.mov'
           - '/home/pi/hoh/hoh-right-v07.mov'
 
-      omxsyncer:
-        master: true
-        verbose: true
+      # omxsyncer:
+      #   master: true
+      #   verbose: true
 
       midi_inputs:
         akai:
@@ -93,9 +93,9 @@ pyhoh:
           - '/home/pi/hoh/hoh-right-v07.mov'
           - '/home/pi/hoh/hoh-right-v07.mov'
 
-      omxsyncer:
-        slave: true
-        verbose: true
+      # omxsyncer:
+      #   slave: true
+      #   verbose: true
 
     default:
       # video playback component

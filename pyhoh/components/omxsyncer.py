@@ -17,33 +17,19 @@ class OmxSyncer:
         self.logger.setLevel(logging.DEBUG if 'verbose' in options and options['verbose'] else logging.INFO)
         self.receiver = None
         self.broadcaster = None
+        self.omxvideo = None
         self.player = None
 
     def __del__(self):
         self.destroy()
 
-    def setup(self, player):
+    def setup(self, omxvideo):
         self.destroy()
-        self.player = player
-
-        if player:
-            if self.isMaster():
-                if not Broadcaster:
-                    self.logger.warning("omxsync not loaded, can't create Broadcaster instance")
-                    return
-                self.broadcaster = Broadcaster(player, self.options)
-            else:
-                if not Receiver:
-                    self.logger.warning("omxsync not loaded, can't create Receiver instance")
-                    return
-                self.receiver = Receiver(player, self.options)
+        self.set_omxvideo(omxvideo)
 
     def destroy(self):
-        if self.receiver:
-            self.receiver.destroy()
-            self.receiver = None
-
-        self.player = None
+        self.set_player(None)
+        self.set_omxvideo(None)
 
     def update(self):
         if self.receiver:
@@ -53,3 +39,42 @@ class OmxSyncer:
 
     def isMaster(self):
         return 'master' in self.options and self.options['master']
+
+    def set_omxvideo(self, omxvideo):
+        # unregister from any previous omxvideo
+        if self.omxvideo:
+            self.omxvideo.loadEvent -= self._onLoad
+
+        # register with new omxvideo
+        self.omxvideo = omxvideo
+        if self.omxvideo:
+            self.omxvideo.loadEvent += self._onLoad
+            # loads player
+            self._onLoad(self.omxvideo)
+
+    def set_player(self, player):
+        if self.receiver:
+            self.receiver.destroy()
+            self.receiver = None
+
+        if self.broadcaster:
+            self.broadcaster.destroy()
+            self.broadcaster = None
+
+        if not player:
+            return
+
+        if self.isMaster():
+            if Broadcaster:
+                self.broadcaster = Broadcaster(player, self.options)
+            else:
+                self.logger.warning("omxsync not loaded, can't create Broadcaster instance")
+            return
+
+        if Receiver:
+            self.receiver = Receiver(player, self.options)
+        else:
+            self.logger.warning("omxsync not loaded, can't create Receiver instance")
+
+def _onLoad(self, omxvideo):
+        self.set_player(omxvideo.player)

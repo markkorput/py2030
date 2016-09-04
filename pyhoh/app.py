@@ -1,6 +1,7 @@
 import copy
 from datetime import datetime
 import logging
+logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
 
 from utils.config_file import ConfigFile
@@ -13,9 +14,6 @@ class App:
 
         # attributes
         self.config_file = ConfigFile('config/config.yml')
-        # self.profile_data = {}
-
-        # components
         self.components = []
 
     def __del__(self):
@@ -37,9 +35,21 @@ class App:
             comp.update()
 
     def _apply_config(self, config_file):
-        pass
+        # read profile data form config file
+        profile_data = config_file.get_value('pyhoh.profiles.'+self.profile)
+        if not profile_data:
+            profile_data = {}
 
+        if 'osc_inputs' in profile_data:
+            from components.osc_input import OscInput
 
+            # loop over each osc_input profile
+            for data in profile_data['osc_inputs'].values():
+                comp = OscInput(data)
+                comp.setup()
+                self.components.append(comp) # auto-starts
+
+            del OscInput
 
 if __name__ == '__main__':
     app = App()

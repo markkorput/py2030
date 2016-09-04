@@ -1,0 +1,8 @@
+pyhoh:
+  profiles:
+    default:
+      osc_inputs:
+        self:
+          ip: ''
+          port: 2033
+          verbose: true

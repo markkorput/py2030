@@ -17,3 +17,10 @@ pyhoh:
       omxsync:
         master: true
         verbose: true
+      # send osc messages
+      osc_outputs:
+        bcast_and_local:
+          # verbose: true
+          ip: 192.168.2.255
+          # hostname: 'rpi4.local'
+          port: 2030

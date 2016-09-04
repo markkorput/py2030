@@ -59,12 +59,12 @@ class App:
 
             del OmxVideoOscInput
 
-        if 'omxslave' in profile_data:
-            from components.omxslave import OmxSlave
-            comp = OmxSlave(profile_data['omxslave'])
+        if 'omxsync' in profile_data:
+            from components.omxsync import OmxSync
+            comp = OmxSync(profile_data['omxsync'])
             comp.setup(omxvideo)
             self.components.append(comp)
-            del OmxSlave
+            del OmxSync
 
         if 'osc_inputs' in profile_data:
             from components.osc_input import OscInput

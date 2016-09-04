@@ -14,5 +14,6 @@ pyhoh:
           - '/home/pi/videos/vid1.mov'
           - '/home/pi/videos/vid2.mov'
           - '/home/pi/videos/vid3.mov'
-      omxslave:
+      omxsync:
+        master: true
         verbose: true

@@ -20,6 +20,8 @@ class OscInput:
         self.running = False
         self.osc_map = None
         self.logger = logging.getLogger(__name__)
+        if 'verbose' in options and options['verbose']:
+            self.logger.setLevel(logging.DEBUG)
 
         # events
         self.connectEvent = Event()
@@ -106,7 +108,7 @@ class OscInput:
 
         # register time out callback
         self.osc_server.handle_timeout = self._onTimeout
-        self._add_handlers(self.osc_server)
+        self.osc_server.addMsgHandler('default', self._onDefault)
 
         # set internal connected flag
         self.connected = True
@@ -126,9 +128,6 @@ class OscInput:
     def _onTimeout(self):
         if self.osc_server:
             self.osc_server.timed_out = True
-
-    def _add_handlers(self, osc_server):
-        osc_server.addMsgHandler('default', self._onDefault)
 
     def _onDefault(self, addr, tags, data, client_address):
         # skip touch osc touch-up events

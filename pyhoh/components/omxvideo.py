@@ -51,7 +51,7 @@ class OmxVideo:
   def load(self, vidNumber):
       path = self._getVidPath(vidNumber)
       if not path:
-          self.logger.warning('invalid video number:', vidNumber)
+          self.logger.warning('invalid video number: {0}'.format(vidNumber))
           return False
 
       return self._loadPath(path)

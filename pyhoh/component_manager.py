@@ -99,7 +99,7 @@ class ComponentManager:
         midi_inputs = {}
         if 'midi_inputs' in profile_data:
             from components.midi_input import MidiInput
-            for name in profile_data['midi_inputs']
+            for name in profile_data['midi_inputs']:
                 data = profile_data['midi_inputs'][name]
                 comp = MidiInput(data)
                 comp.setup()
@@ -109,7 +109,7 @@ class ComponentManager:
 
         if 'midi_to_osc' in profile_data:
             from components.midi_to_osc import MidiToOsc
-            for name in profile_data['midi_to_osc']
+            for name in profile_data['midi_to_osc']:
                 if not name in midi_inputs:
                     self.logger.warning('unknown midi_input name: {0}'.format(name))
                     continue
@@ -118,7 +118,7 @@ class ComponentManager:
                 comp = MidiToOsc(data)
                 comp.setup(midi_inputs[name], osc_outputs) # give it a midi_input component and all the osc_output components
                 self._add_component(comp)
-            del MidiInput
+            del MidiToOsc
 
     def _add_component(self, comp):
         if hasattr(comp, 'update') and type(comp.update).__name__ == 'instancemethod':

@@ -15,6 +15,15 @@ class OmxVideoOscInput(OscInput):
                 self.omxvideo.start(data[0])
                 return
 
+            if addr.startswith('/pyhoh/vid/start/'):
+                try:
+                    number = int(addr.replace('/pyhoh/vid/start/', ''))
+                except ValueError:
+                    self.logger.warning('invalid osc message: {0}'.format(addr))
+                    return
+                self.omxvideo.start(number)
+                return
+
             if addr == '/pyhoh/vid/stop':
                 self.omxvideo.stop()
                 return
@@ -27,10 +36,28 @@ class OmxVideoOscInput(OscInput):
                 self.omxvideo.seek(data[0])
                 return
 
+            if addr.startswith('/pyhoh/vid/seek/'):
+                try:
+                    number = float(addr.replace('/pyhoh/vid/seek/', ''))
+                except ValueError:
+                    self.logger.warning('invalid osc message: {0}'.format(addr))
+                    return
+                self.omxvideo.seek(number)
+                return
+
             if addr == '/pyhoh/vid/load' and len(data) == 1:
                 self.omxvideo.load(data[0])
+                return
+
+            if addr.startswith('/pyhoh/vid/load/'):
+                try:
+                    number = int(addr.replace('/pyhoh/vid/load/', ''))
+                except ValueError:
+                    self.logger.warning('invalid osc message: {0}'.format(addr))
+                    return
+                self.omxvideo.load(number)
                 return
         else:
             self.logger.warning('no omxvideo provided')
 
-        super(OmxVideoOscInput, self)._onDefault(addr, tags, data, client_address)
+        OscInput._onDefault(self, addr, tags, data, client_address)

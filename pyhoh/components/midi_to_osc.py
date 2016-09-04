@@ -1,6 +1,6 @@
 import logging
 
-class OmxSync:
+class MidiToOsc:
     def __init__(self, options = {}):
         # config
         self.options = options

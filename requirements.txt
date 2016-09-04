@@ -1,2 +1,3 @@
 pyOSC==0.3.5b-5294
 PyYAML==3.11
+omxsync==0.1

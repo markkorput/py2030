@@ -37,7 +37,7 @@ class ConfigFile:
         if not content:
             return
 
-        if self.path.endswith('.yaml'):
+        if self.path.endswith('.yaml') or self.path.endswith('.yml'):
             self.loadYaml(content)
         else:
             logger.warning('[ConfigFile] could not determine config file data format from file name ({0}), assuming yaml'.format(self.path))
@@ -88,20 +88,6 @@ class ConfigFile:
                 return default_value
             data = data[name]
         return data
-
-    # def set_value(self, path, value):
-    #     if not self.data:
-    #         self.data = {}
-    #
-    #     parts = path.split('.')
-    #     for part in parts:
-
-    def set_version(self, version):
-        if not self.data:
-            self.data = {}
-        if not 'py2030' in self.data:
-            self.data['py2030'] = {}
-        self.data['py2030']['version'] = version
 
     def backup(self, backup_path=None):
         if not backup_path:

@@ -26,7 +26,7 @@ pyhoh:
           - '/home/pi/videos/vid4.mov'
           - '/home/pi/videos/vid5.mov'
 
-      omxsync:
+      omxsyncer:
         master: true
         verbose: true
 
@@ -74,7 +74,7 @@ pyhoh:
           - '/home/pi/videos/vid4.mov'
           - '/home/pi/videos/vid5.mov'
 
-      omxsync:
+      omxsyncer:
         master: true
         verbose: true
 
@@ -114,6 +114,6 @@ pyhoh:
           - '/home/pi/videos/vid4.mov'
           - '/home/pi/videos/vid5.mov'
 
-      omxsync:
+      omxsyncer:
         slave: true
         verbose: true

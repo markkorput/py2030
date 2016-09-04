@@ -8,7 +8,7 @@ except ImportError:
     Receiver = None
     Broadcaster = None
 
-class OmxSync:
+class OmxSyncer:
     def __init__(self, options = {}):
         # config
         self.options = options

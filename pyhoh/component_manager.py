@@ -70,12 +70,13 @@ class ComponentManager:
 
             del OmxVideoOscInput
 
-        if 'omxsync' in profile_data:
-            from components.omxsync import OmxSync
-            comp = OmxSync(profile_data['omxsync'])
-            comp.setup(omxvideo)
-            self._add_component(comp)
-            del OmxSync
+        if omxvideo:
+            if 'omxsyncer' in profile_data:
+                from components.omxsyncer import OmxSyncer
+                comp = OmxSyncer(profile_data['omxsyncer'])
+                comp.setup(omxvideo)
+                self._add_component(comp)
+                del OmxSyncer
 
         if 'osc_inputs' in profile_data:
             from components.osc_input import OscInput

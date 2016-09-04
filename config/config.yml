@@ -1,8 +1,14 @@
 pyhoh:
   profiles:
     default:
-      osc_inputs:
+      omxvideo_osc_inputs:
         self:
           ip: ''
-          port: 2033
+          port: 2030
           verbose: true
+      omxvideo:
+        verbose: true
+        playlist:
+          - '/home/pi/videos/vid1.mov'
+          - '/home/pi/videos/vid2.mov'
+          - '/home/pi/videos/vid3.mov'

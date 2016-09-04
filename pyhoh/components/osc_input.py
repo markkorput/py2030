@@ -106,7 +106,7 @@ class OscInput:
 
         # register time out callback
         self.osc_server.handle_timeout = self._onTimeout
-        self.osc_server.addMsgHandler('default', self._onDefault)
+        self._add_handlers(self.osc_server)
 
         # set internal connected flag
         self.connected = True
@@ -127,13 +127,13 @@ class OscInput:
         if self.osc_server:
             self.osc_server.timed_out = True
 
-    def receivesType(self, typ):
-        return not 'inputs' in self.options or self.options['inputs'].count(typ) > 0
+    def _add_handlers(self, osc_server):
+        osc_server.addMsgHandler('default', self._onDefault)
 
     def _onDefault(self, addr, tags, data, client_address):
         # skip touch osc touch-up events
-        if len(data) == 1 and data[0] == 0.0:
-            return
+        # if len(data) == 1 and data[0] == 0.0:
+        #     return
 
         self.messageEvent(addr, tags, data, client_address)
-        self.logger.debug('osc-in {0}:{1}'.format(self.host(), self.port()), addr, data, client_address)
+        self.logger.debug('osc-in {0}:{1} {2} [{3}] from {4}'.format(self.host(), self.port(), addr, ", ".join(map(lambda x: str(x), data)), client_address))

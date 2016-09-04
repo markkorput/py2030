@@ -40,6 +40,25 @@ class App:
         if not profile_data:
             profile_data = {}
 
+        omxvideo = None
+        if 'omxvideo' in profile_data:
+            from components.omxvideo import OmxVideo
+            omxvideo = OmxVideo(profile_data['omxvideo'])
+            self.components.append(omxvideo)
+            del OmxVideo
+
+        if 'omxvideo_osc_inputs' in profile_data:
+            from components.omx_video_osc_input import OmxVideoOscInput
+
+            # loop over each osc_input profile
+            for data in profile_data['omxvideo_osc_inputs'].values():
+                comp = OmxVideoOscInput(data)
+                comp.set_omxvideo(omxvideo)
+                comp.setup()
+                self.components.append(comp) # auto-starts
+
+            del OmxVideoOscInput
+
         if 'osc_inputs' in profile_data:
             from components.osc_input import OscInput
 

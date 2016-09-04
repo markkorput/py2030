@@ -76,5 +76,5 @@ class OmxSyncer:
         else:
             self.logger.warning("omxsync not loaded, can't create Receiver instance")
 
-def _onLoad(self, omxvideo):
+    def _onLoad(self, omxvideo):
         self.set_player(omxvideo.player)

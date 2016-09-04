@@ -95,7 +95,7 @@ class OmxVideo:
 
     self.player.play_pause()
     self.toggleEvent(self)
-    self.logger.debug('toggle; video playback {0}'.format('resumed' if self.playback_status() == 'Playing' else 'paused'))
+    self.logger.debug('toggle; video playback {0}'.format('resumed' if self.player.playback_status() == 'Playing' else 'paused'))
 
   def stop(self):
     if not self.player:

@@ -27,6 +27,11 @@ class OmxVideo:
     # events
     self.loadEvent = Event()
     self.unloadEvent = Event()
+    self.stopEvent = Event()
+    self.playEvent = Event()
+    self.pauseEvent = Event()
+    self.seekEvent = Event()
+    self.speedEvent = Event()
 
   def __del__(self):
       self.destroy()
@@ -61,6 +66,7 @@ class OmxVideo:
         return
 
     self.player.play()
+    self.playEvent(self)
     self.logger.debug('video playback started')
 
   def start(self, vidNumber):
@@ -73,6 +79,7 @@ class OmxVideo:
       return
 
     self.player.pause()
+    self.pauseEvent(self)
     self.logger.debug("video playback paused")
 
   def stop(self):
@@ -81,6 +88,7 @@ class OmxVideo:
       return
 
     self.player.stop()
+    self.stopEvent(self)
     self.logger.debug('video playback stopped')
 
   def seek(self, pos):
@@ -95,6 +103,7 @@ class OmxVideo:
         return
 
     self.player.set_position(pos)
+    self.seekEvent(self, pos)
     self.logger.debug('video payback position changed to {0}'.format(pos))
 
   def speed(self, speed):
@@ -107,11 +116,13 @@ class OmxVideo:
 
     if speed == -1:
       self.player.action(1)
+      self.speedEvent(self, -1)
       self.logger.debug("video playback slower")
       return
 
     if speed == 1:
       self.player.action(2)
+      self.speedEvent(self, 1)
       self.logger.debug("video playback faster")
       return
 

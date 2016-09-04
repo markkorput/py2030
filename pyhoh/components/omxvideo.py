@@ -32,7 +32,7 @@ class OmxVideo:
     self.stopEvent = Event()
     self.playEvent = Event()
     self.pauseEvent = Event()
-    self.toggleEvent = Event())
+    self.toggleEvent = Event()
     self.seekEvent = Event()
     self.speedEvent = Event()
 

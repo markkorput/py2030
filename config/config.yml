@@ -1,5 +1,23 @@
 pyhoh:
   profiles:
+    osx:
+      # osc input that takes video control commands
+      osc_inputs:
+        remote:
+          ip: ''
+          port: 2030
+          verbose: true
+
+      osx_osc_video_resumer:
+        remote:
+          verbose: true
+          resume_on:
+            - '/pyhoh/vid/start/0'
+            - '/pyhoh/vid/start/1'
+            - '/pyhoh/vid/start/2'
+            - '/pyhoh/vid/start/3'
+            - '/pyhoh/vid/start/4'
+
     beamer1: # rpi7, slave
       # osc input that takes video control commands
       omxvideo_osc_inputs:

@@ -77,14 +77,17 @@ class ComponentManager:
                 self._add_component(comp)
                 del OmxSyncer
 
+        osc_inputs = {}
         if 'osc_inputs' in profile_data:
             from components.osc_input import OscInput
 
             # loop over each osc_input profile
-            for data in profile_data['osc_inputs'].values():
+            for name in profile_data['osc_inputs']:
+                data = profile_data['osc_inputs'][name]
                 comp = OscInput(data)
                 comp.setup()
                 self._add_component(comp) # auto-starts
+                osc_inputs[name] = comp
 
             del OscInput
 
@@ -145,6 +148,17 @@ class ComponentManager:
                 comp.setup(omxvideo, osc_outputs[name])
                 self._add_component(comp)
             del OmxOscOutput
+
+        if 'osx_osc_video_resumer' in profile_data:
+            from components.osx_osc_video_resumer import OsxOscVideoResumer
+            for name in profile_data['osx_osc_video_resumer']:
+                if not name in osc_inputs:
+                    self.logger.warning('unknown osc_input name: {0}'.format(name))
+                    continue
+                comp = OsxOscVideoResumer(profile_data['osx_osc_video_resumer'][name])
+                comp.setup(osc_inputs[name])
+                self._add_component(comp)
+            del OsxOscVideoResumer
 
     def _add_component(self, comp):
         if hasattr(comp, 'update') and type(comp.update).__name__ == 'instancemethod':

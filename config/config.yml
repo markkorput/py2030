@@ -1,5 +1,134 @@
 pyhoh:
   profiles:
+    beamer1: # rpi7, slave
+      # osc input that takes video control commands
+      omxvideo_osc_inputs:
+        self:
+          ip: ''
+          port: 2030
+          # verbose: true
+
+      # video playback component
+      omxvideo:
+        verbose: true
+        playlist:
+          - '/home/pi/ivo/beamer1writer1.mov'
+          - '/home/pi/ivo/beamer1writer2.mov'
+          - '/home/pi/ivo/beamer1writer3.mov'
+          - '/home/pi/ivo/beamer1writer4.mov'
+          - '/home/pi/ivo/beamer1writer5.mov'
+
+    beamer2: # rpi3, slave
+      # osc input that takes video control commands
+      omxvideo_osc_inputs:
+        self:
+          ip: ''
+          port: 2030
+          # verbose: true
+
+      # video playback component
+      omxvideo:
+        verbose: true
+        playlist:
+          - '/home/pi/ivo/beamer2writer1.mov'
+          - '/home/pi/ivo/beamer2writer2.mov'
+          - '/home/pi/ivo/beamer2writer3.mov'
+          - '/home/pi/ivo/beamer2writer4.mov'
+          - '/home/pi/ivo/beamer2writer5.mov'
+
+    beamer3: # rpi8, slave
+      # osc input that takes video control commands
+      omxvideo_osc_inputs:
+        self:
+          ip: ''
+          port: 2030
+          # verbose: true
+
+      # video playback component
+      omxvideo:
+        verbose: true
+        playlist:
+          - '/home/pi/ivo/beamer3writer1.mov'
+          - '/home/pi/ivo/beamer3writer2.mov'
+          - '/home/pi/ivo/beamer3writer3.mov'
+          - '/home/pi/ivo/beamer3writer4.mov'
+          - '/home/pi/ivo/beamer3writer5.mov'
+
+    beamer4: # rpi2, master
+      # send osc messages
+      osc_outputs:
+        bcast:
+          # verbose: true
+          ip: 192.168.2.255
+          # hostname: 'rpi4.local'
+          port: 2030
+
+      # video playback component
+      omxvideo:
+        verbose: true
+        playlist:
+          - '/home/pi/ivo/beamer4writer1.mov'
+          - '/home/pi/ivo/beamer4writer2.mov'
+          - '/home/pi/ivo/beamer4writer3.mov'
+          - '/home/pi/ivo/beamer4writer4.mov'
+          - '/home/pi/ivo/beamer4writer5.mov'
+
+      # omxsyncer:
+      #   master: true
+      #   verbose: true
+
+      midi_inputs:
+        akai:
+          port: 1
+          # verbose: true
+
+      # for controlling the slaves
+      midi_to_osc:
+        # akai pads (prog1)
+        akai:
+          144: # midi message type; note on
+            36: '/pyhoh/vid/start/0' # prog1, pad1
+            37: '/pyhoh/vid/start/1'
+            38: '/pyhoh/vid/start/2'
+            39: '/pyhoh/vid/start/3'
+            40: '/pyhoh/vid/start/4'
+            41: '/pyhoh/vid/toggle'
+            42: '/pyhoh/vid/stop'
+            43: '/pyhoh/vid/stop'
+
+      # for controlling the local (master) video
+      midi_to_omx:
+        # akai pads (prog1)
+        akai:
+          # verbose: true
+          144: # midi message type; note on
+            36:
+              action: 'start'
+              params:
+                - 0
+            37:
+              action: 'start'
+              params:
+                - 1
+            38:
+              action: 'start'
+              params:
+                - 2
+            39:
+              action: 'start'
+              params:
+                - 3
+            40:
+              action: 'start'
+              params:
+                - 4
+            41:
+              action: 'toggle'
+            42:
+              action: 'stop'
+            43:
+              action: 'stop'
+
     master:
       # send osc messages
       osc_outputs:

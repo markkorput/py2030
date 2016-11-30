@@ -1,5 +1,5 @@
 from osc_input import OscInput
-from utils.event import Event
+from evento import Event
 
 class OmxVideoOscInput(OscInput):
     def set_omxvideo(self, omxvideo):

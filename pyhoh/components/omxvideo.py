@@ -6,7 +6,7 @@ except:
 
 import logging
 
-from ..utils.event import Event
+from evento import Event
 
 class OmxVideo:
   def __init__(self, options = {}):

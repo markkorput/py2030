@@ -6,7 +6,7 @@ except ImportError:
     logging.getLogger(__name__).warning("importing embedded version of pyOSC library")
     from pyhoh.dependencies.OSC import OSCServer, NoCallbackError
 
-from utils.event import Event
+from evento import Event
 import json
 
 DEFAULT_PORT = 2030

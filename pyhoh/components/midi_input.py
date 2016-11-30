@@ -3,8 +3,7 @@ import time
 import logging
 
 from rtmidi.midiutil import open_midiport
-
-from utils.event import Event
+from evento import Event
 
 class MidiInput:
     def __init__(self, options = {}):

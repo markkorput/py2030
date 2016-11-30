@@ -29,6 +29,7 @@ pyhoh:
       # video playback component
       omxvideo:
         verbose: true
+        args: ['--no-osd', '--adev', 'local', '-b']
         playlist:
           - '/home/pi/ivo/beamer1writer1.mov'
           - '/home/pi/ivo/beamer1writer2.mov'
@@ -47,6 +48,7 @@ pyhoh:
       # video playback component
       omxvideo:
         verbose: true
+        args: ['--no-osd', '--adev', 'local', '-b']
         playlist:
           - '/home/pi/ivo/beamer2writer1.mov'
           - '/home/pi/ivo/beamer2writer2.mov'
@@ -65,6 +67,7 @@ pyhoh:
       # video playback component
       omxvideo:
         verbose: true
+        args: ['--no-osd', '--adev', 'local', '-b']
         playlist:
           - '/home/pi/ivo/beamer3writer1.mov'
           - '/home/pi/ivo/beamer3writer2.mov'
@@ -84,6 +87,7 @@ pyhoh:
       # video playback component
       omxvideo:
         verbose: true
+        args: ['--no-osd', '--adev', 'local', '-b']
         playlist:
           - '/home/pi/ivo/beamer4writer1.mov'
           - '/home/pi/ivo/beamer4writer2.mov'
@@ -159,6 +163,7 @@ pyhoh:
       # video playback component
       omxvideo:
         verbose: true
+        args: ['--no-osd', '--adev', 'local', '-b']
         playlist:
           - '/home/pi/hoh/hoh-right-v07.mov'
           - '/home/pi/hoh/hoh-right-v07.mov'
@@ -233,6 +238,7 @@ pyhoh:
       # video playback component
       omxvideo:
         verbose: true
+        args: ['--no-osd', '--adev', 'local', '-b']
         playlist:
           - '/home/pi/hoh/hoh-right-v07.mov'
           - '/home/pi/hoh/hoh-right-v07.mov'
@@ -248,6 +254,7 @@ pyhoh:
       # video playback component
       omxvideo:
         verbose: true
+        args: ['--no-osd', '--adev', 'local', '-b']
         playlist:
           - '/home/pi/videos/vid1.mov'
           - '/home/pi/videos/vid2.mov'

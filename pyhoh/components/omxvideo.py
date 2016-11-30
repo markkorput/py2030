@@ -6,7 +6,7 @@ except:
 
 import logging
 
-from utils.event import Event
+from ..utils.event import Event
 
 class OmxVideo:
   def __init__(self, options = {}):
@@ -23,6 +23,8 @@ class OmxVideo:
     self.playlist = []
     self.playlist = options['playlist'] if 'playlist' in options else []
     self.logger.debug('playlist: {0}'.format(", ".join(self.playlist)))
+
+    self.args = self.options['args'] if 'args' in self.options else ['--no-osd', '-b']
 
     # events
     self.loadEvent = Event()
@@ -153,9 +155,9 @@ class OmxVideo:
         self.logger.warning('No OMXPlayer not available, cannot load file: {0}'.format(videoPath))
         return
 
-    self.logger.debug('loading player with: {0}'.format(videoPath))
+    self.logger.debug('loading player with command: {0} {1}'.format(videoPath, ' '.join(self.args)))
     # start omx player without osd and sending audio through analog jack
-    self.player = OMXPlayer(videoPath, args=['--no-osd', '--adev', 'local', '-b'])
+    self.player = OMXPlayer(videoPath, args=self.args) #['--no-osd', '--adev', 'local', '-b'])
     self.loadEvent(self, videoPath)
 
   def _getVidPath(self, number):

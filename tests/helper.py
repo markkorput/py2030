@@ -16,5 +16,5 @@ packagedir = os.path.abspath(os.path.join(thisdir, '..'))
 # invoking this file directly will run all tests
 if __name__ == '__main__':
     import subprocess
-    os.chdir(thisdir)
+    os.chdir(packagedir)
     subprocess.call(['python', '-m', 'unittest', 'discover'])

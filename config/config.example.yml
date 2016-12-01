@@ -27,14 +27,21 @@ pyhoh:
 
       # send osc messages
       osc_outputs:
-        bcast_and_local:
+        bcast:
           verbose: true
           ip: 192.168.2.255
           # hostname: 'rpi4.local'
           port: 2030
 
+      event_to_osc:
+        bcast:
+          verbose: true
+          loop: '/loop'
+          stop: '/stop'
+          pause: '/pause'
+
       omx_osc_output:
-        bcast_and_local:
+        bcast:
           verbose: true
           start: '/pyhoh/vid/start'
           pause: '/pyhoh/vid/pause'
@@ -66,35 +73,3 @@ pyhoh:
           # - 0
         pause: 'toggle'
         stop: 'stop'
-
-      midi_to_omx:
-        # akai pads (prog1)
-        akai:
-          verbose: true
-          144: # midi message type; note on
-            36:
-              action: 'start'
-              params:
-                - 0
-            37:
-              action: 'start'
-              params:
-                - 1
-            38:
-              action: 'start'
-              params:
-                - 2
-            39:
-              action: 'start'
-              params:
-                - 3
-            40:
-              action: 'start'
-              params:
-                - 4
-            41:
-              action: 'pause'
-            42:
-              action: 'stop'
-            43:
-              action: 'stop'

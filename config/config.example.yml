@@ -1,6 +1,10 @@
 pyhoh:
   profiles:
     default:
+      event_to_event:
+        'start': ['load', 'begin']
+        'stop': ['end', 'unload']
+
       # video playback component
       omxvideo:
         verbose: true

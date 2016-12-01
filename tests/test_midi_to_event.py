@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import unittest
-import helper
+
 from pyhoh.components.midi_to_event import MidiToEvent
 from pyhoh.dynamic_events import DynamicEvents
 from pyhoh.components.midi_input import MidiInput

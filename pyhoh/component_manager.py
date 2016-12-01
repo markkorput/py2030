@@ -54,14 +54,16 @@ class ComponentManager:
 
         if 'event_to_event' in profile_data:
             from components.event_to_event import EventToEvent
-            e2e = EventToEvent(profile_data['event_to_event'])
-            e2e.setup(self.dynamic_events)
+            comp = EventToEvent(profile_data['event_to_event'])
+            comp.setup(self.dynamic_events)
+            self._add_component(comp)
             del EventToEvent
 
         if 'delay_events' in profile_data:
             from components.delay_events import DelayEvents
-            delay_events = DelayEvents(profile_data['delay_events'])
-            delay_events.setup(self.dynamic_events)
+            comp = DelayEvents(profile_data['delay_events'])
+            comp.setup(self.dynamic_events)
+            self._add_component(comp)
             del DelayEvents
 
         omxvideo = None

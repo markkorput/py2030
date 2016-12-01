@@ -21,7 +21,7 @@ class DelayItem:
 
     def trigger(self):
         self.timer = self.delay
-        self.logger.debug('DelayItem with ID `{0}` triggered by source event')
+        self.logger.debug('DelayItem with ID `{0}` triggered by source event'.format(self.id))
 
     def update(self, dt=None):
         if self.timer <= 0:
@@ -32,7 +32,7 @@ class DelayItem:
         if self.timer <= 0:
             # trigger target event
             self.targetEvent()
-            self.logger.debug('DelayItem with ID `{0}` triggered target event')
+            self.logger.debug('DelayItem with ID `{0}` triggered target event'.format(self.id))
 
 class DelayEvents:
     def __init__(self, options = {}):

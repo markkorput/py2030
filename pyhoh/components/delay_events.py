@@ -61,7 +61,7 @@ class DelayItem:
 class DelayEvents:
     def __init__(self, options = {}):
         self.options = options
-        self.dynamic_events = None
+        self.event_manager = None
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG if 'verbose' in options and options['verbose'] else logging.INFO)
         self._delay_items = []
@@ -70,8 +70,8 @@ class DelayEvents:
     def __del__(self):
         self.destroy()
 
-    def setup(self, dynamic_events):
-        self.dynamic_events = dynamic_events
+    def setup(self, event_manager):
+        self.event_manager = event_manager
         self._delay_items = self._options_to_delay_items()
 
         for delay_item in self._delay_items:
@@ -84,7 +84,7 @@ class DelayEvents:
             delay_item.destroy()
 
         self._delay_items = []
-        self.dynamic_events = None
+        self.event_manager = None
 
     def update(self, dt=None):
         if not dt:
@@ -113,9 +113,9 @@ class DelayEvents:
                 continue
 
             delay = params['delay']
-            sourceEvent = self.dynamic_events.getEvent(params['source'])
-            targetEvent = self.dynamic_events.getEvent(params['target'])
-            haltEvent = self.dynamic_events.getEvent(params['halt']) if 'halt' in params else None
-            pauseEvent = self.dynamic_events.getEvent(params['pause']) if 'pause' in params else None
+            sourceEvent = self.event_manager.getEvent(params['source'])
+            targetEvent = self.event_manager.getEvent(params['target'])
+            haltEvent = self.event_manager.getEvent(params['halt']) if 'halt' in params else None
+            pauseEvent = self.event_manager.getEvent(params['pause']) if 'pause' in params else None
             delay_items.append(DelayItem(_id, sourceEvent, delay, targetEvent, halt=haltEvent, pause=pauseEvent, logger=self.logger))
         return delay_items

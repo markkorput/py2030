@@ -3,12 +3,12 @@ import logging
 class EventToOmx:
     def __init__(self, options = {}):
         self.options = options
-        self.dynamic_events = None
+        self.event_manager = None
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG if 'verbose' in options and options['verbose'] else logging.INFO)
 
-    def setup(self, dynamic_events, omxvideo):
-        self.dynamic_events = dynamic_events
+    def setup(self, event_manager, omxvideo):
+        self.event_manager = event_manager
         self.omxvideo = omxvideo
 
         for eventName, config in self.options.items():
@@ -23,7 +23,7 @@ class EventToOmx:
             else:
                 action = config['action']
 
-            event = self.dynamic_events.getEvent(eventName)
+            event = self.event_manager.getEvent(eventName)
 
             if action == 'start':
                 event += lambda: self._onStart(0)

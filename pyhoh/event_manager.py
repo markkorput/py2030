@@ -1,6 +1,6 @@
 from evento import Event
 
-class DynamicEvents:
+class EventManager:
     def __init__(self):
         self._events = {}
         self.eventAddedEvent = Event()

@@ -3,7 +3,7 @@ from datetime import datetime
 import logging
 logging.basicConfig(level=logging.WARNING)
 
-from dynamic_events import DynamicEvents
+from event_manager import EventManager
 from utils.config_file import ConfigFile
 
 class ComponentManager:
@@ -21,7 +21,7 @@ class ComponentManager:
         self.update_components = []
         self.destroy_components = []
         self.running = True
-        self.dynamic_events = DynamicEvents()
+        self.event_manager = EventManager()
 
     def __del__(self):
         self.destroy()
@@ -55,14 +55,14 @@ class ComponentManager:
         if 'event_to_event' in profile_data:
             from components.event_to_event import EventToEvent
             comp = EventToEvent(profile_data['event_to_event'])
-            comp.setup(self.dynamic_events)
+            comp.setup(self.event_manager)
             self._add_component(comp)
             del EventToEvent
 
         if 'delay_events' in profile_data:
             from components.delay_events import DelayEvents
             comp = DelayEvents(profile_data['delay_events'])
-            comp.setup(self.dynamic_events)
+            comp.setup(self.event_manager)
             self._add_component(comp)
             del DelayEvents
 
@@ -79,7 +79,7 @@ class ComponentManager:
             else:
                 from components.event_to_omx import EventToOmx
                 comp = EventToOmx(profile_data['event_to_omx'])
-                comp.setup(self.dynamic_events, omxvideo)
+                comp.setup(self.event_manager, omxvideo)
                 self._add_component(comp)
                 del EventToOmx
 
@@ -148,7 +148,7 @@ class ComponentManager:
 
                 data = profile_data['midi_to_event'][name]
                 comp = MidiToEvent(data)
-                comp.setup(midi_inputs[name], self.dynamic_events)
+                comp.setup(midi_inputs[name], self.event_manager)
                 self._add_component(comp)
             del MidiToEvent
 

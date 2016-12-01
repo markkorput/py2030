@@ -73,6 +73,16 @@ class ComponentManager:
             self._add_component(omxvideo)
             del OmxVideo
 
+        if 'event_to_omx' in profile_data:
+            if omxvideo == None:
+                self.logger.warning("No omxvideo loaded, can't initialize event_to_omx component")
+            else:
+                from components.event_to_omx import EventToOmx
+                comp = EventToOmx(profile_data['event_to_omx'])
+                comp.setup(self.dynamic_events, omxvideo)
+                self._add_component(comp)
+                del EventToOmx
+
         if 'omxvideo_osc_inputs' in profile_data:
             from components.omx_video_osc_input import OmxVideoOscInput
 

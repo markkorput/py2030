@@ -1,0 +1,52 @@
+import logging
+
+class EventToOmx:
+    def __init__(self, options = {}):
+        self.options = options
+        self.dynamic_events = None
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG if 'verbose' in options and options['verbose'] else logging.INFO)
+
+    def setup(self, dynamic_events, omxvideo):
+        self.dynamic_events = dynamic_events
+        self.omxvideo = omxvideo
+
+        for eventName, config in self.options.items():
+            if eventName == 'verbose':
+                continue
+
+            if not hasattr(config, '__iter__'):
+                action = config
+            elif not 'action' in config:
+                self.logger.debug('`{0}` config has no action acttribute'.format(eventName))
+                continue
+            else:
+                action = config['action']
+
+            event = self.dynamic_events.getEvent(eventName)
+
+            if action == 'start':
+                event += lambda: self._onStart(0)
+                continue
+
+            if action == 'stop':
+                event += self._onStop
+                continue
+
+            if action == 'toggle':
+                event += self._onToggle
+                continue
+
+            self.logger.debug("unkown action: {0}".format(action))
+
+    def _onStart(self, idx):
+        self.omxvideo.start(idx)
+        self.logger.debug('OMX START')
+
+    def _onStop(self):
+        self.omxvideo.stop()
+        self.logger.debug('OMX STOP')
+
+    def _onToggle(self):
+        self.omxvideo.toggle()
+        self.logger.debug('OMX TOGGLE')

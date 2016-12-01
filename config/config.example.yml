@@ -58,6 +58,15 @@ pyhoh:
             42: 'stop'
             43: 'stop'
 
+      event_to_omx:
+        verbose: true
+        loop:
+          action: 'start'
+          # params:
+          # - 0
+        pause: 'toggle'
+        stop: 'stop'
+
       midi_to_omx:
         # akai pads (prog1)
         akai:

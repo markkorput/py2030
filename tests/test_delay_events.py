@@ -176,6 +176,7 @@ class TestEventToEvent(unittest.TestCase):
         # progress
         delay_events.update(10)
         self.assertEqual(dynamic_events.getEvent('loop')._fireCount, 2)
+        delay_events.update(6)
         # pause
         pauserE()
         self.assertEqual(delay_events._delay_items[0].active, False)
@@ -186,5 +187,25 @@ class TestEventToEvent(unittest.TestCase):
         pauserE()
         self.assertEqual(delay_events._delay_items[0].active, True)
         # progress, resumed
-        delay_events.update(10)
+        delay_events.update(4)
         self.assertEqual(dynamic_events.getEvent('loop')._fireCount, 3)
+
+    def test_start_after_halt(self):
+        delay_events = DelayEvents({'example': {'source': 'loop', 'delay': 10, 'target': 'loop', 'halt': 'halter'}})
+        dynamic_events = DynamicEvents()
+        delay_events.setup(dynamic_events)
+        # start
+        dynamic_events.getEvent('loop').fire()
+        # reach first loop (2nd loop fire)
+        delay_events.update(10)
+        self.assertEqual(dynamic_events.getEvent('loop')._fireCount, 2)
+        # stop
+        dynamic_events.getEvent('halter').fire()
+        delay_events.update(10)
+        self.assertEqual(dynamic_events.getEvent('loop')._fireCount, 2)
+        # start again
+        dynamic_events.getEvent('loop').fire()
+        self.assertEqual(dynamic_events.getEvent('loop')._fireCount, 3)
+        # finish another cycle since starting again
+        delay_events.update(10)
+        self.assertEqual(dynamic_events.getEvent('loop')._fireCount, 4)

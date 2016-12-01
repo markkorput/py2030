@@ -28,10 +28,10 @@ class DelayItem:
     def destroy(self):
         self.sourceEvent -= self._onSource
 
-        if self.haltEvent:
+        if self.haltEvent != None:
             self.haltEvent -= self._onHalt
 
-        if self.pauseEvent:
+        if self.pauseEvent != None:
             self.pauseEvent -= self._onPause
 
     def update(self, dt=None):
@@ -47,6 +47,7 @@ class DelayItem:
 
     def _onSource(self):
         self.timer = self.delay
+        self.active = True
         self.logger.debug('DelayItem with ID `{0}` triggered by source event'.format(self.id))
 
     def _onHalt(self):

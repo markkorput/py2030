@@ -13,4 +13,5 @@ ratings:
   paths:
   - "**.py"
 exclude_paths:
+- pyhoh/dependencies/
 - tests/

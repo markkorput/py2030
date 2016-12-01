@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import unittest
-import helper
+
 from pyhoh.components.omx_video_osc_input import OmxVideoOscInput
 
 class TestOmxVideoOscInput(unittest.TestCase):

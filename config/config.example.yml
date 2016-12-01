@@ -1,6 +1,17 @@
 pyhoh:
   profiles:
     default:
+
+      delay_events:
+        looper: # name/ID
+          source: 'loop'
+          delay: 60 # seconds
+          target: 'loop'
+
+      event_to_event:
+        'start': ['load', 'loop']
+        'stop': ['stoploop', 'unload']
+
       # video playback component
       omxvideo:
         verbose: true

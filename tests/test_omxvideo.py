@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import unittest
-import helper
+
 from pyhoh.components.omxvideo import OmxVideo
 
 class TestOmxVideo(unittest.TestCase):

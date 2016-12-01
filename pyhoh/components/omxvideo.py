@@ -105,8 +105,8 @@ class OmxVideo:
       return
 
     self.player.stop()
-    self.stopEvent(self)
     self.logger.debug('video playback stopped')
+    self.stopEvent(self)
 
   def seek(self, pos):
     if not self.player:
@@ -120,8 +120,8 @@ class OmxVideo:
         return
 
     self.player.set_position(pos)
-    self.seekEvent(self, pos)
     self.logger.debug('video payback position changed to {0}'.format(pos))
+    self.seekEvent(self, pos)
 
   def speed(self, speed):
     if not self.player:
@@ -133,14 +133,14 @@ class OmxVideo:
 
     if speed == -1:
       self.player.action(1)
-      self.speedEvent(self, -1)
       self.logger.debug("video playback slower")
+      self.speedEvent(self, -1)
       return
 
     if speed == 1:
       self.player.action(2)
-      self.speedEvent(self, 1)
       self.logger.debug("video playback faster")
+      self.speedEvent(self, 1)
       return
 
     self.logger.warning("invalid speed value: {0}".format(speed))

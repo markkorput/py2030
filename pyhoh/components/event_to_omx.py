@@ -18,7 +18,7 @@ class EventToOmx:
             if not hasattr(config, '__iter__'):
                 action = config
             elif not 'action' in config:
-                self.logger.debug('`{0}` config has no action acttribute'.format(eventName))
+                self.logger.debug('`{0}` config has no action attribute'.format(eventName))
                 continue
             else:
                 action = config['action']
@@ -40,13 +40,13 @@ class EventToOmx:
             self.logger.debug("unkown action: {0}".format(action))
 
     def _onStart(self, idx):
-        self.omxvideo.start(idx)
         self.logger.debug('OMX START')
+        self.omxvideo.start(idx)
 
     def _onStop(self):
-        self.omxvideo.stop()
         self.logger.debug('OMX STOP')
+        self.omxvideo.stop()
 
     def _onToggle(self):
-        self.omxvideo.toggle()
         self.logger.debug('OMX TOGGLE')
+        self.omxvideo.toggle()

@@ -20,7 +20,6 @@ class MidiToOmx:
         # register callback
         if self.midi_input:
             self.midi_input.messageEvent += self._onMidiMessage
-        self.logger.debug('midi-to-omx component loaded')
 
     def destroy(self):
         if self.midi_input:

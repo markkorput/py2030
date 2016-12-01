@@ -25,10 +25,10 @@ class MidiToEvent:
 
         if eventId:
             # get event instance
-            event = self.event_manager.getEvent(eventId) #, create=False)
+            event = self.event_manager.getEvent(eventId)
             # trigger event (calls listeners)
-            event()
             self.logger.debug('Midi message {0}/{1} triggered event {2}'.format(msg[0][0], msg[0][1], eventId))
+            event()
 
     def _midiMessageToEventId(self, msg):
         if not msg[0][0] in self.options:

@@ -42,21 +42,21 @@ class DelayItem:
 
         if self.timer <= 0:
             # trigger target event
+            self.logger.debug('DelayItem with ID `{0}` triggering target event'.format(self.id))
             self.targetEvent()
-            self.logger.debug('DelayItem with ID `{0}` triggered target event'.format(self.id))
 
     def _onSource(self):
+        self.logger.debug('DelayItem with ID `{0}` triggered by source event'.format(self.id))
         self.timer = self.delay
         self.active = True
-        self.logger.debug('DelayItem with ID `{0}` triggered by source event'.format(self.id))
 
     def _onHalt(self):
-        self.active = False
         self.logger.debug('DelayItem with ID `{0}` halted'.format(self.id))
+        self.active = False
 
     def _onPause(self):
-        self.active = not self.active
         self.logger.debug('DelayItem with ID `{0}` toggled'.format(self.id))
+        self.active = not self.active
 
 class DelayEvents:
     def __init__(self, options = {}):

@@ -2,12 +2,14 @@ import logging
 from time import time
 
 class DelayItem:
-    def __init__(self, _id, source, delay, effect):
+    def __init__(self, _id, source, delay, target):
         self.id = _id
         self.sourceEvent = source
         self.delay = delay
-        self.effectEvent = effect
+        self.targetEvent = target
         self.timer = 0
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG if 'verbose' in options and options['verbose'] else logging.INFO)
 
     def setup(self):
         self.sourceEvent += self.trigger
@@ -17,6 +19,7 @@ class DelayItem:
 
     def trigger(self):
         self.timer = self.delay
+        self.logger.debug('DelayItem with ID `{0}` triggered by source event')
 
     def update(self, dt=None):
         if self.timer <= 0:
@@ -25,8 +28,9 @@ class DelayItem:
         self.timer -= dt # count down
 
         if self.timer <= 0:
-            # trigger effect event
-            self.effectEvent()
+            # trigger target event
+            self.targetEvent()
+            self.logger.debug('DelayItem with ID `{0}` triggered target event')
 
 class DelayEvents:
     def __init__(self, options = {}):
@@ -81,6 +85,6 @@ class DelayEvents:
 
             delay = params['delay']
             sourceEvent = self.dynamic_events.getEvent(params['source'])
-            effectEvent = self.dynamic_events.getEvent(params['target'])
-            delay_items.append(DelayItem(_id, sourceEvent, delay, effectEvent))
+            targetEvent = self.dynamic_events.getEvent(params['target'])
+            delay_items.append(DelayItem(_id, sourceEvent, delay, tagetEvent))
         return delay_items

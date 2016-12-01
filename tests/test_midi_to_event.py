@@ -6,33 +6,39 @@ from pyhoh.dynamic_events import DynamicEvents
 from pyhoh.components.midi_input import MidiInput
 
 class TestMidiToEvent(unittest.TestCase):
+    def setUp(self):
+        self.midi2event = MidiToEvent({144: {36: 'fooEvent'}})
+        self.dynamic_events = DynamicEvents()
+        self.midi_input = MidiInput()
+        self.midi2event.setup(self.midi_input, self.dynamic_events)
+
     def test_init(self):
         midi2event = MidiToEvent()
         self.assertIsNone(midi2event.midi_input)
         self.assertIsNone(midi2event.dynamic_events)
 
     def test_setup(self):
-        midi2event = MidiToEvent({'144': {'36': 'fooEvent'}})
-        dynevents = DynamicEvents()
-        midiinput = MidiInput()
-        midi2event.setup(midiinput, dynevents)
-        self.assertEqual(midi2event.midi_input, midiinput)
-        self.assertEqual(midi2event.dynamic_events, dynevents)
+        self.assertEqual(self.midi2event.midi_input, self.midi_input)
+        self.assertEqual(self.midi2event.dynamic_events, self.dynamic_events)
 
-        dynevents.getEvent('fooEvent').subscribe(self._onFooEvent)
-        self._onFooEventCount = 0
-        # trigger midi note without event
-        midiinput.messageEvent([['144', '35']])
+    def test_unknown_midi_note(self):
+        fooEvent = self.dynamic_events.getEvent('fooEvent')
         # fooEvent didn't get called
-        self.assertEqual(self._onFooEventCount, 0)
-        # trigger midi note that maps to fooEvent
-        midiinput.messageEvent([['144', '36']])
-        # called once
-        self.assertEqual(self._onFooEventCount, 1)
-        # trigger midi note that maps to fooEvent again
-        midiinput.messageEvent([['144', '36']])
-        # called twice now
-        self.assertEqual(self._onFooEventCount, 2)
+        self.assertEqual(fooEvent._fireCount, 0)
+        # trigger midi note without event
+        self.midi_input.messageEvent([[144, 35]])
+        # fooEvent didn't get called
+        self.assertEqual(fooEvent._fireCount, 0)
 
-    def _onFooEvent(self):
-        self._onFooEventCount = self._onFooEventCount + 1 if hasattr(self, '_onFooEventCount') else 1
+    def test_midi_note_triggers_event(self):
+        fooEvent = self.dynamic_events.getEvent('fooEvent')
+        # not yet called
+        self.assertEqual(fooEvent._fireCount, 0)
+        # trigger midi note that maps to fooEvent
+        self.midi_input.messageEvent([[144, 36]])
+        # called once
+        self.assertEqual(fooEvent._fireCount, 1)
+        # trigger midi note that maps to fooEvent again
+        self.midi_input.messageEvent([[144, 36]])
+        # called twice
+        self.assertEqual(fooEvent._fireCount, 2)

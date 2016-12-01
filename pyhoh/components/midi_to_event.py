@@ -20,9 +20,10 @@ class MidiToEvent:
     def _onMidiMessageEvent(self, msg):
         eventId = self._midiMessageToEventId(msg)
         if eventId:
-            event = self.dynamic_events.getEvent(eventId, create=False)
-            if event:
-                event()
+            # get event instance
+            event = self.dynamic_events.getEvent(eventId) #, create=False)
+            # trigger event (calls listeners)
+            event()
 
     def _midiMessageToEventId(self, msg):
         if not msg[0][0] in self.options:

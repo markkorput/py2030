@@ -2,7 +2,7 @@ import os, yaml, time, shutil
 import logging
 logger = logging.getLogger(__name__)
 
-from .event import Event
+from evento import Event
 
 class ConfigFile:
     def __init__(self, path, options = {}):

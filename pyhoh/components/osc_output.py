@@ -1,6 +1,6 @@
 import json, socket
 import logging
-from utils.event import Event
+from evento import Event
 
 try:
     import OSC

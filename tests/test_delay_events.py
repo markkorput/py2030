@@ -132,3 +132,59 @@ class TestEventToEvent(unittest.TestCase):
         delay_events.update(10) # 4th
         self.assertEqual(dynamic_events.getEvent('loop')._fireCount, 4)
         # etc
+
+    def test_halt(self):
+        delay_events = DelayEvents({'example': {'source': 'loop', 'delay': 10, 'target': 'loop', 'halt': 'halter'}})
+        dynamic_events = DynamicEvents()
+        halterE = dynamic_events.getEvent('halter')
+        self.assertEqual(halterE.getSubscriberCount(), 0)
+        delay_events.setup(dynamic_events)
+        self.assertEqual(delay_events._delay_items[0].haltEvent, halterE)
+        self.assertEqual(halterE.getSubscriberCount(), 1)
+        self.assertEqual(delay_events._delay_items[0].active, True)
+        # start
+        dynamic_events.getEvent('loop').fire()
+        self.assertEqual(dynamic_events.getEvent('loop')._fireCount, 1)
+        # progress
+        delay_events.update(10)
+        self.assertEqual(dynamic_events.getEvent('loop')._fireCount, 2)
+        # progress
+        delay_events.update(10)
+        self.assertEqual(dynamic_events.getEvent('loop')._fireCount, 3)
+        # halt
+        halterE()
+        self.assertEqual(delay_events._delay_items[0].active, False)
+        # progress, halted
+        delay_events.update(10)
+        self.assertEqual(dynamic_events.getEvent('loop')._fireCount, 3)
+        # progress, halted
+        delay_events.update(10)
+        self.assertEqual(dynamic_events.getEvent('loop')._fireCount, 3)
+
+    def test_pause(self):
+        delay_events = DelayEvents({'example': {'source': 'loop', 'delay': 10, 'target': 'loop', 'pause': 'pauser'}})
+        dynamic_events = DynamicEvents()
+        pauserE = dynamic_events.getEvent('pauser')
+        self.assertEqual(pauserE.getSubscriberCount(), 0)
+        delay_events.setup(dynamic_events)
+        self.assertEqual(delay_events._delay_items[0].pauseEvent, pauserE)
+        self.assertEqual(pauserE.getSubscriberCount(), 1)
+        self.assertEqual(delay_events._delay_items[0].active, True)
+        # start
+        dynamic_events.getEvent('loop').fire()
+        self.assertEqual(dynamic_events.getEvent('loop')._fireCount, 1)
+        # progress
+        delay_events.update(10)
+        self.assertEqual(dynamic_events.getEvent('loop')._fireCount, 2)
+        # pause
+        pauserE()
+        self.assertEqual(delay_events._delay_items[0].active, False)
+        # progress, halted
+        delay_events.update(10)
+        self.assertEqual(dynamic_events.getEvent('loop')._fireCount, 2)
+        # resume
+        pauserE()
+        self.assertEqual(delay_events._delay_items[0].active, True)
+        # progress, resumed
+        delay_events.update(10)
+        self.assertEqual(dynamic_events.getEvent('loop')._fireCount, 3)

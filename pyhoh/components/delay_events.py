@@ -2,29 +2,40 @@ import logging
 from time import time
 
 class DelayItem:
-    def __init__(self, _id, source, delay, target, logger=None):
+    def __init__(self, _id, source, delay, target, halt=None, pause=None, logger=None):
         self.id = _id
         self.sourceEvent = source
         self.delay = delay
         self.targetEvent = target
+        self.haltEvent = halt
+        self.pauseEvent = pause
         self.timer = 0
         self.logger = logger
         if not self.logger:
             self.logger = logging.getLogger(__name__)
             self.logger.setLevel(logging.INFO)
+        self.active = True
 
     def setup(self):
-        self.sourceEvent += self.trigger
+        self.sourceEvent += self._onSource
+
+        if self.haltEvent != None:
+            self.haltEvent += self._onHalt
+
+        if self.pauseEvent != None:
+            self.pauseEvent += self._onPause
 
     def destroy(self):
-        self.sourceEvent -= self.trigger
+        self.sourceEvent -= self._onSource
 
-    def trigger(self):
-        self.timer = self.delay
-        self.logger.debug('DelayItem with ID `{0}` triggered by source event'.format(self.id))
+        if self.haltEvent:
+            self.haltEvent -= self._onHalt
+
+        if self.pauseEvent:
+            self.pauseEvent -= self._onPause
 
     def update(self, dt=None):
-        if self.timer <= 0:
+        if self.timer <= 0 or not self.active:
             return # we're not running
 
         self.timer -= dt # count down
@@ -33,6 +44,18 @@ class DelayItem:
             # trigger target event
             self.targetEvent()
             self.logger.debug('DelayItem with ID `{0}` triggered target event'.format(self.id))
+
+    def _onSource(self):
+        self.timer = self.delay
+        self.logger.debug('DelayItem with ID `{0}` triggered by source event'.format(self.id))
+
+    def _onHalt(self):
+        self.active = False
+        self.logger.debug('DelayItem with ID `{0}` halted'.format(self.id))
+
+    def _onPause(self):
+        self.active = not self.active
+        self.logger.debug('DelayItem with ID `{0}` toggled'.format(self.id))
 
 class DelayEvents:
     def __init__(self, options = {}):
@@ -91,5 +114,7 @@ class DelayEvents:
             delay = params['delay']
             sourceEvent = self.dynamic_events.getEvent(params['source'])
             targetEvent = self.dynamic_events.getEvent(params['target'])
-            delay_items.append(DelayItem(_id, sourceEvent, delay, targetEvent, logger=self.logger))
+            haltEvent = self.dynamic_events.getEvent(params['halt']) if 'halt' in params else None
+            pauseEvent = self.dynamic_events.getEvent(params['pause']) if 'pause' in params else None
+            delay_items.append(DelayItem(_id, sourceEvent, delay, targetEvent, halt=haltEvent, pause=pauseEvent, logger=self.logger))
         return delay_items

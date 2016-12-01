@@ -7,6 +7,8 @@ pyhoh:
           source: 'loop'
           delay: 60 # seconds
           target: 'loop'
+          halt: 'stop'
+          pause: 'pause'
 
       event_to_event:
         'start': ['load', 'loop']

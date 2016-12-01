@@ -1,4 +1,5 @@
 import logging
+from time import time
 
 class DelayItem:
     def __init__(self, _id, source, delay, effect):
@@ -17,7 +18,7 @@ class DelayItem:
     def trigger(self):
         self.timer = self.delay
 
-    def update(self, dt):
+    def update(self, dt=None):
         if self.timer <= 0:
             return # we're not running
 
@@ -34,6 +35,7 @@ class DelayEvents:
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG if 'verbose' in options and options['verbose'] else logging.INFO)
         self._delay_items = []
+        self._last_update = None
 
     def __del__(self):
         self.destroy()
@@ -45,6 +47,8 @@ class DelayEvents:
         for delay_item in self._delay_items:
             delay_item.setup()
 
+        self._last_update = time()
+
     def destroy(self):
         for delay_item in self._delay_items:
             delay_item.destroy()
@@ -52,7 +56,12 @@ class DelayEvents:
         self._delay_items = []
         self.dynamic_events = None
 
-    def update(self, dt):
+    def update(self, dt=None):
+        if not dt:
+            t = time()
+            dt = t - self._last_update
+            self._last_update = t
+
         for delay_item in self._delay_items:
             delay_item.update(dt)
 

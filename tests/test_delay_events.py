@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import unittest
+from time import sleep
 from pyhoh.dynamic_events import DynamicEvents
 from pyhoh.components.delay_events import DelayEvents
 
@@ -64,3 +65,19 @@ class TestEventToEvent(unittest.TestCase):
         self.assertEqual(delay_events._delay_items[0].timer, 0)
         self.assertEqual(dynamic_events.getEvent('AA')._fireCount, 1)
         self.assertEqual(dynamic_events.getEvent('BB')._fireCount, 1)
+
+    def test_update_progress_without_specified_dt(self):
+        delay_events = DelayEvents({'looper': {'source': 'AA', 'delay': 30, 'target': 'BB'}})
+        dynamic_events = DynamicEvents()
+        delay_events.setup(dynamic_events)
+        self.assertEqual(delay_events._delay_items[0].timer, 0)
+        # trigger source event, in order to trigger the delayed call to the target event
+        dynamic_events.getEvent('AA').fire()
+        self.assertEqual(delay_events._delay_items[0].timer, 30)
+        delay_events.update()
+        self.assertLess(delay_events._delay_items[0].timer, 30)
+        self.assertGreater(delay_events._delay_items[0].timer, 29.75)
+        sleep(0.25)
+        delay_events.update()
+        self.assertLess(delay_events._delay_items[0].timer, 29.75)
+        self.assertGreater(delay_events._delay_items[0].timer, 29.5)

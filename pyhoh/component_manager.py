@@ -3,7 +3,7 @@ from datetime import datetime
 import logging
 logging.basicConfig(level=logging.WARNING)
 
-
+from dynamic_events import DynamicEvents
 from utils.config_file import ConfigFile
 
 class ComponentManager:
@@ -21,6 +21,7 @@ class ComponentManager:
         self.update_components = []
         self.destroy_components = []
         self.running = True
+        self.dynamic_events = DynamicEvents()
 
     def __del__(self):
         self.destroy()
@@ -50,6 +51,20 @@ class ComponentManager:
         # read profile data form config file
         if not profile_data:
             profile_data = {}
+
+        if 'event_to_event' in profile_data:
+            from components.event_to_event import EventToEvent
+            comp = EventToEvent(profile_data['event_to_event'])
+            comp.setup(self.dynamic_events)
+            self._add_component(comp)
+            del EventToEvent
+
+        if 'delay_events' in profile_data:
+            from components.delay_events import DelayEvents
+            comp = DelayEvents(profile_data['delay_events'])
+            comp.setup(self.dynamic_events)
+            self._add_component(comp)
+            del DelayEvents
 
         omxvideo = None
         if 'omxvideo' in profile_data:
@@ -113,6 +128,19 @@ class ComponentManager:
                 self._add_component(comp)
                 midi_inputs[name] = comp
             del MidiInput
+
+        if 'midi_to_event' in profile_data:
+            from components.midi_to_event import MidiToEvent
+            for name in profile_data['midi_to_event']:
+                if not name in midi_inputs:
+                    self.logger.warning('unknown midi_input name `{0}` in midi_to_event config'.format(name))
+                    continue
+
+                data = profile_data['midi_to_event'][name]
+                comp = MidiToEvent(data)
+                comp.setup(midi_inputs[name], self.dynamic_events)
+                self._add_component(comp)
+            del MidiToEvent
 
         if 'midi_to_osc' in profile_data:
             from components.midi_to_osc import MidiToOsc

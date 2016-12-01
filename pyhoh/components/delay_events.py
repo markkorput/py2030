@@ -75,6 +75,9 @@ class DelayEvents:
         delay_items = []
 
         for _id, params in self.options.items():
+            if not hasattr(params, '__iter__'):
+                continue
+
             if not 'source' in params:
                 self.logger.warning('delay_event configuration with id {0} misses the `source` param'.format(id))
                 continue

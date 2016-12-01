@@ -128,6 +128,19 @@ class ComponentManager:
                 osc_outputs[name] = comp
             del OscOutput
 
+        if 'event_to_osc' in profile_data:
+            from components.event_to_osc import EventToOsc
+            for name in profile_data['event_to_osc']:
+                if not name in osc_outputs:
+                    self.logger.warning('unknown midi_output: {0}'.format(name))
+                    continue
+                data = profile_data['event_to_osc'][name]
+                comp = EventToOsc(data)
+                comp.setup(osc_outputs[name], self.event_manager)
+                self._add_component(comp)
+            del EventToOsc
+
+
         midi_inputs = {}
         if 'midi_inputs' in profile_data:
             from components.midi_input import MidiInput

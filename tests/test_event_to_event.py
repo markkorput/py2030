@@ -16,6 +16,15 @@ class TestEventToEvent(unittest.TestCase):
         self.assertEqual(e2e.dynamic_events, dynamic_events)
         self.assertEqual(dynamic_events.getEvent('abc').getSubscriberCount(), 1)
 
+    def test_destroy(self):
+        e2e = EventToEvent({'abc': 'def'})
+        dynamic_events = DynamicEvents()
+        e2e.setup(dynamic_events)
+        self.assertEqual(dynamic_events.getEvent('abc').getSubscriberCount(), 1)
+        e2e.destroy()
+        self.assertIsNone(e2e.dynamic_events)
+        self.assertEqual(dynamic_events.getEvent('abc').getSubscriberCount(), 0)
+
     def test_events_triggers_other_events(self):
         e2e = EventToEvent({'event1': ['aa', 'bb', 'cc'], 'event2': ['bb', 'dd'], 'event3': 'bb'})
         dynamic_events = DynamicEvents()

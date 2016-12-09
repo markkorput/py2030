@@ -10,6 +10,7 @@ class ComponentManager:
     def __init__(self, options = {}):
         # config
         self.options = options
+        logging.basicConfig()
         self.logger = logging.getLogger(__name__)
         if self.options.verbose:
             self.logger.setLevel(logging.DEBUG)

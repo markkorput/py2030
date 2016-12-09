@@ -13,7 +13,8 @@ class EventOscTrigger:
         self.event += self._onEvent
 
     def destroy(self):
-        self.event -= self._onEvent
+        if self._onEvent in self.event:
+            self.event -= self._onEvent
 
     def _onEvent(self):
         self.osc_output.sendMessage(self.osc_message)

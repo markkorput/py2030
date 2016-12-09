@@ -1,10 +1,16 @@
 #!/usr/bin/env python
 import unittest
+import logging
+
 from pyhoh.event_manager import EventManager
 from pyhoh.components.event_to_omx import EventToOmx
 from pyhoh.components.omxvideo import OmxVideo
 
 class TestEventToOmx(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        logging.basicConfig()
+
     def test_init(self):
         event2omx = EventToOmx()
         self.assertIsNone(event2omx.event_manager)

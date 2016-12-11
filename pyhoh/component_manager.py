@@ -12,11 +12,11 @@ class ComponentManager:
         self.options = options
         logging.basicConfig()
         self.logger = logging.getLogger(__name__)
-        if 'verbose' in self.options and self.options.verbose:
+        if 'verbose' in self.options and self.options['verbose']:
             self.logger.setLevel(logging.DEBUG)
 
         # attributes
-        self.profile = self.options.profile if 'profile' in self.options else 'default'
+        self.profile = self.options['profile'] if 'profile' in self.options else 'default'
         self.config_file = ConfigFile('config/config.yml')
         self.components = []
         self.update_components = []

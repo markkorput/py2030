@@ -12,11 +12,11 @@ class ComponentManager:
         self.options = options
         logging.basicConfig()
         self.logger = logging.getLogger(__name__)
-        if self.options.verbose:
+        if 'verbose' in self.options and self.options.verbose:
             self.logger.setLevel(logging.DEBUG)
 
         # attributes
-        self.profile = self.options.profile
+        self.profile = self.options.profile if 'profile' in self.options else 'default'
         self.config_file = ConfigFile('config/config.yml')
         self.components = []
         self.update_components = []
@@ -33,8 +33,10 @@ class ComponentManager:
         # read config file content
         self.config_file.load()
 
+        profile_data = self.options['profile_data'] if 'profile_data' in self.options else self.config_file.get_value('pyhoh.profiles.'+self.profile)
+
         # load components based on profile configuration
-        self._load_components(self.config_file.get_value('pyhoh.profiles.'+self.profile))
+        self._load_components(profile_data)
 
     def destroy(self):
         for comp in self.destroy_components:

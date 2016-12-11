@@ -38,6 +38,9 @@ class ComponentManager:
         # load components based on profile configuration
         self._load_components(profile_data)
 
+        if 'start_event' in profile_data:
+            self.event_manager.getEvent(profile_data['start_event']).fire()
+
     def destroy(self):
         for comp in self.destroy_components:
             comp.destroy()

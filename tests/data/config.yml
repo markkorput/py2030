@@ -1,0 +1,5 @@
+pyhoh:
+  profiles:
+    reloader:
+      start_event: 'heyholetsgo'
+      reload_event: 'reload2'

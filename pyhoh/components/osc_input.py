@@ -74,7 +74,11 @@ class OscInput:
         self.osc_server.timed_out = False
 
         # handle all pending requests then return
-        while not self.osc_server.timed_out and count < limit:
+        # NOTE; if you get weird bugs because self.osc_server is None,
+        # one of handled OSC messages probably triggered the destruction
+        # of this component. This should not happen until after this update
+        # loop is finished, so destructive operations should be queued for later
+        while self.osc_server.timed_out == False and count < limit:
             try:
                 self.osc_server.handle_request()
                 count += 1

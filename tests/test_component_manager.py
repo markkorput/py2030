@@ -66,3 +66,8 @@ class TestComponentManager(unittest.TestCase):
         cm.event_manager.getEvent('quit').fire()
         # after
         self.assertFalse(cm.running)
+
+    def test_stop_event_same_as_start_event(self):
+        cm = ComponentManager({'profile_data': {'stop_event': 'quit', 'start_event': 'quit'}})
+        cm.setup()
+        self.assertFalse(cm.running)

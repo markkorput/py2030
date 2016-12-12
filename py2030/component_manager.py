@@ -50,14 +50,14 @@ class ComponentManager:
         if 'reload_event' in self._profile_data:
             self.event_manager.getEvent(self._profile_data['reload_event']).subscribe(self._onReloadEvent)
 
-        if 'start_event' in self._profile_data:
-            self.logger.debug('triggering start_event: ' + str(self._profile_data['start_event']))
-            self.event_manager.getEvent(self._profile_data['start_event']).fire()
-
         if 'stop_event' in self._profile_data:
             self.event_manager.getEvent(self._profile_data['stop_event']).subscribe(self._onStopEvent)
 
         self.running = True
+
+        if 'start_event' in self._profile_data:
+            self.logger.debug('triggering start_event: ' + str(self._profile_data['start_event']))
+            self.event_manager.getEvent(self._profile_data['start_event']).fire()
 
     def _onStopEvent(self):
         self.running = False

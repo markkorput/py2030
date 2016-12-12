@@ -2,6 +2,7 @@ py2030:
   profiles:
     control-start:
       start_event: 'start'
+      stop_event: 'start'
 
       osc_outputs:
         bcast:
@@ -15,6 +16,7 @@ py2030:
 
     control-pause:
       start_event: 'pause'
+      stop_event: 'pause'
 
       osc_outputs:
         bcast:
@@ -28,6 +30,7 @@ py2030:
 
     control-stop:
       start_event: 'stop'
+      stop_event: 'stop'
 
       osc_outputs:
         bcast:

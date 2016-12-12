@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(name='py2030',
-      version='0.1.0',
+      version='0.1.1',
       description='A modular swiss pocket knife for managing a network of RaspberryPIs',
       url='http://github.com/markkorput/py2030',
       author='Mark van de Korput',

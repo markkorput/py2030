@@ -1,9 +1,14 @@
+import logging
+
 class OscToEvent:
     def __init__(self, options = {}):
         self.options = options
         self.osc_input = None
         self.event_manager = None
         self.mapping=None
+
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG if 'verbose' in options and options['verbose'] else logging.INFO)
 
     def __del__(self):
         self.destroy()
@@ -27,6 +32,10 @@ class OscToEvent:
 
     def _onOscMessage(self, addr, *args, **kargs):
         if addr in self.mapping:
-            self.event_manager.getEvent(self.mapping[addr]).fire()
+            event_name = self.mapping[addr]
+            self.logger.debug('OSC message `{}` triggers event `{}`'.format(addr, event_name))
+            self.event_manager.getEvent(event_name).fire()
+
         elif 'auto' in self.options and self.options['auto']:
+            self.logger.debug('OSC message `{}` triggers event `{}`'.format(addr, addr))
             self.event_manager.getEvent(addr).fire()

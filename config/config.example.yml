@@ -73,13 +73,15 @@ pyhoh:
         pause: 'toggle'
         stop: 'stop'
 
-    osc_to_event:
-      osc_inputs:
+    osc_to_event: # profile
+      osc_inputs: # input component
         broadcast:
           ip: ''
           port: 2030
           verbose: true
 
-        broadcast:
+      osc_to_event: # mapping component
+        broadcast: # osc input component
           verbose: true
           auto: true
+          '/some_message': 'some_event'

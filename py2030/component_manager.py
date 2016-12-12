@@ -18,7 +18,7 @@ class ComponentManager:
 
         # attributes
         self.profile = self.options['profile'] if 'profile' in self.options else 'default'
-        self.config_file = ConfigFile(self.options['config_file'] if 'config_file' in self.options and self.options['config_file'] else 'config/config.yml')
+        self.config_file = ConfigFile(self.options['config_file'] if 'config_file' in self.options and self.options['config_file'] else 'config.yml')
         self.components = []
         self.update_components = []
         self.destroy_components = []

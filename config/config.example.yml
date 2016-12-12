@@ -3,7 +3,7 @@ py2030:
     'MarkBookPro_local':
       start_event: 'go'
 
-      ssh_remotes:
+      ssh_remotes: # this component still has to be implemented
         rpi2:
           host: 'rpi2.local'
           files:
@@ -11,7 +11,6 @@ py2030:
             '_project_name_/config.yml': '/home/pi/_project_name_/'
             # copies all new or updated files to rpi2.local:/home/pi/_project_name_/*
             '_project_name_/rpi2/*': '/home/pi/_project_name_/'
-
 
     default:
       delay_events:

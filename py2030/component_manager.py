@@ -51,6 +51,7 @@ class ComponentManager:
             self.event_manager.getEvent(self._profile_data['reload_event']).subscribe(self._onReloadEvent)
 
         if 'start_event' in self._profile_data:
+            self.logger.debug('triggering start_event: ' + str(self._profile_data['start_event']))
             self.event_manager.getEvent(self._profile_data['start_event']).fire()
 
     def _onReloadEvent(self):

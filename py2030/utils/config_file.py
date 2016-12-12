@@ -69,8 +69,15 @@ class ConfigFile:
         f.close()
         return content
 
+    def get_yaml(self):
+        ConfigFile.to_yaml(self.data)
+
+    @classmethod
+    def to_yaml(cls, data):
+        return yaml.dump(data, default_flow_style=False)
+
     def write_yaml(self, data):
-        self.write(yaml.dump(data, default_flow_style=False))
+        self.write(ConfigFile.to_yaml(data))
 
     def write(self, content):
         f = open(self.path, 'w')

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import unittest
-from pyhoh.event_manager import EventManager
+from py2030.event_manager import EventManager
 
 class TestEventManager(unittest.TestCase):
     def test_init(self):

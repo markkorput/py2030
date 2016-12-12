@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from optparse import OptionParser
-from component_manager import ComponentManager
+from .component_manager import ComponentManager
 
 if __name__ == '__main__':
     parser = OptionParser()

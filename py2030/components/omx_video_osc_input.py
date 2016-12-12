@@ -1,4 +1,4 @@
-from osc_input import OscInput
+from .osc_input import OscInput
 from evento import Event
 
 class OmxVideoOscInput(OscInput):

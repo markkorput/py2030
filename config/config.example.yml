@@ -8,7 +8,7 @@ py2030:
           host: 'rpi2.local'
           files:
             # copies changes to local config.yml to rpi2.local
-            '_project_name_/config.yml': '/home/pi/pyHoh/config/'
+            '_project_name_/config.yml': '/home/pi/_project_name_/'
             # copies all new or updated files to rpi2.local:/home/pi/_project_name_/*
             '_project_name_/rpi2/*': '/home/pi/_project_name_/'
 

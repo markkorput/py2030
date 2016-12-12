@@ -78,8 +78,9 @@ class MidiInput:
                 continue
 
             # self.time += msg[1]
-            self.messageEvent(msg)
             self.logger.debug('midi message: {0}'.format(msg))
+            self.messageEvent(msg)
+
 
 # for manual testing this python file can be invoked directly
 if __name__ == '__main__':

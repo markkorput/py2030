@@ -7,8 +7,15 @@ if __name__ == '__main__':
     parser.add_option('-p', '--profile', dest='profile', default="default")
     # parser.add_option('-f', '--file', dest='file', default=None)
     parser.add_option('-v', '--verbose', dest='verbose', action="store_true", default=False)
+    parser.add_option('-y', '--yml', '--yaml', '--config-file', dest='config_file', default=None)
 
-    options, args = parser.parse_args()
+    opts, args = parser.parse_args()
+
+    options = {
+        'verbose': opts.verbose,
+        'profile': opts.profile,
+        'config_file': opts.config_file
+    }
 
     cm = ComponentManager(options)
     cm.setup()

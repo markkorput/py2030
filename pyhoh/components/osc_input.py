@@ -74,7 +74,11 @@ class OscInput:
         self.osc_server.timed_out = False
 
         # handle all pending requests then return
-        while not self.osc_server.timed_out and count < limit:
+        # NOTE; if you get weird bugs because self.osc_server is None,
+        # one of handled OSC messages probably triggered the destruction
+        # of this component. This should not happen until after this update
+        # loop is finished, so destructive operations should be queued for later
+        while self.osc_server.timed_out == False and count < limit:
             try:
                 self.osc_server.handle_request()
                 count += 1
@@ -133,6 +137,5 @@ class OscInput:
         # skip touch osc touch-up events
         # if len(data) == 1 and data[0] == 0.0:
         #     return
-
-        self.messageEvent(addr, tags, data, client_address)
         self.logger.debug('osc-in {0}:{1} {2} [{3}] from {4}'.format(self.host(), self.port(), addr, ", ".join(map(lambda x: str(x), data)), client_address))
+        self.messageEvent(addr, tags, data, client_address)

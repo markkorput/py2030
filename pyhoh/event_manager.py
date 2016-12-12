@@ -1,11 +1,12 @@
 from evento import Event
 
-class DynamicEvents:
+class EventManager:
     def __init__(self):
         self._events = {}
         self.eventAddedEvent = Event()
 
     def getEvent(self, id, create=True):
+        id = str(id)
         if id in self._events:
             return self._events[id]
 

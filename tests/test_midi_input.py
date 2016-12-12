@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import unittest
-import helper
 from pyhoh.components.midi_input import MidiInput
 
 class TestMidiInput(unittest.TestCase):

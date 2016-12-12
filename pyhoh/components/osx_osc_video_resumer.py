@@ -31,5 +31,5 @@ class OsxOscVideoResumer:
         -e 'tell application "System Events"' -e 'keystroke "f" using {command down}' \
         -e "end tell" -e "play the front document" -e "end tell"
         """
+        self.logger.debug('running command: {0}'.format(cmd))
         os.system(cmd)
-        self.logger.debug('rand command: {0}'.format(cmd))

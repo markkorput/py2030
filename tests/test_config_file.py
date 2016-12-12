@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import unittest
-import helper
 from pyhoh.utils.config_file import ConfigFile
 
 class TestOscInput(unittest.TestCase):

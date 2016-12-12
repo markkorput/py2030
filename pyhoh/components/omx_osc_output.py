@@ -68,8 +68,6 @@ class OmxOscOutput:
             if self.msgSpeed:
                 self.omxvideo.speedEvent += self._onSpeed
 
-        self.logger.debug('OmxOscOutput component ready')
-
     def destroy(self):
         if self.omxvideo:
             if self.msgLoad:

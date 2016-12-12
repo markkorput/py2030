@@ -3,53 +3,104 @@ from datetime import datetime
 import logging
 logging.basicConfig(level=logging.WARNING)
 
-
+from event_manager import EventManager
 from utils.config_file import ConfigFile
 
 class ComponentManager:
     def __init__(self, options = {}):
         # config
         self.options = options
+
+        logging.basicConfig()
         self.logger = logging.getLogger(__name__)
-        if self.options.verbose:
+        if 'verbose' in self.options and self.options['verbose']:
             self.logger.setLevel(logging.DEBUG)
 
         # attributes
-        self.profile = self.options.profile
-        self.config_file = ConfigFile('config/config.yml')
+        self.profile = self.options['profile'] if 'profile' in self.options else 'default'
+        self.config_file = ConfigFile(self.options['config_file'] if 'config_file' in self.options and self.options['config_file'] else 'config/config.yml')
         self.components = []
         self.update_components = []
         self.destroy_components = []
         self.running = True
+        self.event_manager = EventManager()
+        self._profile_data = None
+        self._operation_queue = []
 
     def __del__(self):
         self.destroy()
 
     def setup(self):
+        self.logger.debug('config file: {0}'.format(self.config_file.path))
         self.logger.debug('profile: {0}'.format(self.profile))
 
-        # read config file content
-        self.config_file.load()
+        # load from option
+        if self._profile_data == None and 'profile_data' in self.options:
+            self._profile_data = self.options['profile_data']
+
+        # load from config file
+        if self._profile_data == None:
+            # read config file content
+            self.config_file.load()
+            self._profile_data = self.config_file.get_value('pyhoh.profiles.'+self.profile, default_value={})
 
         # load components based on profile configuration
-        self._load_components(self.config_file.get_value('pyhoh.profiles.'+self.profile))
+        self._load_components(self._profile_data)
+
+        if 'reload_event' in self._profile_data:
+            self.event_manager.getEvent(self._profile_data['reload_event']).subscribe(self._onReloadEvent)
+
+        if 'start_event' in self._profile_data:
+            self.event_manager.getEvent(self._profile_data['start_event']).fire()
+
+    def _onReloadEvent(self):
+        self._operation_queue.append(self._reload)
+
+    def _reload(self):
+        self.logger.info('-- Reloading --')
+        self.destroy()
+        self.config_file.load({'force': True})
+        self._profile_data = self.config_file.get_value('pyhoh.profiles.'+self.profile, default_value={})
+        self.setup()
 
     def destroy(self):
+        if self._profile_data and 'reload_event' in self._profile_data:
+            self.event_manager.getEvent(self._profile_data['reload_event']).unsubscribe(self._onReloadEvent)
+
         for comp in self.destroy_components:
             comp.destroy()
 
         self.components = []
         self.update_components = []
         self.destroy_components = []
+        self._profile_data = None
 
     def update(self):
         for comp in self.update_components:
             comp.update()
 
+        for op in self._operation_queue:
+            op()
+        self._operation_queue = []
+
     def _load_components(self, profile_data = None):
         # read profile data form config file
         if not profile_data:
             profile_data = {}
+
+        if 'event_to_event' in profile_data:
+            from components.event_to_event import EventToEvent
+            comp = EventToEvent(profile_data['event_to_event'])
+            comp.setup(self.event_manager)
+            self._add_component(comp)
+            del EventToEvent
+
+        if 'delay_events' in profile_data:
+            from components.delay_events import DelayEvents
+            comp = DelayEvents(profile_data['delay_events'])
+            comp.setup(self.event_manager)
+            self._add_component(comp)
+            del DelayEvents
 
         omxvideo = None
         if 'omxvideo' in profile_data:
@@ -57,6 +108,16 @@ class ComponentManager:
             omxvideo = OmxVideo(profile_data['omxvideo'])
             self._add_component(omxvideo)
             del OmxVideo
+
+        if 'event_to_omx' in profile_data:
+            if omxvideo == None:
+                self.logger.warning("No omxvideo loaded, can't initialize event_to_omx component")
+            else:
+                from components.event_to_omx import EventToOmx
+                comp = EventToOmx(profile_data['event_to_omx'])
+                comp.setup(self.event_manager, omxvideo)
+                self._add_component(comp)
+                del EventToOmx
 
         if 'omxvideo_osc_inputs' in profile_data:
             from components.omx_video_osc_input import OmxVideoOscInput
@@ -91,6 +152,18 @@ class ComponentManager:
 
             del OscInput
 
+        if 'osc_to_event' in profile_data:
+            from components.osc_to_event import OscToEvent
+            for name in profile_data['osc_to_event']:
+                if not name in osc_inputs:
+                    self.logger.warning('unknown osc_input name `{0}` in osc_to_event config'.format(name))
+                    continue
+                data = profile_data['osc_to_event'][name]
+                comp = OscToEvent(data)
+                comp.setup(osc_inputs[name], self.event_manager)
+                self._add_component(comp)
+            del OscToEvent
+
         osc_outputs = {}
         if 'osc_outputs' in profile_data:
             from components.osc_output import OscOutput
@@ -103,6 +176,19 @@ class ComponentManager:
                 osc_outputs[name] = comp
             del OscOutput
 
+        if 'event_to_osc' in profile_data:
+            from components.event_to_osc import EventToOsc
+            for name in profile_data['event_to_osc']:
+                if not name in osc_outputs:
+                    self.logger.warning('unknown midi_output: {0}'.format(name))
+                    continue
+                data = profile_data['event_to_osc'][name]
+                comp = EventToOsc(data)
+                comp.setup(osc_outputs[name], self.event_manager)
+                self._add_component(comp)
+            del EventToOsc
+
+
         midi_inputs = {}
         if 'midi_inputs' in profile_data:
             from components.midi_input import MidiInput
@@ -113,6 +199,19 @@ class ComponentManager:
                 self._add_component(comp)
                 midi_inputs[name] = comp
             del MidiInput
+
+        if 'midi_to_event' in profile_data:
+            from components.midi_to_event import MidiToEvent
+            for name in profile_data['midi_to_event']:
+                if not name in midi_inputs:
+                    self.logger.warning('unknown midi_input name `{0}` in midi_to_event config'.format(name))
+                    continue
+
+                data = profile_data['midi_to_event'][name]
+                comp = MidiToEvent(data)
+                comp.setup(midi_inputs[name], self.event_manager)
+                self._add_component(comp)
+            del MidiToEvent
 
         if 'midi_to_osc' in profile_data:
             from components.midi_to_osc import MidiToOsc

@@ -1,6 +1,18 @@
 pyhoh:
   profiles:
     default:
+      delay_events:
+        looper: # name/ID
+          source: 'loop'
+          delay: 60 # seconds
+          target: 'loop'
+          halt: 'stop'
+          pause: 'pause'
+
+      event_to_event:
+        'start': ['load', 'loop']
+        'stop': ['stoploop', 'unload']
+
       # video playback component
       omxvideo:
         verbose: true
@@ -14,14 +26,21 @@ pyhoh:
 
       # send osc messages
       osc_outputs:
-        bcast_and_local:
+        bcast:
           verbose: true
           ip: 192.168.2.255
           # hostname: 'rpi4.local'
           port: 2030
 
+      event_to_osc:
+        bcast:
+          verbose: true
+          loop: '/loop'
+          stop: '/stop'
+          pause: '/pause'
+
       omx_osc_output:
-        bcast_and_local:
+        bcast:
           verbose: true
           start: '/pyhoh/vid/start'
           pause: '/pyhoh/vid/pause'
@@ -45,34 +64,40 @@ pyhoh:
             42: 'stop'
             43: 'stop'
 
-      midi_to_omx:
-        # akai pads (prog1)
-        akai:
+      event_to_omx:
+        verbose: true
+        loop:
+          action: 'start'
+          # params:
+          # - 0
+        pause: 'toggle'
+        stop: 'stop'
+
+    osc_to_event: # profile
+      reload_event: '/reload'
+
+      osc_inputs: # input component
+        broadcast:
+          ip: ''
+          port: 2030
           verbose: true
-          144: # midi message type; note on
-            36:
-              action: 'start'
-              params:
-                - 0
-            37:
-              action: 'start'
-              params:
-                - 1
-            38:
-              action: 'start'
-              params:
-                - 2
-            39:
-              action: 'start'
-              params:
-                - 3
-            40:
-              action: 'start'
-              params:
-                - 4
-            41:
-              action: 'pause'
-            42:
-              action: 'stop'
-            43:
-              action: 'stop'
+
+      osc_to_event: # mapping component
+        broadcast: # osc input component
+          verbose: true
+          auto: true
+          '/some_message': 'some_event'
+
+    reloader:
+      reload_event: '/reload'
+
+      osc_inputs:
+        bcast:
+          ip: ''
+          port: 2030
+          verbose: true
+
+      osc_to_event:
+        bcast:
+          verbose: true
+          auto: true

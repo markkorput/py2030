@@ -34,10 +34,10 @@ class MidiToOsc:
             self.logger.debug('no osc message specified for midi note {0},{1}'.format(msg[0][0], msg[0][1]))
             return
 
+        self.logger.debug('midi note ({0}, {1}) mapping to osc message: {2}'.format(msg[0][0], msg[0][1], oscmsg))
+
         for oscout in self.osc_outputs:
             oscout.sendMessage(oscmsg)
-
-        self.logger.debug('midi note ({0}, {1}) mapped to osc message: {2}'.format(msg[0][0], msg[0][1], oscmsg))
 
     def _midiToOsc(self, msg):
         if not msg[0][0] in self.options:

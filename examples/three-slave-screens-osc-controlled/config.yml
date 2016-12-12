@@ -1,0 +1,106 @@
+py2030:
+  profiles:
+    control-start:
+      start_event: 'start'
+
+      osc_outputs:
+        bcast:
+          verbose: true
+          ip: '192.168.2.255' # broadcast address of local 192.168.2.* network
+          port: 2030
+
+      event_to_osc:
+        bcast:
+          'start': '/start'
+
+    control-pause:
+      start_event: 'pause'
+
+      osc_outputs:
+        bcast:
+          verbose: true
+          ip: '192.168.2.255' # broadcast address of local 192.168.2.* network
+          port: 2030
+
+      event_to_osc:
+        bcast:
+          'pause': '/pause'
+
+    control-stop:
+      start_event: 'stop'
+
+      osc_outputs:
+        bcast:
+          verbose: true
+          ip: '192.168.2.255' # broadcast address of local 192.168.2.* network
+          port: 2030
+
+      event_to_osc:
+        bcast:
+          'stop': '/stop'
+
+    rpi1_local: # raspberry pi #1 (left screen)
+      osc_inputs:
+        bcast:
+          verbose: true
+          ip: ''
+          port: 2030
+
+      osc_to_event:
+        bcast:
+          auto: true
+
+      omxvideo:
+        verbose: true
+        args: ['--no-osd', '--adev', 'local', '-b']
+        playlist:
+          - '/home/pi/tom/screen-right.mov'
+
+      event_to_omx:
+        '/loop': 'start'
+        '/pause': 'toggle'
+        '/stop': 'stop'
+
+    rpi2_local: # raspberry pi #2 (center screen)
+      osc_inputs:
+        bcast:
+          verbose: true
+          ip: ''
+          port: 2030
+
+      osc_to_event:
+        bcast:
+          auto: true
+
+      event_to_omx:
+        '/loop': 'start'
+        '/pause': 'toggle'
+        '/stop': 'stop'
+
+      omxvideo:
+        verbose: true
+        args: ['--no-osd', '--adev', 'local', '-b']
+        playlist:
+          - '/home/pi/tom/screen-middle.mov'
+
+    rpi3_local: # raspberry pi #3 (right screen)
+      osc_inputs:
+        bcast:
+          verbose: true
+          ip: ''
+          port: 2030
+
+      osc_to_event:
+        bcast:
+          auto: true
+
+      omxvideo:
+        verbose: true
+        args: ['--no-osd', '--adev', 'local', '-b']
+        playlist:
+          - '/home/pi/tom/screen-right.mov'
+
+      event_to_omx:
+        '/loop': 'start'
+        '/pause': 'toggle'
+        '/stop': 'stop'

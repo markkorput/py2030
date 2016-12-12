@@ -17,7 +17,7 @@ python -m py2030.yaml > config.yml
 ```
 
 
-Now you can run py2030 using the following command:
+Now you can run a py2030 application using the following command:
 ```shell
 python -m py2030.app -v
 ```

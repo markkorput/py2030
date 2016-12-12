@@ -18,3 +18,7 @@ class TestComponentManager(unittest.TestCase):
         cm.setup()
         # the configure start event is fired after setup completes
         self.assertEqual(cm.event_manager.getEvent('letsgo')._fireCount, 1)
+
+    def test_config_file_option(self):
+        cm = ComponentManager({'config_file': 'foo/bar.txt'})
+        self.assertEqual(cm.config_file.path, 'foo/bar.txt')

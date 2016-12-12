@@ -30,3 +30,8 @@ class TestEventManager(unittest.TestCase):
         event3 = event_manager.getEvent('bar', create=False)
         self.assertIsNone(event2)
         self.assertEqual(event1, event3)
+
+    def test_getEvent_maps_non_string_params(self):
+        em = EventManager()
+        self.assertEqual(em.getEvent(3), em.getEvent('3'))
+        self.assertEqual(em.getEvent(True), em.getEvent('True'))

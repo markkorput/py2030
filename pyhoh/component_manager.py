@@ -24,6 +24,8 @@ class ComponentManager:
         self.destroy_components = []
         self.running = True
         self.event_manager = EventManager()
+        self._profile_data = None
+        self._operation_queue = []
 
     def __del__(self):
         self.destroy()
@@ -32,28 +34,54 @@ class ComponentManager:
         self.logger.debug('config file: {0}'.format(self.config_file.path))
         self.logger.debug('profile: {0}'.format(self.profile))
 
-        # read config file content
-        self.config_file.load()
+        # load from option
+        if self._profile_data == None and 'profile_data' in self.options:
+            self._profile_data = self.options['profile_data']
 
-        profile_data = self.options['profile_data'] if 'profile_data' in self.options else self.config_file.get_value('pyhoh.profiles.'+self.profile, default_value={})
+        # load from config file
+        if self._profile_data == None:
+            # read config file content
+            self.config_file.load()
+            self._profile_data = self.config_file.get_value('pyhoh.profiles.'+self.profile, default_value={})
 
         # load components based on profile configuration
-        self._load_components(profile_data)
+        self._load_components(self._profile_data)
 
-        if 'start_event' in profile_data:
-            self.event_manager.getEvent(profile_data['start_event']).fire()
+        if 'reload_event' in self._profile_data:
+            self.event_manager.getEvent(self._profile_data['reload_event']).subscribe(self._onReloadEvent)
+
+        if 'start_event' in self._profile_data:
+            self.event_manager.getEvent(self._profile_data['start_event']).fire()
+
+    def _onReloadEvent(self):
+        self._operation_queue.append(self._reload)
+
+    def _reload(self):
+        self.logger.info('-- Reloading --')
+        self.destroy()
+        self.config_file.load({'force': True})
+        self._profile_data = self.config_file.get_value('pyhoh.profiles.'+self.profile, default_value={})
+        self.setup()
 
     def destroy(self):
+        if self._profile_data and 'reload_event' in self._profile_data:
+            self.event_manager.getEvent(self._profile_data['reload_event']).unsubscribe(self._onReloadEvent)
+
         for comp in self.destroy_components:
             comp.destroy()
 
         self.components = []
         self.update_components = []
         self.destroy_components = []
+        self._profile_data = None
 
     def update(self):
         for comp in self.update_components:
             comp.update()
+
+        for op in self._operation_queue:
+            op()
+        self._operation_queue = []
 
     def _load_components(self, profile_data = None):
         # read profile data form config file

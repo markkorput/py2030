@@ -74,6 +74,8 @@ pyhoh:
         stop: 'stop'
 
     osc_to_event: # profile
+      reload_event: '/reload'
+
       osc_inputs: # input component
         broadcast:
           ip: ''
@@ -85,3 +87,17 @@ pyhoh:
           verbose: true
           auto: true
           '/some_message': 'some_event'
+
+    reloader:
+      reload_event: '/reload'
+
+      osc_inputs:
+        bcast:
+          ip: ''
+          port: 2030
+          verbose: true
+
+      osc_to_event:
+        bcast:
+          verbose: true
+          auto: true

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import unittest
 
-from pyhoh.components.omxvideo import OmxVideo
+from py2030.components.omxvideo import OmxVideo
 
 class TestOmxVideo(unittest.TestCase):
     def test_init(self):

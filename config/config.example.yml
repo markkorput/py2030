@@ -1,5 +1,18 @@
-pyhoh:
+py2030:
   profiles:
+    'MarkBookPro_local':
+      start_event: 'go'
+
+      ssh_remotes:
+        rpi2:
+          host: 'rpi2.local'
+          files:
+            # copies changes to local config.yml to rpi2.local
+            '_project_name_/config.yml': '/home/pi/pyHoh/config/'
+            # copies all new or updated files to rpi2.local:/home/pi/_project_name_/*
+            '_project_name_/rpi2/*': '/home/pi/_project_name_/'
+
+
     default:
       delay_events:
         looper: # name/ID
@@ -42,9 +55,9 @@ pyhoh:
       omx_osc_output:
         bcast:
           verbose: true
-          start: '/pyhoh/vid/start'
-          pause: '/pyhoh/vid/pause'
-          stop: '/pyhoh/vid/stop'
+          start: '/py2030/vid/start'
+          pause: '/py2030/vid/pause'
+          stop: '/py2030/vid/stop'
 
       midi_inputs:
         akai:

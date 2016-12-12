@@ -42,7 +42,7 @@ class ComponentManager:
         if self._profile_data == None:
             # read config file content
             self.config_file.load()
-            self._profile_data = self.config_file.get_value('pyhoh.profiles.'+self.profile, default_value={})
+            self._profile_data = self.config_file.get_value('py2030.profiles.'+self.profile, default_value={})
 
         # load components based on profile configuration
         self._load_components(self._profile_data)
@@ -60,7 +60,7 @@ class ComponentManager:
         self.logger.info('-- Reloading --')
         self.destroy()
         self.config_file.load({'force': True})
-        self._profile_data = self.config_file.get_value('pyhoh.profiles.'+self.profile, default_value={})
+        self._profile_data = self.config_file.get_value('py2030.profiles.'+self.profile, default_value={})
         self.setup()
 
     def destroy(self):

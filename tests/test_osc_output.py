@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import unittest
 
-from pyhoh.components.osc_output import OscOutput
+from py2030.components.osc_output import OscOutput
 
 class TestOscInput(unittest.TestCase):
     def test_init(self):

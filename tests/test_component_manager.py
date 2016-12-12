@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import unittest
 
-from pyhoh.component_manager import ComponentManager
+from py2030.component_manager import ComponentManager
 
 class TestComponentManager(unittest.TestCase):
     def test_init(self):

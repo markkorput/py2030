@@ -1,5 +1,5 @@
 # py2030
-python application to manage synchronised video playback for video installations on Raspberry Pis
+python application to control video playback for video installations using multiple Raspberry PIs
 
 ## Install
 

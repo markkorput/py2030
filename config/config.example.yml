@@ -1,7 +1,6 @@
 pyhoh:
   profiles:
     default:
-
       delay_events:
         looper: # name/ID
           source: 'loop'
@@ -73,3 +72,14 @@ pyhoh:
           # - 0
         pause: 'toggle'
         stop: 'stop'
+
+    osc_to_event:
+      osc_inputs:
+        broadcast:
+          ip: ''
+          port: 2030
+          verbose: true
+
+        broadcast:
+          verbose: true
+          auto: true

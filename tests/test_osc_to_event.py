@@ -71,3 +71,29 @@ class TestOscToEvent(unittest.TestCase):
         osc_input.messageEvent('/start')
         self.assertEqual(event_manager.getEvent('startE')._fireCount, 2)
         self.assertEqual(event_manager.getEvent('stopE')._fireCount, 1)
+
+    def test_auto_true(self):
+        # setup
+        osc2event = OscToEvent({'auto': True})
+        osc_input = OscInput()
+        event_manager = EventManager()
+        osc2event.setup(osc_input, event_manager)
+        # before
+        self.assertEqual(event_manager.getEvent('/osc/message')._fireCount, 0)
+        # trigger
+        osc_input.messageEvent('/osc/message')
+        # before
+        self.assertEqual(event_manager.getEvent('/osc/message')._fireCount, 1)
+
+    def test_auto_false(self):
+        # setup
+        osc2event = OscToEvent() # default: {'auto': False}
+        osc_input = OscInput()
+        event_manager = EventManager()
+        osc2event.setup(osc_input, event_manager)
+        # before
+        self.assertEqual(event_manager.getEvent('/osc/message')._fireCount, 0)
+        # trigger
+        osc_input.messageEvent('/osc/message')
+        # before
+        self.assertEqual(event_manager.getEvent('/osc/message')._fireCount, 0)

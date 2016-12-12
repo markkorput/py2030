@@ -28,3 +28,5 @@ class OscToEvent:
     def _onOscMessage(self, addr, *args, **kargs):
         if addr in self.mapping:
             self.event_manager.getEvent(self.mapping[addr]).fire()
+        elif 'auto' in self.options and self.options['auto']:
+            self.event_manager.getEvent(addr).fire()

@@ -25,7 +25,7 @@ class ComponentManager:
         self.running = True
         self.event_manager = EventManager()
         self._profile_data = None
-        self._do_reload = False
+        self._operation_queue = []
 
     def __del__(self):
         self.destroy()
@@ -54,7 +54,14 @@ class ComponentManager:
             self.event_manager.getEvent(self._profile_data['start_event']).fire()
 
     def _onReloadEvent(self):
-        self._do_reload = True
+        self._operation_queue.append(self._reload)
+
+    def _reload(self):
+        self.logger.info('-- Reloading --')
+        self.destroy()
+        self.config_file.load({'force': True})
+        self._profile_data = self.config_file.get_value('pyhoh.profiles.'+self.profile, default_value={})
+        self.setup()
 
     def destroy(self):
         if self._profile_data and 'reload_event' in self._profile_data:
@@ -72,13 +79,9 @@ class ComponentManager:
         for comp in self.update_components:
             comp.update()
 
-        if self._do_reload:
-            self._do_reload = False
-            self.logger.info('-- Reloading --')
-            self.destroy()
-            self.config_file.load({'force': True})
-            self._profile_data = self.config_file.get_value('pyhoh.profiles.'+self.profile, default_value={})
-            self.setup()
+        for op in self._operation_queue:
+            op()
+        self._operation_queue = []
 
     def _load_components(self, profile_data = None):
         # read profile data form config file

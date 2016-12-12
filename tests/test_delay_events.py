@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import unittest
 from time import sleep
-from pyhoh.event_manager import EventManager
-from pyhoh.components.delay_events import DelayEvents
+from py2030.event_manager import EventManager
+from py2030.components.delay_events import DelayEvents
 
 class TestEventToEvent(unittest.TestCase):
     def test_init(self):

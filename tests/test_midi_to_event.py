@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import unittest
 
-from pyhoh.components.midi_to_event import MidiToEvent
-from pyhoh.event_manager import EventManager
-from pyhoh.components.midi_input import MidiInput
+from py2030.components.midi_to_event import MidiToEvent
+from py2030.event_manager import EventManager
+from py2030.components.midi_input import MidiInput
 
 class TestMidiToEvent(unittest.TestCase):
     def setUp(self):

@@ -18,7 +18,7 @@ class ComponentManager:
 
         # attributes
         self.profile = self.options['profile'] if 'profile' in self.options else 'default'
-        self.config_file = ConfigFile(self.options['config_file'] if 'config_file' in self.options and self.options['config_file'] else 'config/config.yml')
+        self.config_file = ConfigFile(self.options['config_file'] if 'config_file' in self.options and self.options['config_file'] else 'config.yml')
         self.components = []
         self.update_components = []
         self.destroy_components = []
@@ -42,7 +42,7 @@ class ComponentManager:
         if self._profile_data == None:
             # read config file content
             self.config_file.load()
-            self._profile_data = self.config_file.get_value('pyhoh.profiles.'+self.profile, default_value={})
+            self._profile_data = self.config_file.get_value('py2030.profiles.'+self.profile, default_value={})
 
         # load components based on profile configuration
         self._load_components(self._profile_data)
@@ -51,6 +51,7 @@ class ComponentManager:
             self.event_manager.getEvent(self._profile_data['reload_event']).subscribe(self._onReloadEvent)
 
         if 'start_event' in self._profile_data:
+            self.logger.debug('triggering start_event: ' + str(self._profile_data['start_event']))
             self.event_manager.getEvent(self._profile_data['start_event']).fire()
 
     def _onReloadEvent(self):
@@ -60,7 +61,7 @@ class ComponentManager:
         self.logger.info('-- Reloading --')
         self.destroy()
         self.config_file.load({'force': True})
-        self._profile_data = self.config_file.get_value('pyhoh.profiles.'+self.profile, default_value={})
+        self._profile_data = self.config_file.get_value('py2030.profiles.'+self.profile, default_value={})
         self.setup()
 
     def destroy(self):

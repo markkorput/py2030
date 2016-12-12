@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import unittest
-from pyhoh.event_manager import EventManager
-from pyhoh.components.osc_output import OscOutput
-from pyhoh.components.event_to_osc import EventToOsc
+from py2030.event_manager import EventManager
+from py2030.components.osc_output import OscOutput
+from py2030.components.event_to_osc import EventToOsc
 
 class TestEventToOsc(unittest.TestCase):
     def test_init(self):

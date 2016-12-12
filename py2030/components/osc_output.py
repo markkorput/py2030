@@ -6,7 +6,7 @@ try:
     import OSC
 except ImportError:
     logging.getLogger(__name__).warning("importing embedded version of pyOSC library")
-    import pyhoh.dependencies.OSC as OSC
+    import py2030.dependencies.OSC as OSC
 
 DEFAULT_PORT = 2030
 DEFAULT_HOST = '255.255.255.255'

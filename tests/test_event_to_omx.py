@@ -2,9 +2,9 @@
 import unittest
 import logging
 
-from pyhoh.event_manager import EventManager
-from pyhoh.components.event_to_omx import EventToOmx
-from pyhoh.components.omxvideo import OmxVideo
+from py2030.event_manager import EventManager
+from py2030.components.event_to_omx import EventToOmx
+from py2030.components.omxvideo import OmxVideo
 
 class TestEventToOmx(unittest.TestCase):
     @classmethod

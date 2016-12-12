@@ -1,4 +1,4 @@
-pyhoh:
+py2030:
   profiles:
     reloader:
       start_event: 'heyholetsgo'

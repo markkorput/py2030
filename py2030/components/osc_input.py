@@ -4,7 +4,7 @@ try:
     from OSC import OSCServer, NoCallbackError
 except ImportError:
     logging.getLogger(__name__).warning("importing embedded version of pyOSC library")
-    from pyhoh.dependencies.OSC import OSCServer, NoCallbackError
+    from py2030.dependencies.OSC import OSCServer, NoCallbackError
 
 from evento import Event
 import json

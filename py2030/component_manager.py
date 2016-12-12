@@ -22,10 +22,10 @@ class ComponentManager:
         self.components = []
         self.update_components = []
         self.destroy_components = []
-        self.running = True
         self.event_manager = EventManager()
         self._profile_data = None
         self._operation_queue = []
+        self.running = False
 
     def __del__(self):
         self.destroy()
@@ -54,6 +54,14 @@ class ComponentManager:
             self.logger.debug('triggering start_event: ' + str(self._profile_data['start_event']))
             self.event_manager.getEvent(self._profile_data['start_event']).fire()
 
+        if 'stop_event' in self._profile_data:
+            self.event_manager.getEvent(self._profile_data['stop_event']).subscribe(self._onStopEvent)
+
+        self.running = True
+
+    def _onStopEvent(self):
+        self.running = False
+
     def _onReloadEvent(self):
         self._operation_queue.append(self._reload)
 
@@ -75,6 +83,7 @@ class ComponentManager:
         self.update_components = []
         self.destroy_components = []
         self._profile_data = None
+        self.running = False
 
     def update(self):
         for comp in self.update_components:

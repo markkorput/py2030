@@ -7,9 +7,14 @@ class TestComponentManager(unittest.TestCase):
     def test_init(self):
         cm = ComponentManager()
         self.assertIsNotNone(cm.event_manager)
-        self.assertTrue(cm.running)
+        self.assertFalse(cm.running)
         self.assertEqual(cm.profile, 'default')
         self.assertEqual(cm.config_file.path, 'config.yml')
+
+    def test_setup(self):
+        cm = ComponentManager()
+        cm.setup()
+        self.assertTrue(cm.running)
 
     def test_start_event(self):
         cm = ComponentManager({'profile_data': {'start_event': 'go'}})
@@ -51,3 +56,13 @@ class TestComponentManager(unittest.TestCase):
         cm.destroy()
         # verify
         self.assertEqual(len(cm.event_manager.getEvent('reload2')), 0)
+
+    def test_stop_event(self):
+        cm = ComponentManager({'profile_data': {'stop_event': 'quit'}})
+        cm.setup()
+        # before
+        self.assertTrue(cm.running)
+        # trigger the stop_event
+        cm.event_manager.getEvent('quit').fire()
+        # after
+        self.assertFalse(cm.running)

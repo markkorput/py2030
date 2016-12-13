@@ -38,3 +38,28 @@ class TestEventManager(unittest.TestCase):
         em = EventManager()
         self.assertEqual(em.get(3), em.get('3'))
         self.assertEqual(em.get(True), em.get('True'))
+
+    def test_fire_existing(self):
+        em = EventManager()
+        event = em.get('some_event')
+        self.assertEqual(event._fireCount, 0)
+        em.fire('some_event')
+        self.assertEqual(event._fireCount, 1)
+        event.fire()
+        self.assertEqual(event._fireCount, 2)
+        event()
+        self.assertEqual(event._fireCount, 3)
+        em.fire('some_event')
+        self.assertEqual(event._fireCount, 4)
+
+    def test_fire_new(self):
+        em = EventManager()
+        em.fire('another')
+        event = em.get('another')
+        self.assertEqual(event._fireCount, 1)
+
+    def test_fire_doesnt_create_event(self):
+        em = EventManager()
+        em.fire('another', create=False)
+        event = em.get('another')
+        self.assertEqual(event._fireCount, 0)

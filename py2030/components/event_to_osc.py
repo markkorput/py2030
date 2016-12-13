@@ -41,7 +41,7 @@ class EventToOsc:
             if type(val).__name__ != 'str':
                 continue
 
-            trigger = EventOscTrigger(self.event_manager.getEvent(key), self.osc_output, val)
+            trigger = EventOscTrigger(self.event_manager.get(key), self.osc_output, val)
             trigger.setup()
             self._triggers.append(trigger)
 

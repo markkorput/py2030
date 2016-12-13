@@ -48,16 +48,16 @@ class ComponentManager:
         self._load_components(self._profile_data)
 
         if 'reload_event' in self._profile_data:
-            self.event_manager.getEvent(self._profile_data['reload_event']).subscribe(self._onReloadEvent)
+            self.event_manager.get(self._profile_data['reload_event']).subscribe(self._onReloadEvent)
 
         if 'stop_event' in self._profile_data:
-            self.event_manager.getEvent(self._profile_data['stop_event']).subscribe(self._onStopEvent)
+            self.event_manager.get(self._profile_data['stop_event']).subscribe(self._onStopEvent)
 
         self.running = True
 
         if 'start_event' in self._profile_data:
             self.logger.debug('triggering start_event: ' + str(self._profile_data['start_event']))
-            self.event_manager.getEvent(self._profile_data['start_event']).fire()
+            self.event_manager.get(self._profile_data['start_event']).fire()
 
     def _onStopEvent(self):
         self.running = False
@@ -74,7 +74,7 @@ class ComponentManager:
 
     def destroy(self):
         if self._profile_data and 'reload_event' in self._profile_data:
-            self.event_manager.getEvent(self._profile_data['reload_event']).unsubscribe(self._onReloadEvent)
+            self.event_manager.get(self._profile_data['reload_event']).unsubscribe(self._onReloadEvent)
 
         for comp in self.destroy_components:
             comp.destroy()

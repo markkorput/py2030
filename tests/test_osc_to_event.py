@@ -40,18 +40,18 @@ class TestOscToEvent(unittest.TestCase):
         event_manager = EventManager()
         osc2event.setup(osc_input, event_manager)
         # before
-        self.assertEqual(event_manager.getEvent('True')._fireCount, 0)
-        self.assertEqual(event_manager.getEvent('true')._fireCount, 0)
-        self.assertEqual(event_manager.getEvent(3)._fireCount, 0)
-        self.assertEqual(event_manager.getEvent('3')._fireCount, 0)
+        self.assertEqual(event_manager.get('True')._fireCount, 0)
+        self.assertEqual(event_manager.get('true')._fireCount, 0)
+        self.assertEqual(event_manager.get(3)._fireCount, 0)
+        self.assertEqual(event_manager.get('3')._fireCount, 0)
         # tigger
         osc_input.messageEvent('verbose')
         osc_input.messageEvent('foo')
         # after
-        self.assertEqual(event_manager.getEvent('True')._fireCount, 0)
-        self.assertEqual(event_manager.getEvent('true')._fireCount, 0)
-        self.assertEqual(event_manager.getEvent(3)._fireCount, 0)
-        self.assertEqual(event_manager.getEvent('3')._fireCount, 0)
+        self.assertEqual(event_manager.get('True')._fireCount, 0)
+        self.assertEqual(event_manager.get('true')._fireCount, 0)
+        self.assertEqual(event_manager.get(3)._fireCount, 0)
+        self.assertEqual(event_manager.get('3')._fireCount, 0)
 
     def test_osc_messages_trigger_specified_events(self):
         osc2event = OscToEvent({'/start': 'startE', '/stop': 'stopE'})
@@ -59,18 +59,18 @@ class TestOscToEvent(unittest.TestCase):
         event_manager = EventManager()
         osc2event.setup(osc_input, event_manager)
         # before
-        self.assertEqual(event_manager.getEvent('startE')._fireCount, 0)
-        self.assertEqual(event_manager.getEvent('stopE')._fireCount, 0)
+        self.assertEqual(event_manager.get('startE')._fireCount, 0)
+        self.assertEqual(event_manager.get('stopE')._fireCount, 0)
         # trigger start
         osc_input.messageEvent('/start')
-        self.assertEqual(event_manager.getEvent('startE')._fireCount, 1)
-        self.assertEqual(event_manager.getEvent('stopE')._fireCount, 0)
+        self.assertEqual(event_manager.get('startE')._fireCount, 1)
+        self.assertEqual(event_manager.get('stopE')._fireCount, 0)
         osc_input.messageEvent('/stop')
-        self.assertEqual(event_manager.getEvent('startE')._fireCount, 1)
-        self.assertEqual(event_manager.getEvent('stopE')._fireCount, 1)
+        self.assertEqual(event_manager.get('startE')._fireCount, 1)
+        self.assertEqual(event_manager.get('stopE')._fireCount, 1)
         osc_input.messageEvent('/start')
-        self.assertEqual(event_manager.getEvent('startE')._fireCount, 2)
-        self.assertEqual(event_manager.getEvent('stopE')._fireCount, 1)
+        self.assertEqual(event_manager.get('startE')._fireCount, 2)
+        self.assertEqual(event_manager.get('stopE')._fireCount, 1)
 
     def test_auto_false(self):
         # setup
@@ -79,11 +79,11 @@ class TestOscToEvent(unittest.TestCase):
         event_manager = EventManager()
         osc2event.setup(osc_input, event_manager)
         # before
-        self.assertEqual(event_manager.getEvent('/osc/message')._fireCount, 0)
+        self.assertEqual(event_manager.get('/osc/message')._fireCount, 0)
         # trigger
         osc_input.messageEvent('/osc/message')
         # before
-        self.assertEqual(event_manager.getEvent('/osc/message')._fireCount, 0)
+        self.assertEqual(event_manager.get('/osc/message')._fireCount, 0)
 
     def test_auto_true(self):
         # setup
@@ -92,11 +92,11 @@ class TestOscToEvent(unittest.TestCase):
         event_manager = EventManager()
         osc2event.setup(osc_input, event_manager)
         # before
-        self.assertEqual(event_manager.getEvent('/osc/message')._fireCount, 0)
+        self.assertEqual(event_manager.get('/osc/message')._fireCount, 0)
         # trigger
         osc_input.messageEvent('/osc/message')
         # before
-        self.assertEqual(event_manager.getEvent('/osc/message')._fireCount, 1)
+        self.assertEqual(event_manager.get('/osc/message')._fireCount, 1)
 
     def test_auto_true_with_explicit_overwrite(self):
         # setup
@@ -105,10 +105,10 @@ class TestOscToEvent(unittest.TestCase):
         event_manager = EventManager()
         osc2event.setup(osc_input, event_manager)
         # before
-        self.assertEqual(event_manager.getEvent('/explicit')._fireCount, 0)
-        self.assertEqual(event_manager.getEvent('doesthis')._fireCount, 0)
+        self.assertEqual(event_manager.get('/explicit')._fireCount, 0)
+        self.assertEqual(event_manager.get('doesthis')._fireCount, 0)
         # trigger
         osc_input.messageEvent('/explicit')
         # before
-        self.assertEqual(event_manager.getEvent('/explicit')._fireCount, 0)
-        self.assertEqual(event_manager.getEvent('doesthis')._fireCount, 1)
+        self.assertEqual(event_manager.get('/explicit')._fireCount, 0)
+        self.assertEqual(event_manager.get('doesthis')._fireCount, 1)

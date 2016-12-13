@@ -22,7 +22,7 @@ class TestMidiToEvent(unittest.TestCase):
         self.assertEqual(self.midi2event.event_manager, self.event_manager)
 
     def test_unknown_midi_note(self):
-        fooEvent = self.event_manager.getEvent('fooEvent')
+        fooEvent = self.event_manager.get('fooEvent')
         # fooEvent didn't get called
         self.assertEqual(fooEvent._fireCount, 0)
         # trigger midi note without event
@@ -31,7 +31,7 @@ class TestMidiToEvent(unittest.TestCase):
         self.assertEqual(fooEvent._fireCount, 0)
 
     def test_midi_note_triggers_event(self):
-        fooEvent = self.event_manager.getEvent('fooEvent')
+        fooEvent = self.event_manager.get('fooEvent')
         # not yet called
         self.assertEqual(fooEvent._fireCount, 0)
         # trigger midi note that maps to fooEvent

@@ -5,7 +5,7 @@ class EventManager:
         self._events = {}
         self.eventAddedEvent = Event()
 
-    def getEvent(self, id, create=True):
+    def get(self, id, create=True):
         id = str(id)
         if id in self._events:
             return self._events[id]

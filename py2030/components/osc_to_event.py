@@ -34,8 +34,8 @@ class OscToEvent:
         if addr in self.mapping:
             event_name = self.mapping[addr]
             self.logger.debug('OSC message `{}` triggers event `{}`'.format(addr, event_name))
-            self.event_manager.getEvent(event_name).fire()
+            self.event_manager.get(event_name).fire()
 
         elif 'auto' in self.options and self.options['auto']:
             self.logger.debug('OSC message `{}` triggers event `{}`'.format(addr, addr))
-            self.event_manager.getEvent(addr).fire()
+            self.event_manager.get(addr).fire()

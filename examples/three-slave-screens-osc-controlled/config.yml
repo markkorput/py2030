@@ -60,7 +60,7 @@ py2030:
         verbose: true
         args: ['--no-osd', '--adev', 'local', '-b']
         playlist:
-          - '/home/pi/tom/screen-right.mov'
+          - '/home/pi/tom/screen-left.mov'
 
       event_to_omx:
         '/loop': 'start'
@@ -110,3 +110,37 @@ py2030:
         '/loop': 'start'
         '/pause': 'toggle'
         '/stop': 'stop'
+
+    # profile used to sync local files to remote devices
+    filesync:
+      ssh_remotes: # this component still has to be implemented
+        rpi1:
+          host: 'rpi1.local'
+          username: 'pi'
+          password: 'raspberry'
+          files:
+            # copies changes to local config.yml into the project folder
+            # inside the pi user's home folder on rpi2.local
+            'config.yml': 'project/'
+            # copies all new or updated files to rpi2.local:/home/pi/_project_name_/*
+            'screen-left.mov': 'project/'
+        rpi2:
+          host: 'rpi2.local'
+          username: 'pi'
+          password: 'raspberry'
+          files:
+            # copies changes to local config.yml into the project folder
+            # inside the pi user's home folder on rpi2.local
+            'config.yml': 'project/'
+            # copies all new or updated files to rpi2.local:/home/pi/_project_name_/*
+            'screen-middle.mov': 'project/'
+        rpi2:
+          host: 'rpi3.local'
+          username: 'pi'
+          password: 'raspberry'
+          files:
+            # copies changes to local config.yml into the project folder
+            # inside the pi user's home folder on rpi2.local
+            'config.yml': 'project/'
+            # copies all new or updated files to rpi2.local:/home/pi/_project_name_/*
+            'screen-right.mov': 'project/'

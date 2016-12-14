@@ -1,5 +1,6 @@
 py2030:
   profiles:
+    # broadcasts a '/start' OSC message to the network and shuts down
     control-start:
       start_event: 'start'
       stop_event: 'start'
@@ -14,6 +15,7 @@ py2030:
         bcast:
           'start': '/start'
 
+    # broadcasts a '/pause' OSC message to the network and shuts down
     control-pause:
       start_event: 'pause'
       stop_event: 'pause'
@@ -28,6 +30,7 @@ py2030:
         bcast:
           'pause': '/pause'
 
+    # broadcasts a '/stop' OSC message to the network and shuts down
     control-stop:
       start_event: 'stop'
       stop_event: 'stop'

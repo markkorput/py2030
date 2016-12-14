@@ -1,16 +1,18 @@
 py2030:
   profiles:
-    'MarkBookPro_local':
-      start_event: 'go'
+    ssh:
+      stop_event: 'finished'
 
       ssh_remotes: # this component still has to be implemented
-        rpi2:
-          host: 'rpi2.local'
+        local:
+          verbose: true
+          hostname: 'localhost'
+          username: 'pi'
+          password: 'raspberry'
+          done_event: 'finished'
           files:
             # copies changes to local config.yml to rpi2.local
-            '_project_name_/config.yml': '/home/pi/_project_name_/'
-            # copies all new or updated files to rpi2.local:/home/pi/_project_name_/*
-            '_project_name_/rpi2/*': '/home/pi/_project_name_/'
+            'examples/three-slave*/*': '~/Public'
 
     default:
       delay_events:

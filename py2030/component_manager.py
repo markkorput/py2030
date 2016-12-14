@@ -60,9 +60,11 @@ class ComponentManager:
             self.event_manager.get(self._profile_data['start_event']).fire()
 
     def _onStopEvent(self):
+        self.logger.debug('stop_event triggered')
         self.running = False
 
     def _onReloadEvent(self):
+        self.logger.debug('reload_event triggered')
         self._operation_queue.append(self._reload)
 
     def _reload(self):
@@ -268,6 +270,14 @@ class ComponentManager:
                 comp.setup(osc_inputs[name])
                 self._add_component(comp)
             del OsxOscVideoResumer
+
+        if 'ssh_remotes' in profile_data:
+            from .components.ssh_remote import SshRemote
+            for data in profile_data['ssh_remotes'].values():
+                comp = SshRemote(data)
+                comp.setup(self.event_manager)
+                self._add_component(comp)
+            del SshRemote
 
     def _add_component(self, comp):
         if hasattr(comp, 'update') and type(comp.update).__name__ == 'instancemethod':

@@ -113,7 +113,7 @@ class SshRemote:
                 print 'unicode issue with printing stderr response'
 
     def put(self, local_file_path, remote_file_name):
-        self.logger.debug('Performing put command with local file path {0} remote file path {1}'.format(local_file_path, remote_file_name))
+        self.logger.debug('PUT ({2}) {0} -> {1} '.format(local_file_path, remote_file_name, self.ip if self.ip else self.hostname))
         with SCPClient(self.client.get_transport()) as scp:
             try:
                 scp.put(local_file_path, remote_file_name)
@@ -126,7 +126,6 @@ class SshRemote:
             scp.get(remote_file_name)
 
     def process(self, local_path, remote_path):
-        self.logger.debug('performing sync to host {0} with local path {1} and remote path {2}'.format(self.ip if self.ip else self.hostname, local_path, remote_path))
         self.put(local_path, remote_path)
         return True
 

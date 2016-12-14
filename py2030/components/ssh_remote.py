@@ -12,6 +12,7 @@ class SshRemote:
         self.connected = False
         self.client = None
         self._operations = {}
+        self.event_manager = None
 
         self.logger = logging.getLogger(__name__)
         if 'verbose' in self.options and self.options['verbose']:
@@ -20,7 +21,8 @@ class SshRemote:
     def __del__(self):
         self.destroy()
 
-    def setup(self):
+    def setup(self, event_manager=None):
+        self.event_manager = event_manager
         if 'files' in self.options:
             for local_pattern, remote_path in self.options['files'].items():
                 local_files = glob(local_pattern)
@@ -45,6 +47,7 @@ class SshRemote:
             self.disconnect()
 
         self._operations = {}
+        self.event_manager = None
 
     def update(self):
         if self.isDone():
@@ -58,6 +61,10 @@ class SshRemote:
         key = self._operations.keys()[0]
         if self.process(key, self._operations[key]):
             del self._operations[key]
+
+        if self.isDone():
+            if self.event_manager and 'done_event' in self.options:
+                self.event_manager.fire(self.options['done_event'])
 
     def isDone(self):
         return len(self._operations) <= 0

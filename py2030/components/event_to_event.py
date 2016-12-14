@@ -19,7 +19,7 @@ class EventToEvent:
         # loop over each key/value pair in configuration hash
         for triggerName, effectNames in self.options.items():
             # the key is the name of the event that triggers other event(s)
-            triggerEvent = self.event_manager.getEvent(triggerName)
+            triggerEvent = self.event_manager.get(triggerName)
 
             # if the target events is not a list, turn it into a single-item list first
             if not hasattr(effectNames, '__iter__'):
@@ -27,7 +27,7 @@ class EventToEvent:
 
             # loop over all the target events name and connect them as listeners to the trigger event
             for effectName in effectNames:
-                effectEvent = self.event_manager.getEvent(effectName)
+                effectEvent = self.event_manager.get(effectName)
                 if connect:
                     triggerEvent += effectEvent
                 else:

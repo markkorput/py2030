@@ -23,7 +23,7 @@ class EventToOmx:
             else:
                 action = config['action']
 
-            event = self.event_manager.getEvent(eventName)
+            event = self.event_manager.get(eventName)
 
             if action == 'start':
                 event += lambda: self._onStart(0)

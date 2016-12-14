@@ -115,7 +115,7 @@ py2030:
     filesync:
       ssh_remotes: # this component still has to be implemented
         rpi1:
-          host: 'rpi1.local'
+          hostname: 'rpi1.local'
           username: 'pi'
           password: 'raspberry'
           files:
@@ -125,7 +125,7 @@ py2030:
             # copies all new or updated files to rpi2.local:/home/pi/_project_name_/*
             'screen-left.mov': 'project/'
         rpi2:
-          host: 'rpi2.local'
+          hostname: 'rpi2.local'
           username: 'pi'
           password: 'raspberry'
           files:
@@ -135,7 +135,7 @@ py2030:
             # copies all new or updated files to rpi2.local:/home/pi/_project_name_/*
             'screen-middle.mov': 'project/'
         rpi2:
-          host: 'rpi3.local'
+          hostname: 'rpi3.local'
           username: 'pi'
           password: 'raspberry'
           files:

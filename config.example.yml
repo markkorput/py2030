@@ -25,10 +25,6 @@ py2030:
           halt: 'stop'
           pause: 'pause'
 
-      event_to_event:
-        'start': ['load', 'loop']
-        'stop': ['stoploop', 'unload']
-
       # video playback component
       omxvideo:
         verbose: true
@@ -40,18 +36,16 @@ py2030:
           - '/home/pi/videos/vid4.mov'
           - '/home/pi/videos/vid5.mov'
         input_events:
-          play: '' # start/resume playback
-          # start: '' # requires vid playlist number
-          stop: ''
-          pause: '' # pause, does nothing when already paused
-          toggle: '' # toggle between play/pause
-          seek: '' # jump to specified playback position (specified in seconds from start of video)
-          load: '' # load a video (by playlist number)
+          # format: <event_id>: <omx-action>
+          'loop': 'start' # loads and start video. Accepts a number but defaults to zero (0), meaning first video in playlist
+          'stop': 'stop' # stop playback
+          'pause': 'toggle' # toggle between play/pause
+          # '': 'play' # start/resume playback
+          # '': 'pause' # pause, does nothing when already paused
+          # '': 'seek' # jump to specified playback position (specified in seconds from start of video)
+          # '': 'load' # load a video (by playlist number)
 
-          input_events:
-
-
-      # send osc messages
+      # send osc messages to other devices
       osc_outputs:
         bcast:
           verbose: true

@@ -180,23 +180,27 @@ class OmxVideo:
           self.logger.warning('no event manager')
           return
 
-      self._registerInputEventCallbacks('play', self.play, _register)
-      self._registerInputEventCallbacks('pause', self.pause, _register)
-      self._registerInputEventCallbacks('toggle', self.toggle, _register)
-      self._registerInputEventCallbacks('stop', self.stop, _register)
-      self._registerInputEventCallbacks('start', self.start, _register)
-      self._registerInputEventCallbacks('load', self.load, _register)
-      self._registerInputEventCallbacks('seek', self.seek, _register)
+      # we'll need input event config data
+      if not 'input_events' in self.options:
+          return
 
-  def _registerInputEventCallbacks(self, action_name, action_listener, _register=True):
-    if not 'input_events' in self.options:
-      return
+      # all known actions
+      action_funcs = {
+        'play': self.play,
+        'pause': self.pause,
+        'toggle': self.toggle,
+        'stop': self.stop,
+        'start': self.start,
+        'load': self.load,
+        'seek': self.seek
+      }
 
-    data = self.options['input_events']
+      for event_name, action_name in self.options['input_events'].items():
+          if not action_name in action_funcs:
+              self.logger.warning('unknown input event action: {0}'.format(action_name))
+              continue
 
-    if action_name in data:
-      for event in self.event_manager.config_to_events(data[action_name]):
           if _register:
-              event += action_listener
+              self.event_manager.get(event_name).subscribe(action_funcs[action_name])
           else:
-              event -= action_listener
+              self.event_manager.get(event_name).unsubscribe(action_funcs[action_name])

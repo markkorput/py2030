@@ -55,11 +55,11 @@ class EventManager:
 
             config_data = config_data['event']
 
-        for event_id in self.config_to_event_ids(config_data):
+        for event_id in self._config_to_event_ids(config_data):
             events.append(self.get(event_id))
         return events
 
-    def config_to_event_ids(self, config_data):
+    def _config_to_event_ids(self, config_data):
         if hasattr(config_data, '__iter__'):
             return  config_data
         return [config_data]

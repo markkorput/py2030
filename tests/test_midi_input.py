@@ -63,11 +63,18 @@ class TestMidiInputOutputEvents(unittest.TestCase):
         self.assertEqual(midiinput.event_manager.get('end')._fireCount, 1)
 
     def test_midi_note_triggers_event_with_param(self):
-        midiinput = MidiInput({'output_events': {144: {36: {'event': 'load', 'params': [1]}}}})
+        midiinput = MidiInput({'output_events': {144: {36: {'event': 'load', 'params': 1}}}})
         midiinput.setup(EventManager(), midi_port=MidiPortMock([[[144,36]]]))
         self.assertEqual(midiinput.event_manager.get('load')._fireCount, 0)
         midiinput.update() # process mocked midi message
         self.assertEqual(midiinput.event_manager.get('load')._fireCount, 1) # TODO verify it fired with params: [1]
+
+    def test_midi_note_triggers_event_with_multiple_params(self):
+        midiinput = MidiInput({'output_events': {144: {36: {'event': 'load', 'params': [1,2,3]}}}})
+        midiinput.setup(EventManager(), midi_port=MidiPortMock([[[144,36]]]))
+        self.assertEqual(midiinput.event_manager.get('load')._fireCount, 0)
+        midiinput.update() # process mocked midi message
+        self.assertEqual(midiinput.event_manager.get('load')._fireCount, 1) # TODO verify it fired with al three params: [1,2,3]
 
     def test_unknown_midi_note_triggers_nothing(self):
         midiinput = MidiInput({'output_events': {144: {36: 'begin'}}})

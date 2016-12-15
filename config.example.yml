@@ -14,7 +14,8 @@ py2030:
             # copies changes to local config.yml to rpi2.local
             'examples/three-slave*/*': '~/Public'
 
-    default:
+
+    looper: # profile
       delay_events:
         looper: # name/ID
           source: 'loop'
@@ -52,13 +53,6 @@ py2030:
           loop: '/loop'
           stop: '/stop'
           pause: '/pause'
-
-      omx_osc_output:
-        bcast:
-          verbose: true
-          start: '/py2030/vid/start'
-          pause: '/py2030/vid/pause'
-          stop: '/py2030/vid/stop'
 
       midi_inputs:
         akai:

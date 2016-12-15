@@ -14,8 +14,9 @@ py2030:
             # copies changes to local config.yml to rpi2.local
             'examples/three-slave*/*': '~/Public'
 
-
     looper: # profile
+      start_event: 'loop'
+
       delay_events:
         looper: # name/ID
           source: 'loop'
@@ -38,6 +39,17 @@ py2030:
           - '/home/pi/videos/vid3.mov'
           - '/home/pi/videos/vid4.mov'
           - '/home/pi/videos/vid5.mov'
+        input_events:
+          play: '' # start/resume playback
+          # start: '' # requires vid playlist number
+          stop: ''
+          pause: '' # pause, does nothing when already paused
+          toggle: '' # toggle between play/pause
+          seek: '' # jump to specified playback position (specified in seconds from start of video)
+          load: '' # load a video (by playlist number)
+
+          input_events:
+
 
       # send osc messages
       osc_outputs:
@@ -71,6 +83,9 @@ py2030:
             41: 'pause'
             42: 'stop'
             43: 'stop'
+            36:
+              event: 'start'
+              params: [0]
 
       event_to_omx:
         verbose: true
@@ -96,6 +111,7 @@ py2030:
           auto: true
           '/some_message': 'some_event'
 
+
     reloader:
       reload_event: '/reload'
 
@@ -109,3 +125,14 @@ py2030:
         bcast:
           verbose: true
           auto: true
+
+    event_demo:
+      some_components:
+        event_inputs:
+          # specify actions and the events they are triggerd by
+          # format:
+          # <component-specific action-to-be-triggerd>: <event_name>
+          # OR
+          # <component-specific action-to-be-triggerd>: [<event_name1>, <event_name2>, ...]
+          action1: 'eventName1' # event takes no arguments
+          action2: ['eventName2a', 'eventName2b']

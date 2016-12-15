@@ -118,6 +118,7 @@ class ComponentManager:
         if 'omxvideo' in profile_data:
             from .components.omxvideo import OmxVideo
             omxvideo = OmxVideo(profile_data['omxvideo'])
+            omxvideo.setup(self.event_manager)
             self._add_component(omxvideo)
             del OmxVideo
 

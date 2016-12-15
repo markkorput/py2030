@@ -17,7 +17,7 @@ class EventOscTrigger:
             self.event -= self._onEvent
 
     def _onEvent(self):
-        self.osc_output.sendMessage(self.osc_message)
+        self.osc_output.send(self.osc_message)
 
 class EventToOsc:
     def __init__(self, options = {}):

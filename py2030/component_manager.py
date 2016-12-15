@@ -137,7 +137,7 @@ class ComponentManager:
             for name in profile_data['osc_inputs']:
                 data = profile_data['osc_inputs'][name]
                 comp = OscInput(data)
-                comp.setup()
+                comp.setup(self.event_manager)
                 self._add_component(comp) # auto-starts
                 osc_inputs[name] = comp
 

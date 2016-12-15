@@ -61,11 +61,10 @@ py2030:
         args: ['--no-osd', '--adev', 'local', '-b']
         playlist:
           - '/home/pi/tom/screen-left.mov'
-
-      event_to_omx:
-        '/loop': 'start'
-        '/pause': 'toggle'
-        '/stop': 'stop'
+        input_events:
+          '/loop': 'start'
+          '/pause': 'toggle'
+          '/stop': 'stop'
 
     rpi2_local: # raspberry pi #2 (center screen)
       osc_inputs:
@@ -78,16 +77,15 @@ py2030:
         bcast:
           auto: true
 
-      event_to_omx:
-        '/loop': 'start'
-        '/pause': 'toggle'
-        '/stop': 'stop'
-
       omxvideo:
         verbose: true
         args: ['--no-osd', '--adev', 'local', '-b']
         playlist:
           - '/home/pi/tom/screen-middle.mov'
+        input_events:
+          '/loop': 'start'
+          '/pause': 'toggle'
+          '/stop': 'stop'
 
     rpi3_local: # raspberry pi #3 (right screen)
       osc_inputs:
@@ -105,11 +103,11 @@ py2030:
         args: ['--no-osd', '--adev', 'local', '-b']
         playlist:
           - '/home/pi/tom/screen-right.mov'
+        input_events:
+          '/loop': 'start'
+          '/pause': 'toggle'
+          '/stop': 'stop'
 
-      event_to_omx:
-        '/loop': 'start'
-        '/pause': 'toggle'
-        '/stop': 'stop'
 
     # profile used to sync local files to remote devices
     filesync:

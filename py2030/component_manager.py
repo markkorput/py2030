@@ -122,34 +122,12 @@ class ComponentManager:
             self._add_component(omxvideo)
             del OmxVideo
 
-        if 'event_to_omx' in profile_data:
-            if omxvideo == None:
-                self.logger.warning("No omxvideo loaded, can't initialize event_to_omx component")
-            else:
-                from .components.event_to_omx import EventToOmx
-                comp = EventToOmx(profile_data['event_to_omx'])
-                comp.setup(self.event_manager, omxvideo)
-                self._add_component(comp)
-                del EventToOmx
-
-        if 'omxvideo_osc_inputs' in profile_data:
-            from .components.omx_video_osc_input import OmxVideoOscInput
-
-            # loop over each osc_input profile
-            for data in profile_data['omxvideo_osc_inputs'].values():
-                comp = OmxVideoOscInput(data)
-                comp.set_omxvideo(omxvideo)
-                comp.setup()
-                self._add_component(comp) # auto-starts
-
-            del OmxVideoOscInput
-
         if omxvideo and 'omxsyncer' in profile_data:
-                from .components.omxsyncer import OmxSyncer
-                comp = OmxSyncer(profile_data['omxsyncer'])
-                comp.setup(omxvideo)
-                self._add_component(comp)
-                del OmxSyncer
+            from .components.omxsyncer import OmxSyncer
+            comp = OmxSyncer(profile_data['omxsyncer'])
+            comp.setup(omxvideo)
+            self._add_component(comp)
+            del OmxSyncer
 
         osc_inputs = {}
         if 'osc_inputs' in profile_data:

@@ -81,15 +81,6 @@ py2030:
               event: 'start'
               params: [0]
 
-      event_to_omx:
-        verbose: true
-        loop:
-          action: 'start'
-          # params:
-          # - 0
-        pause: 'toggle'
-        stop: 'stop'
-
     osc_to_event: # profile
       reload_event: '/reload'
 

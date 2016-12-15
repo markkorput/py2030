@@ -95,20 +95,8 @@ class MidiInput:
             if msg[0][0] in self.output_events:
                 data = self.output_events[msg[0][0]]
                 if msg[0][1] in data:
-                    event_id = data[msg[0][1]]
-                    self.logger.debug('firing output event: {0}'.format(event_id))
-                    self.event_manager.fire(event_id)
-
-    def _midiMessageToEventId(self, msg):
-        if not msg[0][0] in self.options:
-            return None
-
-        cur = self.options[msg[0][0]]
-
-        if msg[0][1] in cur:
-            return cur[msg[0][1]]
-
-
+                    for event in self.event_manager.config_to_events(data[msg[0][1]]):
+                        event.fire()
 
 # for manual testing this python file can be invoked directly
 if __name__ == '__main__':

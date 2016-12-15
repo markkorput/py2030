@@ -1,5 +1,18 @@
 from evento import Event
 
+class ParamsEvent(Event):
+    def setup(self, event, params=[]):
+        self.event=event
+        self.params=tuple(params)
+        # subscribe custom listener to self
+        self.subscribe(self._onFire)
+
+    # our custom listener will trigger the specified event with the given (additional) args
+    def _onFire(self, *args, **kwargs):
+        new_args = args + self.params
+        # trigger given event
+        self.event(*new_args, **kwargs)
+
 class EventManager:
     def __init__(self):
         self._events = {}
@@ -33,6 +46,15 @@ class EventManager:
     # - list of string values, interpreted as multiple event IDs
     def config_to_events(self, config_data):
         events = []
+
+        if config_data.__class__ == {}.__class__ and 'event' in config_data: # we got a dict?
+            if 'params' in config_data:
+                params_event = ParamsEvent()
+                params_event.setup(self.get(config_data['event'], config_data['params']))
+                return [params_event]
+
+            config_data = config_data['event']
+
         for event_id in self.config_to_event_ids(config_data):
             events.append(self.get(event_id))
         return events

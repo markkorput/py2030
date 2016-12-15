@@ -180,42 +180,23 @@ class OmxVideo:
           self.logger.warning('no event manager')
           return
 
-      if not 'input_events' in self.options:
-          return
+      self._registerInputEventCallbacks('play', self.play, _register)
+      self._registerInputEventCallbacks('pause', self.pause, _register)
+      self._registerInputEventCallbacks('toggle', self.toggle, _register)
+      self._registerInputEventCallbacks('stop', self.stop, _register)
+      self._registerInputEventCallbacks('start', self.start, _register)
+      self._registerInputEventCallbacks('load', self.load, _register)
+      self._registerInputEventCallbacks('seek', self.seek, _register)
 
-      data = self.options['input_events']
+  def _registerInputEventCallbacks(self, action_name, action_listener, _register=True):
+    if not 'input_events' in self.options:
+      return
 
-      if 'play' in data:
-          for event in self.event_manager.config_to_events(data['play']):
-              self._registerEventCallbacks(event, self.play, _register)
+    data = self.options['input_events']
 
-      if 'pause' in data:
-          for event in self.event_manager.config_to_events(data['pause']):
-              self._registerEventCallbacks(event, self.pause, _register)
-
-      if 'toggle' in data:
-          for event in self.event_manager.config_to_events(data['toggle']):
-              self._registerEventCallbacks(event, self.toggle, _register)
-
-      if 'stop' in data:
-          for event in self.event_manager.config_to_events(data['stop']):
-              self._registerEventCallbacks(event, self.stop, _register)
-
-      if 'start' in data:
-          for event in self.event_manager.config_to_events(data['start']):
-              self._registerEventCallbacks(event, self.start, _register)
-
-      if 'load' in data:
-          for event in self.event_manager.config_to_events(data['load']):
-              self._registerEventCallbacks(event, self.load, _register)
-
-      if 'seek' in data:
-          for event in self.event_manager.config_to_events(data['seek']):
-              self._registerEventCallbacks(event, self.seek, _register)
-
-
-  def _registerEventCallbacks(self, event, listener, _register=True):
-      if _register:
-          event += listener
-      else:
-          event -= listener
+    if action_name in data:
+      for event in self.event_manager.config_to_events(data[action_name]):
+          if _register:
+              event += action_listener
+          else:
+              event -= action_listener

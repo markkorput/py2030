@@ -65,7 +65,9 @@ class TestEventManager(unittest.TestCase):
         self.assertEqual(event._fireCount, 0)
 
     def test_config_to_events_with_iterable_input_returns_input(self):
-        self.assertEqual(EventManager().config_to_events(['abc', 'def']), ['abc', 'def'])
+        em = EventManager()
+        self.assertEqual(em.config_to_events(['abc', 'def']), [em.get('abc'), em.get('def')])
 
     def test_config_to_events_with_non_iterable_input_returns_list_with_input_as_single_value(self):
-        self.assertEqual(EventManager().config_to_events('abc'), ['abc'])
+        em = EventManager()
+        self.assertEqual(em.config_to_events('abc'), [em.get('abc')])

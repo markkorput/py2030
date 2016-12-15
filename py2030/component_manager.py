@@ -167,43 +167,16 @@ class ComponentManager:
                 self._add_component(comp)
             del EventToOsc
 
-
         midi_inputs = {}
         if 'midi_inputs' in profile_data:
             from .components.midi_input import MidiInput
             for name in profile_data['midi_inputs']:
                 data = profile_data['midi_inputs'][name]
                 comp = MidiInput(data)
-                comp.setup()
+                comp.setup(self.event_manager)
                 self._add_component(comp)
                 midi_inputs[name] = comp
             del MidiInput
-
-        if 'midi_to_event' in profile_data:
-            from .components.midi_to_event import MidiToEvent
-            for name in profile_data['midi_to_event']:
-                if not name in midi_inputs:
-                    self.logger.warning('unknown midi_input name `{0}` in midi_to_event config'.format(name))
-                    continue
-
-                data = profile_data['midi_to_event'][name]
-                comp = MidiToEvent(data)
-                comp.setup(midi_inputs[name], self.event_manager)
-                self._add_component(comp)
-            del MidiToEvent
-
-        if 'midi_to_osc' in profile_data:
-            from .components.midi_to_osc import MidiToOsc
-            for name in profile_data['midi_to_osc']:
-                if not name in midi_inputs:
-                    self.logger.warning('unknown midi_input name: {0}'.format(name))
-                    continue
-
-                data = profile_data['midi_to_osc'][name]
-                comp = MidiToOsc(data)
-                comp.setup(midi_inputs[name], osc_outputs.values()) # give it a midi_input component and all the osc_output components
-                self._add_component(comp)
-            del MidiToOsc
 
         if 'osx_osc_video_resumer' in profile_data:
             from .components.osx_osc_video_resumer import OsxOscVideoResumer

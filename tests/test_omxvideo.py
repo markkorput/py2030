@@ -77,7 +77,7 @@ class TestOmxVideo(unittest.TestCase):
         omxvideo.destroy()
         self.assertEqual(len(em.get('stop_event')), 0) # unregistered
 
-    def test_multiple_input_event(self):
+    def test_multiple_input_events(self):
         all_event_names = (
             'play_event1', 'play_event2',
             'pause_event1', 'pause_event2',
@@ -117,7 +117,44 @@ class TestOmxVideo(unittest.TestCase):
         for name in all_event_names:
             self.assertEqual(len(em.get(name)), 0) # unregistered
 
-        #   # start: '' # requires vid playlist number
-        #   stop: ''
-        #   seek: '' # jump to specified playback position (specified in seconds from start of video)
-        #   load: '' # load a video (by playlist number)
+    def test_input_event_start(self):
+        omxvideo = OmxVideo({'input_events': {'start': 'start_event'}})
+        em = EventManager()
+        self.assertEqual(len(em.get('start_event')), 0)
+        omxvideo.setup(em)
+        self.assertEqual(len(em.get('start_event')), 1) # registered
+        self.assertEqual(omxvideo.startEvent._fireCount, 0)
+        omxvideo.event_manager.fire('start_event') # fire without params
+        self.assertEqual(omxvideo.startEvent._fireCount, 1) # performed
+        omxvideo.event_manager.get('start_event').fire(3) # fire with number param
+        self.assertEqual(omxvideo.startEvent._fireCount, 2) # performed again
+        omxvideo.destroy()
+        self.assertEqual(len(em.get('start_event')), 0) # unregistered
+
+    def test_input_event_load(self):
+        omxvideo = OmxVideo({'input_events': {'load': 'load_event'}, 'playlist': ['1', '2', '3', '4']})
+        em = EventManager()
+        self.assertEqual(len(em.get('load_event')), 0)
+        omxvideo.setup(em)
+        self.assertEqual(len(em.get('load_event')), 1) # registered
+        self.assertEqual(omxvideo.loadEvent._fireCount, 0)
+        omxvideo.event_manager.fire('load_event') # fire without params
+        self.assertEqual(omxvideo.loadEvent._fireCount, 1) # performed
+        omxvideo.event_manager.get('load_event').fire(3) # fire with number param
+        self.assertEqual(omxvideo.loadEvent._fireCount, 2) # performed again
+        omxvideo.destroy()
+        self.assertEqual(len(em.get('load_event')), 0) # unregistered
+
+    def test_input_event_seek(self):
+        omxvideo = OmxVideo({'input_events': {'seek': 'seek_event'}})
+        em = EventManager()
+        self.assertEqual(len(em.get('seek_event')), 0)
+        omxvideo.setup(em)
+        self.assertEqual(len(em.get('seek_event')), 1) # registered
+        self.assertEqual(omxvideo.seekEvent._fireCount, 0)
+        omxvideo.event_manager.fire('seek_event') # fire without params
+        self.assertEqual(omxvideo.seekEvent._fireCount, 1) # performed
+        omxvideo.event_manager.get('seek_event').fire(3) # fire with number param
+        self.assertEqual(omxvideo.seekEvent._fireCount, 2) # performed again
+        omxvideo.destroy()
+        self.assertEqual(len(em.get('seek_event')), 0) # unregistered

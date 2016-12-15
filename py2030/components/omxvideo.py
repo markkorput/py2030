@@ -56,14 +56,14 @@ class OmxVideo:
       self.player = None
       self.unloadEvent(self)
 
-  def load(self, vidNumber):
-      path = self._getVidPath(vidNumber)
+  def load(self, idx=0):
+      path = self._getVidPath(idx)
       if not path:
-          self.logger.warning('invalid video number: {0}'.format(vidNumber))
+          self.logger.warning('invalid video number: {0}'.format(idx))
           return False
 
       result = self._loadPath(path)
-      self.loadIndexEvent(self, vidNumber)
+      self.loadIndexEvent(self, idx)
       return result
 
   def play(self):
@@ -75,10 +75,10 @@ class OmxVideo:
     self.logger.debug('video playback started')
     self.playEvent(self)
 
-  def start(self, vidNumber):
-      self.load(vidNumber)
+  def start(self, idx=0):
+      self.load(idx)
       self.play()
-      self.startEvent(self, vidNumber)
+      self.startEvent(self, idx)
 
   def pause(self):
     if self.player:
@@ -107,7 +107,7 @@ class OmxVideo:
     self.logger.debug('video playback stopped')
     self.stopEvent(self)
 
-  def seek(self, pos):
+  def seek(self, pos=0.0):
     try:
         pos = float(pos)
     except ValueError as err:
@@ -122,7 +122,7 @@ class OmxVideo:
     self.logger.debug('video payback position changed to {0}'.format(pos))
     self.seekEvent(self, pos)
 
-  def speed(self, speed):
+  def speed(self, speed=0):
     if not self.player:
       self.logger.warning("can't change video playback speed, no video loaded")
 
@@ -161,18 +161,18 @@ class OmxVideo:
 
     self.loadEvent(self, videoPath)
 
-  def _getVidPath(self, number):
+  def _getVidPath(self, idx):
     # make sure we have an int
     try:
-      number = int(number)
+      idx = int(idx)
     except:
       return None
 
     # make sure the int is not out of bounds for our array
-    if number < 0 or number >= len(self.playlist):
+    if idx < 0 or idx >= len(self.playlist):
       return None
 
-    return self.playlist[number]
+    return self.playlist[idx]
 
   def _registerCallbacks(self, _register=True):
       # we'll need an event_manager
@@ -200,6 +200,19 @@ class OmxVideo:
       if 'stop' in data:
           for event in self.event_manager.config_to_events(data['stop']):
               self._registerEventCallbacks(event, self.stop, _register)
+
+      if 'start' in data:
+          for event in self.event_manager.config_to_events(data['start']):
+              self._registerEventCallbacks(event, self.start, _register)
+
+      if 'load' in data:
+          for event in self.event_manager.config_to_events(data['load']):
+              self._registerEventCallbacks(event, self.load, _register)
+
+      if 'seek' in data:
+          for event in self.event_manager.config_to_events(data['seek']):
+              self._registerEventCallbacks(event, self.seek, _register)
+
 
   def _registerEventCallbacks(self, event, listener, _register=True):
       if _register:

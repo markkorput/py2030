@@ -15,6 +15,8 @@ class MidiInput:
         self.port_name = None
         self.limit = 10
         self.connected = False
+        self.event_manager = None
+        self.output_events = None
 
         self.logger = logging.getLogger(__name__)
         if 'verbose' in options and options['verbose']:
@@ -26,16 +28,26 @@ class MidiInput:
     def __del__(self):
         self.destroy()
 
-    def setup(self):
+    def setup(self, event_manager=None, midi_port=None):
+        self.event_manager = event_manager
         # start listening for midi messages
         # (we'll poll for new message in the update method)
-        self._connect()
+        if midi_port == None:
+            self._connect()
+        else:
+            self.midiin = midi_port
+            self.connected = True
         # reset timer
         # self.time = 0
+
+        self.output_events = self.options['output_events'] if self.event_manager != None and 'output_events' in self.options else {}
 
     def destroy(self):
         if self.midiin:
             self._disconnect()
+
+        self.event_manager = None
+        self.output_events = None
 
     def _connect(self):
         try:
@@ -54,7 +66,6 @@ class MidiInput:
             return
         print("Midi input initialized on port: " + self.port_name)
         self.connected = True
-        return
 
     def _disconnect(self):
         self.midiin.close_port()
@@ -80,6 +91,23 @@ class MidiInput:
             # self.time += msg[1]
             self.logger.debug('midi message: {0}'.format(msg))
             self.messageEvent(msg)
+
+            if msg[0][0] in self.output_events:
+                data = self.output_events[msg[0][0]]
+                if msg[0][1] in data:
+                    event_id = data[msg[0][1]]
+                    self.logger.debug('firing output event: {0}'.format(event_id))
+                    self.event_manager.fire(event_id)
+
+    def _midiMessageToEventId(self, msg):
+        if not msg[0][0] in self.options:
+            return None
+
+        cur = self.options[msg[0][0]]
+
+        if msg[0][1] in cur:
+            return cur[msg[0][1]]
+
 
 
 # for manual testing this python file can be invoked directly

@@ -64,6 +64,18 @@ py2030:
         akai:
           port: 1
           verbose: true
+          output_events:
+            144: # midi message type; note on
+              36: 'start' # midi note 36 triggers event start0
+              37:
+                event: 'start'
+                params: [1]
+              38: 'start2'
+              39: 'start3'
+              40: 'start4'
+              41: 'pause'
+              42: 'stop'
+              43: 'stop'
 
       midi_to_event:
         akai:

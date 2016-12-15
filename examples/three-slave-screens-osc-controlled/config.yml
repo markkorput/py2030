@@ -51,10 +51,8 @@ py2030:
           verbose: true
           ip: ''
           port: 2030
-
-      osc_to_event:
-        bcast:
-          auto: true
+          output_events:
+            auto: true
 
       omxvideo:
         verbose: true
@@ -72,10 +70,8 @@ py2030:
           verbose: true
           ip: ''
           port: 2030
-
-      osc_to_event:
-        bcast:
-          auto: true
+          output_events:
+            auto: true
 
       omxvideo:
         verbose: true
@@ -93,10 +89,8 @@ py2030:
           verbose: true
           ip: ''
           port: 2030
-
-      osc_to_event:
-        bcast:
-          auto: true
+          output_events:
+            auto: true
 
       omxvideo:
         verbose: true

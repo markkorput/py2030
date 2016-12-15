@@ -217,17 +217,6 @@ class ComponentManager:
                 self._add_component(comp)
             del MidiToOsc
 
-        if omxvideo and 'midi_to_omx' in profile_data:
-            from .components.midi_to_omx import MidiToOmx
-            for name in profile_data['midi_to_omx']:
-                if not name in midi_inputs:
-                    self.logger.warning('unknown midi_input name: {0}'.format(name))
-                    continue
-                comp = MidiToOmx(profile_data['midi_to_omx'][name])
-                comp.setup(midi_inputs[name], omxvideo)
-                self._add_component(comp)
-            del MidiToOmx
-
         if 'osx_osc_video_resumer' in profile_data:
             from .components.osx_osc_video_resumer import OsxOscVideoResumer
             for name in profile_data['osx_osc_video_resumer']:

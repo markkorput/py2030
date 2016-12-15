@@ -118,6 +118,7 @@ class ComponentManager:
         if 'omxvideo' in profile_data:
             from .components.omxvideo import OmxVideo
             omxvideo = OmxVideo(profile_data['omxvideo'])
+            omxvideo.setup(self.event_manager)
             self._add_component(omxvideo)
             del OmxVideo
 
@@ -248,17 +249,6 @@ class ComponentManager:
                 comp.setup(midi_inputs[name], omxvideo)
                 self._add_component(comp)
             del MidiToOmx
-
-        if omxvideo and 'omx_osc_output' in profile_data:
-            from .components.omx_osc_output import OmxOscOutput
-            for name in profile_data['omx_osc_output']:
-                if not name in osc_outputs:
-                    self.logger.warning('unknown osc_output name: {0}'.format(name))
-                    continue
-                comp = OmxOscOutput(profile_data['omx_osc_output'][name])
-                comp.setup(omxvideo, osc_outputs[name])
-                self._add_component(comp)
-            del OmxOscOutput
 
         if 'osx_osc_video_resumer' in profile_data:
             from .components.osx_osc_video_resumer import OsxOscVideoResumer

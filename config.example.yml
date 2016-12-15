@@ -14,7 +14,9 @@ py2030:
             # copies changes to local config.yml to rpi2.local
             'examples/three-slave*/*': '~/Public'
 
-    default:
+    looper: # profile
+      start_event: 'loop'
+
       delay_events:
         looper: # name/ID
           source: 'loop'
@@ -22,10 +24,6 @@ py2030:
           target: 'loop'
           halt: 'stop'
           pause: 'pause'
-
-      event_to_event:
-        'start': ['load', 'loop']
-        'stop': ['stoploop', 'unload']
 
       # video playback component
       omxvideo:
@@ -37,8 +35,17 @@ py2030:
           - '/home/pi/videos/vid3.mov'
           - '/home/pi/videos/vid4.mov'
           - '/home/pi/videos/vid5.mov'
+        input_events:
+          # format: <event_id>: <omx-action>
+          'loop': 'start' # loads and start video. Accepts a number but defaults to zero (0), meaning first video in playlist
+          'stop': 'stop' # stop playback
+          'pause': 'toggle' # toggle between play/pause
+          # '': 'play' # start/resume playback
+          # '': 'pause' # pause, does nothing when already paused
+          # '': 'seek' # jump to specified playback position (specified in seconds from start of video)
+          # '': 'load' # load a video (by playlist number)
 
-      # send osc messages
+      # send osc messages to other devices
       osc_outputs:
         bcast:
           verbose: true
@@ -52,13 +59,6 @@ py2030:
           loop: '/loop'
           stop: '/stop'
           pause: '/pause'
-
-      omx_osc_output:
-        bcast:
-          verbose: true
-          start: '/py2030/vid/start'
-          pause: '/py2030/vid/pause'
-          stop: '/py2030/vid/stop'
 
       midi_inputs:
         akai:
@@ -77,15 +77,9 @@ py2030:
             41: 'pause'
             42: 'stop'
             43: 'stop'
-
-      event_to_omx:
-        verbose: true
-        loop:
-          action: 'start'
-          # params:
-          # - 0
-        pause: 'toggle'
-        stop: 'stop'
+            36:
+              event: 'start'
+              params: [0]
 
     osc_to_event: # profile
       reload_event: '/reload'
@@ -102,6 +96,7 @@ py2030:
           auto: true
           '/some_message': 'some_event'
 
+
     reloader:
       reload_event: '/reload'
 
@@ -115,3 +110,14 @@ py2030:
         bcast:
           verbose: true
           auto: true
+
+    event_demo:
+      some_components:
+        event_inputs:
+          # specify actions and the events they are triggerd by
+          # format:
+          # <component-specific action-to-be-triggerd>: <event_name>
+          # OR
+          # <component-specific action-to-be-triggerd>: [<event_name1>, <event_name2>, ...]
+          action1: 'eventName1' # event takes no arguments
+          action2: ['eventName2a', 'eventName2b']

@@ -89,13 +89,9 @@ py2030:
           ip: ''
           port: 2030
           verbose: true
-
-      osc_to_event: # mapping component
-        broadcast: # osc input component
-          verbose: true
-          auto: true
-          '/some_message': 'some_event'
-
+          output_events:
+            auto: true
+            '/some_message': 'some_event'
 
     reloader:
       reload_event: '/reload'
@@ -105,11 +101,8 @@ py2030:
           ip: ''
           port: 2030
           verbose: true
-
-      osc_to_event:
-        bcast:
-          verbose: true
-          auto: true
+          output_events:
+            auto: true
 
     event_demo:
       some_components:

@@ -20,6 +20,8 @@ class OscInput:
         self.running = False
         self.osc_map = None
         self.logger = logging.getLogger(__name__)
+        self.event_manager = None
+
         if 'verbose' in options and options['verbose']:
             self.logger.setLevel(logging.DEBUG)
 
@@ -45,10 +47,15 @@ class OscInput:
             else:
                 self.logger.setLevel(logging.INFO)
 
-    def setup(self):
+    def setup(self, event_manager=None):
+        self.event_manager = event_manager
+        if self.event_manager:
+            self.output_events = self.options['output_events'] if 'output_events' in self.options else {}
         self.start()
 
     def destroy(self):
+        self.output_events = None
+        self.event_manager = None
         self.stop()
 
     def start(self):
@@ -133,9 +140,17 @@ class OscInput:
         if self.osc_server:
             self.osc_server.timed_out = True
 
-    def _onDefault(self, addr, tags, data, client_address):
+    def _onDefault(self, addr, tags=[], data=[], client_address=''):
         # skip touch osc touch-up events
         # if len(data) == 1 and data[0] == 0.0:
         #     return
         self.logger.debug('osc-in {0}:{1} {2} [{3}] from {4}'.format(self.host(), self.port(), addr, ", ".join(map(lambda x: str(x), data)), client_address))
         self.messageEvent(addr, tags, data, client_address)
+
+        # trigger events based on incoming messages if configured
+        if addr in self.output_events:
+            self.logger.debug('triggering output event: {0}'.format(self.output_events[addr]))
+            self.event_manager.fire(self.output_events[addr])
+        elif self.output_events['auto'] == True:
+            self.logger.debug('triggering auto-output event: {0}'.format(addr))
+            self.event_manager.fire(addr)

@@ -137,23 +137,11 @@ class ComponentManager:
             for name in profile_data['osc_inputs']:
                 data = profile_data['osc_inputs'][name]
                 comp = OscInput(data)
-                comp.setup()
+                comp.setup(self.event_manager)
                 self._add_component(comp) # auto-starts
                 osc_inputs[name] = comp
 
             del OscInput
-
-        if 'osc_to_event' in profile_data:
-            from .components.osc_to_event import OscToEvent
-            for name in profile_data['osc_to_event']:
-                if not name in osc_inputs:
-                    self.logger.warning('unknown osc_input name `{0}` in osc_to_event config'.format(name))
-                    continue
-                data = profile_data['osc_to_event'][name]
-                comp = OscToEvent(data)
-                comp.setup(osc_inputs[name], self.event_manager)
-                self._add_component(comp)
-            del OscToEvent
 
         osc_outputs = {}
         if 'osc_outputs' in profile_data:

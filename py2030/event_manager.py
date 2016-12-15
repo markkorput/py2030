@@ -17,6 +17,7 @@ class EventManager:
     def __init__(self):
         self._events = {}
         self.eventAddedEvent = Event()
+        self.fireEvent = Event()
 
     def get(self, _id, create=True):
         _id = str(_id)
@@ -29,6 +30,10 @@ class EventManager:
         if create:
             new_event = Event()
             self._events[_id] = new_event
+            self.eventAddedEvent(new_event)
+            pevent = ParamsEvent()
+            pevent.setup(self.fireEvent, [_id])
+            new_event += pevent
             return new_event
 
         # don't create, return None
@@ -38,6 +43,9 @@ class EventManager:
         event = self.get(_id, create)
         if event != None:
             event.fire()
+
+    def subscribe(self, listener):
+        self.fireEvent += listener
 
     # takes raw event config value -which can be in various forms
     # and returns a list of events it specifies.

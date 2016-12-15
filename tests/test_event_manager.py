@@ -6,15 +6,19 @@ class TestEventManager(unittest.TestCase):
     def test_init(self):
         event_manager = EventManager()
         self.assertIsNotNone(event_manager.eventAddedEvent)
+        self.assertIsNotNone(event_manager.fireEvent)
         self.assertEqual(len(event_manager._events), 0)
 
     def test_get_creates_event(self):
         em = EventManager()
         self.assertFalse('newbie' in em._events)
+        self.assertEqual(em.eventAddedEvent._fireCount, 0)
+
         event = em.get('newbie') # creates new event with this ID
         self.assertTrue('newbie' in em._events)
         self.assertEqual(len(em._events), 1)
         self.assertEqual(em._events['newbie'], event)
+        self.assertEqual(em.eventAddedEvent._fireCount, 1)
         self.assertTrue('fire' in dir(event))
         self.assertTrue('subscribe' in dir(event))
         self.assertTrue('unsubscribe' in dir(event))
@@ -71,3 +75,15 @@ class TestEventManager(unittest.TestCase):
     def test_config_to_events_with_non_iterable_input_returns_list_with_input_as_single_value(self):
         em = EventManager()
         self.assertEqual(em.config_to_events('abc'), [em.get('abc')])
+
+    def test_subscribe(self):
+        em = EventManager()
+        em.subscribe(self._onFire)
+        self.test_subscribe_event_log = []
+        em.get('test_subscribe_event').fire()
+        self.assertEqual(self.test_subscribe_event_log, ['test_subscribe_event'])
+        em.get('some_other_event').fire()
+        self.assertEqual(self.test_subscribe_event_log, ['test_subscribe_event', 'some_other_event'])
+
+    def _onFire(self, event_id):
+        self.test_subscribe_event_log.append(event_id)

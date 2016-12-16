@@ -98,3 +98,25 @@ py2030:
           # an event with the same name as the message's address
           output_events:
             auto: true
+
+    midi_master:
+      midi_inputs:
+        akai:
+          port: 1
+          verbose: true
+          output_events:
+            144: # midi message type; note on
+              36: # midi note 36 triggers event start with a single param
+                event: 'start'
+                params: 0
+              37:
+                event: 'start'
+                params: 1
+              38:
+                event: 'start'
+                params: 2
+              39:
+                event: 'start'
+                params: 3
+              41: 'pause' # midi note 41 trigger the pause event
+              42: 'stop' # midi note 42 trigger the stop event

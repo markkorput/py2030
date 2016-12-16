@@ -8,7 +8,7 @@ py2030:
         web1:
           # url: ''
           port: 2031
-          serve: 'web/'
+          serve: 'web/' # serve folder
           output_events:
             '/api/start': 'start'
             '/api/stop': 'stop'

@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 import time
 import logging
-
-from rtmidi.midiutil import open_midiport
 from evento import Event
+
+try:
+    from rtmidi.midiutil import open_midiport
+except ImportError as err:
+    logging.getLogger(__name__).warning("Importing of rtmidi.midiutil failed, MidiInput component will not work.")
+    open_midiport = False
 
 class MidiInput:
     def __init__(self, options = {}):
@@ -50,6 +54,10 @@ class MidiInput:
         self.output_events = None
 
     def _connect(self):
+        if not open_midiport:
+            self.logger.warning('rtmidi library not available MidiInput cannot connect.')
+            return
+
         try:
             self.midiin, self.port_name = open_midiport(self.port)
         except IOError as err:

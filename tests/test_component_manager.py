@@ -11,9 +11,16 @@ class TestComponentManager(unittest.TestCase):
         self.assertEqual(cm.profile, 'default')
         self.assertEqual(cm.config_file.path, 'config.yml')
 
-    def test_setup(self):
+    def test_setup_without_components_will_abort(self):
         cm = ComponentManager()
         cm.setup()
+        self.assertEqual(len(cm.components), 0)
+        self.assertFalse(cm.running)
+
+    def test_setup(self):
+        cm = ComponentManager({'profile_data': {'osc_outputs': {'sender': {'ip': '127.0.0.1'}}}})
+        cm.setup()
+        self.assertEqual(len(cm.components), 1)
         self.assertTrue(cm.running)
 
     def test_start_event(self):
@@ -58,7 +65,7 @@ class TestComponentManager(unittest.TestCase):
         self.assertEqual(len(cm.event_manager.get('reload2')), 0)
 
     def test_stop_event(self):
-        cm = ComponentManager({'profile_data': {'stop_event': 'quit'}})
+        cm = ComponentManager({'profile_data': {'stop_event': 'quit', 'osc_outputs': {'sender': {'ip': '127.0.0.1'}}}})
         cm.setup()
         # before
         self.assertTrue(cm.running)

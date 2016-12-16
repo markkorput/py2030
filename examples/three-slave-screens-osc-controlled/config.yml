@@ -10,10 +10,8 @@ py2030:
           verbose: true
           ip: '192.168.2.255' # broadcast address of local 192.168.2.* network
           port: 2030
-
-      event_to_osc:
-        bcast:
-          'start': '/start'
+          input_events:
+            'start': '/start'
 
     # broadcasts a '/pause' OSC message to the network and shuts down
     control-pause:
@@ -25,10 +23,8 @@ py2030:
           verbose: true
           ip: '192.168.2.255' # broadcast address of local 192.168.2.* network
           port: 2030
-
-      event_to_osc:
-        bcast:
-          'pause': '/pause'
+          input_events:
+            'pause': '/pause'
 
     # broadcasts a '/stop' OSC message to the network and shuts down
     control-stop:
@@ -40,10 +36,8 @@ py2030:
           verbose: true
           ip: '192.168.2.255' # broadcast address of local 192.168.2.* network
           port: 2030
-
-      event_to_osc:
-        bcast:
-          'stop': '/stop'
+          input_events:
+            'stop': '/stop'
 
     rpi1_local: # raspberry pi #1 (left screen)
       osc_inputs:

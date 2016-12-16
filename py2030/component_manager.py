@@ -43,6 +43,8 @@ class ComponentManager:
             # read config file content
             self.config_file.load()
             self._profile_data = self.config_file.get_value('py2030.profiles.'+self.profile, default_value={})
+            if self._profile_data == {}:
+                self.logger.warning("No profile data found")
 
         # load components based on profile configuration
         self._load_components(self._profile_data)
@@ -53,7 +55,10 @@ class ComponentManager:
         if 'stop_event' in self._profile_data:
             self.event_manager.get(self._profile_data['stop_event']).subscribe(self._onStopEvent)
 
-        self.running = True
+        if len(self.components) > 0:
+            self.running = True
+        else:
+            self.logger.warning('No components loaded. Abort.')
 
         if 'start_event' in self._profile_data:
             self.logger.debug('triggering start_event: ' + str(self._profile_data['start_event']))
@@ -150,22 +155,10 @@ class ComponentManager:
             for name in profile_data['osc_outputs']:
                 data = profile_data['osc_outputs'][name]
                 comp = OscOutput(data)
-                comp.setup()
+                comp.setup(self.event_manager)
                 self._add_component(comp) # auto-starts
                 osc_outputs[name] = comp
             del OscOutput
-
-        if 'event_to_osc' in profile_data:
-            from .components.event_to_osc import EventToOsc
-            for name in profile_data['event_to_osc']:
-                if not name in osc_outputs:
-                    self.logger.warning('unknown midi_output: {0}'.format(name))
-                    continue
-                data = profile_data['event_to_osc'][name]
-                comp = EventToOsc(data)
-                comp.setup(osc_outputs[name], self.event_manager)
-                self._add_component(comp)
-            del EventToOsc
 
         midi_inputs = {}
         if 'midi_inputs' in profile_data:

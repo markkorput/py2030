@@ -37,11 +37,11 @@ class TestComponentManager(unittest.TestCase):
         # before
         self.assertEqual(cm.event_manager.get('ramones')._fireCount, 0)
         self.assertEqual(cm.event_manager.get('heyholetsgo')._fireCount, 0)
-        self.assertEqual(len(cm.event_manager.get('reloader')), 0)
+        self.assertFalse(cm._onReloadEvent in cm.event_manager.get('reload'))
         # setup from param config
         cm.setup()
         # after first setup
-        self.assertEqual(len(cm.event_manager.get('reload')), 1)
+        self.assertTrue(cm._onReloadEvent in cm.event_manager.get('reload'))
         self.assertEqual(cm.event_manager.get('ramones')._fireCount, 1)
         self.assertEqual(cm.event_manager.get('heyholetsgo')._fireCount, 0)
         # trigger reload

@@ -11,10 +11,13 @@ class TestEventManager(unittest.TestCase):
     def test_get_creates_event(self):
         em = EventManager()
         self.assertFalse('newbie' in em._events)
+        self.assertEqual(em.eventAddedEvent._fireCount, 0)
+
         event = em.get('newbie') # creates new event with this ID
         self.assertTrue('newbie' in em._events)
         self.assertEqual(len(em._events), 1)
         self.assertEqual(em._events['newbie'], event)
+        self.assertEqual(em.eventAddedEvent._fireCount, 1)
         self.assertTrue('fire' in dir(event))
         self.assertTrue('subscribe' in dir(event))
         self.assertTrue('unsubscribe' in dir(event))

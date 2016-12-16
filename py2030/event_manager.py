@@ -13,6 +13,7 @@ class ParamsEvent(Event):
         # trigger given event
         self.event(*new_args, **kwargs)
 
+
 class EventManager:
     def __init__(self):
         self._events = {}
@@ -29,6 +30,7 @@ class EventManager:
         if create:
             new_event = Event()
             self._events[_id] = new_event
+            self.eventAddedEvent(new_event)
             return new_event
 
         # don't create, return None

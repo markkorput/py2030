@@ -52,13 +52,10 @@ py2030:
           ip: 192.168.2.255
           # hostname: 'rpi4.local'
           port: 2030
-
-      event_to_osc:
-        bcast:
-          verbose: true
-          loop: '/loop'
-          stop: '/stop'
-          pause: '/pause'
+          input_events:
+            loop: '/loop'
+            stop: '/stop'
+            pause: '/pause'
 
       midi_inputs:
         akai:
@@ -102,7 +99,7 @@ py2030:
 
     event_demo:
       some_components:
-        event_inputs:
+        input_events:
           # specify actions and the events they are triggerd by
           # format:
           # <component-specific action-to-be-triggerd>: <event_name>

@@ -1,0 +1,26 @@
+py2030:
+  profiles:
+    controller: # device configuration
+      stop_event: 'stop'
+      reload_event: 'reload'
+
+      web_servers: # configurations for WebServer components
+        web1:
+          verbose: true
+          # url: ''
+          port: 2031
+          serve: 'web/' # serve folder
+          output_events:
+            '/api/start': 'start'
+            '/api/stop': 'stop'
+            '/api/reload': 'reload'
+
+      # component for sending OSC message
+      osc_outputs:
+        osc1:
+          verbose: true
+          port: 2030
+          ip: 192.168.2.255
+          input_events:
+            'start': '/start'
+            'stop': '/stop'

@@ -1,5 +1,8 @@
-# py2030
+# py2030 [![Build Status](https://api.travis-ci.org/markkorput/py2030.svg)](https://travis-ci.org/markkorput/py2030)
+_current version: 0.2.0_
+
 python application to control video playback for video installations using multiple Raspberry PIs
+
 
 ## Install
 

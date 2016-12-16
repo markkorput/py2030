@@ -25,7 +25,7 @@ class OmxVideo:
     self.logger.debug('playlist: {0}'.format(", ".join(self.playlist)))
 
     self.args = self.options['args'] if 'args' in self.options else ['--no-osd', '-b']
-
+    self.event_manager = None
     # events
     self.loadEvent = Event()
     self.loadIndexEvent = Event()
@@ -41,15 +41,14 @@ class OmxVideo:
   def __del__(self):
       self.destroy()
 
-  def setup(self):
-      pass
+  def setup(self, _event_manager = None):
+      self.event_manager = _event_manager
+      self._registerCallbacks()
 
   def destroy(self):
+    self._registerCallbacks(False)
     if self.player:
       self._unload()
-
-  def update(self):
-      pass
 
   def _unload(self):
     if self.player:
@@ -57,91 +56,92 @@ class OmxVideo:
       self.player = None
       self.unloadEvent(self)
 
-  def load(self, vidNumber):
-      path = self._getVidPath(vidNumber)
+  def load(self, idx=0):
+      path = self._getVidPath(idx)
       if not path:
-          self.logger.warning('invalid video number: {0}'.format(vidNumber))
+          self.logger.warning('invalid video number: {0}'.format(idx))
           return False
 
       result = self._loadPath(path)
-      self.loadIndexEvent(self, vidNumber)
+      self.loadIndexEvent(self, idx)
       return result
 
   def play(self):
-    if not self.player:
+    if self.player:
+        self.player.play()
+    else:
         self.logger.warning("can't start playback, no video loaded")
-        return
 
-    self.player.play()
-    self.playEvent(self)
     self.logger.debug('video playback started')
+    self.playEvent(self)
 
-  def start(self, vidNumber):
-      self.load(vidNumber)
+  def start(self, idx=0):
+      self.load(idx)
       self.play()
-      self.startEvent(self, vidNumber)
+      self.startEvent(self, idx)
 
   def pause(self):
-    if not self.player:
-      self.logger.warning("can't pause video, no video loaded")
-      return
+    if self.player:
+        self.player.pause()
+    else:
+        self.logger.warning("can't pause video, no video loaded")
 
-    self.player.pause()
-    self.pauseEvent(self)
     self.logger.debug("video playback paused")
+    self.pauseEvent(self)
 
   def toggle(self):
-    if not self.player:
-      self.logger.warning("can't toggle play/pause video playback, no video loaded")
-      return
+    if self.player:
+        self.player.play_pause()
+        self.logger.debug('toggle; video playback {0}'.format('resumed' if self.player.playback_status() == 'Playing' else 'paused'))
+    else:
+        self.logger.warning("can't toggle play/pause video playback, no video loaded")
 
-    self.player.play_pause()
     self.toggleEvent(self)
-    self.logger.debug('toggle; video playback {0}'.format('resumed' if self.player.playback_status() == 'Playing' else 'paused'))
 
   def stop(self):
-    if not self.player:
-      self.logger.warning("can't stop video playback, no video loaded")
-      return
+    if self.player:
+        self.player.stop()
+    else:
+        self.logger.warning("can't stop video playback, no video loaded")
 
-    self.player.stop()
     self.logger.debug('video playback stopped')
     self.stopEvent(self)
 
-  def seek(self, pos):
-    if not self.player:
-      self.logger.warning("can't seek video playback position, no video loaded")
-      return
-
+  def seek(self, pos=0.0):
     try:
         pos = float(pos)
     except ValueError as err:
         self.logger.warning('invalid pos value: {0}'.format(pos))
         return
 
-    self.player.set_position(pos)
+    if self.player:
+        self.player.set_position(pos)
+    else:
+        self.logger.warning("can't seek video playback position, no video loaded")
+
     self.logger.debug('video payback position changed to {0}'.format(pos))
     self.seekEvent(self, pos)
 
-  def speed(self, speed):
+  def speed(self, speed=0):
     if not self.player:
       self.logger.warning("can't change video playback speed, no video loaded")
-      return
 
     # speed -1 means 'slower'
     # speed 1 means 'faster'
 
     if speed == -1:
-      self.player.action(1)
-      self.logger.debug("video playback slower")
-      self.speedEvent(self, -1)
-      return
+        if self.player:
+            self.player.action(1)
+        self.logger.debug("video playback slower")
+        self.speedEvent(self, -1)
+        return
 
     if speed == 1:
-      self.player.action(2)
-      self.logger.debug("video playback faster")
-      self.speedEvent(self, 1)
-      return
+        if self.player:
+            self.player.action(2)
+        self.logger.debug("video playback faster")
+        self.speedEvent(self, 1)
+        return
 
     self.logger.warning("invalid speed value: {0}".format(speed))
 
@@ -150,25 +150,57 @@ class OmxVideo:
     if self.player:
       self._unload()
 
-    # this will be paused by default
-    if not OMXPlayer:
-        self.logger.warning('No OMXPlayer not available, cannot load file: {0}'.format(videoPath))
-        return
-
     self.logger.debug('loading player with command: {0} {1}'.format(videoPath, ' '.join(self.args)))
-    # start omx player without osd and sending audio through analog jack
-    self.player = OMXPlayer(videoPath, args=self.args) #['--no-osd', '--adev', 'local', '-b'])
+    # this will be paused by default
+
+    if OMXPlayer:
+        # start omx player without osd and sending audio through analog jack
+        self.player = OMXPlayer(videoPath, args=self.args) #['--no-osd', '--adev', 'local', '-b'])
+    else:
+        self.logger.warning('No OMXPlayer not available, cannot load file: {0}'.format(videoPath))
+
     self.loadEvent(self, videoPath)
 
-  def _getVidPath(self, number):
+  def _getVidPath(self, idx):
     # make sure we have an int
     try:
-      number = int(number)
+      idx = int(idx)
     except:
       return None
 
     # make sure the int is not out of bounds for our array
-    if number < 0 or number >= len(self.playlist):
+    if idx < 0 or idx >= len(self.playlist):
       return None
 
-    return self.playlist[number]
+    return self.playlist[idx]
+
+  def _registerCallbacks(self, _register=True):
+      # we'll need an event_manager
+      if self.event_manager == None:
+          self.logger.warning('no event manager')
+          return
+
+      # we'll need input event config data
+      if not 'input_events' in self.options:
+          return
+
+      # all known actions
+      action_funcs = {
+        'play': self.play,
+        'pause': self.pause,
+        'toggle': self.toggle,
+        'stop': self.stop,
+        'start': self.start,
+        'load': self.load,
+        'seek': self.seek
+      }
+
+      for event_name, action_name in self.options['input_events'].items():
+          if not action_name in action_funcs:
+              self.logger.warning('unknown input event action: {0}'.format(action_name))
+              continue
+
+          if _register:
+              self.event_manager.get(event_name).subscribe(action_funcs[action_name])
+          else:
+              self.event_manager.get(event_name).unsubscribe(action_funcs[action_name])

@@ -1,0 +1,139 @@
+py2030:
+  profiles:
+    # broadcasts a '/start' OSC message to the network and shuts down
+    control-start:
+      start_event: 'start'
+      stop_event: 'start'
+
+      osc_outputs:
+        bcast:
+          verbose: true
+          ip: '192.168.2.255' # broadcast address of local 192.168.2.* network
+          port: 2030
+          input_events:
+            'start': '/start'
+
+    # broadcasts a '/pause' OSC message to the network and shuts down
+    control-pause:
+      start_event: 'pause'
+      stop_event: 'pause'
+
+      osc_outputs:
+        bcast:
+          verbose: true
+          ip: '192.168.2.255' # broadcast address of local 192.168.2.* network
+          port: 2030
+          input_events:
+            'pause': '/pause'
+
+    # broadcasts a '/stop' OSC message to the network and shuts down
+    control-stop:
+      start_event: 'stop'
+      stop_event: 'stop'
+
+      osc_outputs:
+        bcast:
+          verbose: true
+          ip: '192.168.2.255' # broadcast address of local 192.168.2.* network
+          port: 2030
+          input_events:
+            'stop': '/stop'
+
+    rpi1_local: # raspberry pi #1 (left screen)
+      osc_inputs:
+        bcast:
+          verbose: true
+          ip: ''
+          port: 2030
+          output_events:
+            auto: true
+
+      omxvideo:
+        verbose: true
+        args: ['--no-osd', '--adev', 'local', '-b']
+        playlist:
+          - '/home/pi/tom/screen-left.mov'
+        input_events:
+          '/loop': 'start'
+          '/pause': 'toggle'
+          '/stop': 'stop'
+
+    rpi2_local: # raspberry pi #2 (center screen)
+      osc_inputs:
+        bcast:
+          verbose: true
+          ip: ''
+          port: 2030
+          output_events:
+            auto: true
+
+      omxvideo:
+        verbose: true
+        args: ['--no-osd', '--adev', 'local', '-b']
+        playlist:
+          - '/home/pi/tom/screen-middle.mov'
+        input_events:
+          '/loop': 'start'
+          '/pause': 'toggle'
+          '/stop': 'stop'
+
+    rpi3_local: # raspberry pi #3 (right screen)
+      osc_inputs:
+        bcast:
+          verbose: true
+          ip: ''
+          port: 2030
+          output_events:
+            auto: true
+
+      omxvideo:
+        verbose: true
+        args: ['--no-osd', '--adev', 'local', '-b']
+        playlist:
+          - '/home/pi/tom/screen-right.mov'
+        input_events:
+          '/loop': 'start'
+          '/pause': 'toggle'
+          '/stop': 'stop'
+
+
+    # profile used to sync local files to remote devices
+    filesync:
+      stop_event: 'done'
+
+      ssh_remotes: # this component still has to be implemented
+        rpi1:
+          done_event: 'done'
+          hostname: 'rpi1.local'
+          username: 'pi'
+          password: 'raspberry'
+          files:
+            # copies changes to local config.yml into the project folder
+            # inside the pi user's home folder on rpi2.local
+            'config.yml': 'project/'
+            # copies all new or updated files to rpi2.local:/home/pi/_project_name_/*
+            'screen-left.mov': 'project/'
+
+        rpi2:
+          done_event: 'done'
+          hostname: 'rpi2.local'
+          username: 'pi'
+          password: 'raspberry'
+          files:
+            # copies changes to local config.yml into the project folder
+            # inside the pi user's home folder on rpi2.local
+            'config.yml': 'project/'
+            # copies all new or updated files to rpi2.local:/home/pi/_project_name_/*
+            'screen-middle.mov': 'project/'
+
+        rpi3:
+          done_event: 'done'
+          hostname: 'rpi3.local'
+          username: 'pi'
+          password: 'raspberry'
+          files:
+            # copies changes to local config.yml into the project folder
+            # inside the pi user's home folder on rpi2.local
+            'config.yml': 'project/'
+            # copies all new or updated files to rpi2.local:/home/pi/_project_name_/*
+            'screen-right.mov': 'project/'

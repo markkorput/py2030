@@ -22,10 +22,10 @@ class ComponentManager:
         self.components = []
         self.update_components = []
         self.destroy_components = []
-        self.running = True
         self.event_manager = EventManager()
         self._profile_data = None
         self._operation_queue = []
+        self.running = False
 
     def __del__(self):
         self.destroy()
@@ -43,18 +43,33 @@ class ComponentManager:
             # read config file content
             self.config_file.load()
             self._profile_data = self.config_file.get_value('py2030.profiles.'+self.profile, default_value={})
+            if self._profile_data == {}:
+                self.logger.warning("No profile data found")
 
         # load components based on profile configuration
         self._load_components(self._profile_data)
 
         if 'reload_event' in self._profile_data:
-            self.event_manager.getEvent(self._profile_data['reload_event']).subscribe(self._onReloadEvent)
+            self.event_manager.get(self._profile_data['reload_event']).subscribe(self._onReloadEvent)
+
+        if 'stop_event' in self._profile_data:
+            self.event_manager.get(self._profile_data['stop_event']).subscribe(self._onStopEvent)
+
+        if len(self.components) > 0:
+            self.running = True
+        else:
+            self.logger.warning('No components loaded. Abort.')
 
         if 'start_event' in self._profile_data:
             self.logger.debug('triggering start_event: ' + str(self._profile_data['start_event']))
-            self.event_manager.getEvent(self._profile_data['start_event']).fire()
+            self.event_manager.get(self._profile_data['start_event']).fire()
+
+    def _onStopEvent(self):
+        self.logger.debug('stop_event triggered')
+        self.running = False
 
     def _onReloadEvent(self):
+        self.logger.debug('reload_event triggered')
         self._operation_queue.append(self._reload)
 
     def _reload(self):
@@ -66,7 +81,7 @@ class ComponentManager:
 
     def destroy(self):
         if self._profile_data and 'reload_event' in self._profile_data:
-            self.event_manager.getEvent(self._profile_data['reload_event']).unsubscribe(self._onReloadEvent)
+            self.event_manager.get(self._profile_data['reload_event']).unsubscribe(self._onReloadEvent)
 
         for comp in self.destroy_components:
             comp.destroy()
@@ -75,6 +90,7 @@ class ComponentManager:
         self.update_components = []
         self.destroy_components = []
         self._profile_data = None
+        self.running = False
 
     def update(self):
         for comp in self.update_components:
@@ -107,37 +123,16 @@ class ComponentManager:
         if 'omxvideo' in profile_data:
             from .components.omxvideo import OmxVideo
             omxvideo = OmxVideo(profile_data['omxvideo'])
+            omxvideo.setup(self.event_manager)
             self._add_component(omxvideo)
             del OmxVideo
 
-        if 'event_to_omx' in profile_data:
-            if omxvideo == None:
-                self.logger.warning("No omxvideo loaded, can't initialize event_to_omx component")
-            else:
-                from .components.event_to_omx import EventToOmx
-                comp = EventToOmx(profile_data['event_to_omx'])
-                comp.setup(self.event_manager, omxvideo)
-                self._add_component(comp)
-                del EventToOmx
-
-        if 'omxvideo_osc_inputs' in profile_data:
-            from .components.omx_video_osc_input import OmxVideoOscInput
-
-            # loop over each osc_input profile
-            for data in profile_data['omxvideo_osc_inputs'].values():
-                comp = OmxVideoOscInput(data)
-                comp.set_omxvideo(omxvideo)
-                comp.setup()
-                self._add_component(comp) # auto-starts
-
-            del OmxVideoOscInput
-
         if omxvideo and 'omxsyncer' in profile_data:
-                from .components.omxsyncer import OmxSyncer
-                comp = OmxSyncer(profile_data['omxsyncer'])
-                comp.setup(omxvideo)
-                self._add_component(comp)
-                del OmxSyncer
+            from .components.omxsyncer import OmxSyncer
+            comp = OmxSyncer(profile_data['omxsyncer'])
+            comp.setup(omxvideo)
+            self._add_component(comp)
+            del OmxSyncer
 
         osc_inputs = {}
         if 'osc_inputs' in profile_data:
@@ -147,23 +142,11 @@ class ComponentManager:
             for name in profile_data['osc_inputs']:
                 data = profile_data['osc_inputs'][name]
                 comp = OscInput(data)
-                comp.setup()
+                comp.setup(self.event_manager)
                 self._add_component(comp) # auto-starts
                 osc_inputs[name] = comp
 
             del OscInput
-
-        if 'osc_to_event' in profile_data:
-            from .components.osc_to_event import OscToEvent
-            for name in profile_data['osc_to_event']:
-                if not name in osc_inputs:
-                    self.logger.warning('unknown osc_input name `{0}` in osc_to_event config'.format(name))
-                    continue
-                data = profile_data['osc_to_event'][name]
-                comp = OscToEvent(data)
-                comp.setup(osc_inputs[name], self.event_manager)
-                self._add_component(comp)
-            del OscToEvent
 
         osc_outputs = {}
         if 'osc_outputs' in profile_data:
@@ -172,23 +155,10 @@ class ComponentManager:
             for name in profile_data['osc_outputs']:
                 data = profile_data['osc_outputs'][name]
                 comp = OscOutput(data)
-                comp.setup()
+                comp.setup(self.event_manager)
                 self._add_component(comp) # auto-starts
                 osc_outputs[name] = comp
             del OscOutput
-
-        if 'event_to_osc' in profile_data:
-            from .components.event_to_osc import EventToOsc
-            for name in profile_data['event_to_osc']:
-                if not name in osc_outputs:
-                    self.logger.warning('unknown midi_output: {0}'.format(name))
-                    continue
-                data = profile_data['event_to_osc'][name]
-                comp = EventToOsc(data)
-                comp.setup(osc_outputs[name], self.event_manager)
-                self._add_component(comp)
-            del EventToOsc
-
 
         midi_inputs = {}
         if 'midi_inputs' in profile_data:
@@ -196,58 +166,10 @@ class ComponentManager:
             for name in profile_data['midi_inputs']:
                 data = profile_data['midi_inputs'][name]
                 comp = MidiInput(data)
-                comp.setup()
+                comp.setup(self.event_manager)
                 self._add_component(comp)
                 midi_inputs[name] = comp
             del MidiInput
-
-        if 'midi_to_event' in profile_data:
-            from .components.midi_to_event import MidiToEvent
-            for name in profile_data['midi_to_event']:
-                if not name in midi_inputs:
-                    self.logger.warning('unknown midi_input name `{0}` in midi_to_event config'.format(name))
-                    continue
-
-                data = profile_data['midi_to_event'][name]
-                comp = MidiToEvent(data)
-                comp.setup(midi_inputs[name], self.event_manager)
-                self._add_component(comp)
-            del MidiToEvent
-
-        if 'midi_to_osc' in profile_data:
-            from .components.midi_to_osc import MidiToOsc
-            for name in profile_data['midi_to_osc']:
-                if not name in midi_inputs:
-                    self.logger.warning('unknown midi_input name: {0}'.format(name))
-                    continue
-
-                data = profile_data['midi_to_osc'][name]
-                comp = MidiToOsc(data)
-                comp.setup(midi_inputs[name], osc_outputs.values()) # give it a midi_input component and all the osc_output components
-                self._add_component(comp)
-            del MidiToOsc
-
-        if omxvideo and 'midi_to_omx' in profile_data:
-            from .components.midi_to_omx import MidiToOmx
-            for name in profile_data['midi_to_omx']:
-                if not name in midi_inputs:
-                    self.logger.warning('unknown midi_input name: {0}'.format(name))
-                    continue
-                comp = MidiToOmx(profile_data['midi_to_omx'][name])
-                comp.setup(midi_inputs[name], omxvideo)
-                self._add_component(comp)
-            del MidiToOmx
-
-        if omxvideo and 'omx_osc_output' in profile_data:
-            from .components.omx_osc_output import OmxOscOutput
-            for name in profile_data['omx_osc_output']:
-                if not name in osc_outputs:
-                    self.logger.warning('unknown osc_output name: {0}'.format(name))
-                    continue
-                comp = OmxOscOutput(profile_data['omx_osc_output'][name])
-                comp.setup(omxvideo, osc_outputs[name])
-                self._add_component(comp)
-            del OmxOscOutput
 
         if 'osx_osc_video_resumer' in profile_data:
             from .components.osx_osc_video_resumer import OsxOscVideoResumer
@@ -259,6 +181,14 @@ class ComponentManager:
                 comp.setup(osc_inputs[name])
                 self._add_component(comp)
             del OsxOscVideoResumer
+
+        if 'ssh_remotes' in profile_data:
+            from .components.ssh_remote import SshRemote
+            for data in profile_data['ssh_remotes'].values():
+                comp = SshRemote(data)
+                comp.setup(self.event_manager)
+                self._add_component(comp)
+            del SshRemote
 
     def _add_component(self, comp):
         if hasattr(comp, 'update') and type(comp.update).__name__ == 'instancemethod':

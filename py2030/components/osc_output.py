@@ -11,6 +11,24 @@ except ImportError:
 DEFAULT_PORT = 2030
 DEFAULT_HOST = '255.255.255.255'
 
+class EventMessage:
+    def __init__(self, osc_output, event, message):
+        self.event = event
+        self.osc_output = osc_output
+        self.message = message
+        self.event += self._send
+
+    def __del__(self):
+        self.destroy()
+
+    def destroy(self):
+        if self.event:
+            self.event -= self._send
+            self.event = None
+
+    def _send(self):
+        self.osc_output.send(self.message)
+
 class OscOutput:
     def __init__(self, options = {}):
         # config
@@ -23,8 +41,9 @@ class OscOutput:
 
         self.client = None
         self.connected = False
-        self.running = False
         self.host_cache = None
+        self.event_manager = None
+        self._event_messages = []
 
         # events
         self.connectEvent = Event()
@@ -34,20 +53,36 @@ class OscOutput:
     def __del__(self):
         self.destroy()
 
-    def setup(self):
-        self.start()
+    def setup(self, event_manager=None):
+        self._connect()
+        self.event_manager = event_manager
+        if event_manager != None:
+            self._registerCallbacks()
 
     def destroy(self):
-        if self.running:
-            self.stop()
+        if self.event_manager != None:
+            self._registerCallbacks(False)
+            self.event_manager = None
 
-    def start(self):
-        if self._connect():
-            self.running = True
+        if self.connected:
+            self._disconnect()
 
-    def stop(self):
-        self._disconnect()
-        self.running = False
+    def _registerCallbacks(self, _register=True):
+        if not _register:
+            for event_message in self._event_messages:
+                event_message.destroy()
+            self._event_messages = []
+            return
+
+        if not 'input_events' in self.options:
+            return
+
+        for event_id, message in self.options['input_events'].items():
+            self._event_messages.append(EventMessage(self, self.event_manager.get(event_id), message))
+
+    def _onEvent(self, event_id):
+        if event_id in self.options['input_events']:
+            self.send(self.options['input_events'][event_id])
 
     def port(self):
         return int(self.options['port']) if 'port' in self.options else DEFAULT_PORT
@@ -101,7 +136,7 @@ class OscOutput:
 
         self.connected = False
 
-    def sendMessage(self, addr, data=[]):
+    def send(self, addr, data=[]):
         msg = OSC.OSCMessage()
         msg.setAddress(addr) # set OSC address
 

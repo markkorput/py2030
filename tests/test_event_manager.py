@@ -8,30 +8,69 @@ class TestEventManager(unittest.TestCase):
         self.assertIsNotNone(event_manager.eventAddedEvent)
         self.assertEqual(len(event_manager._events), 0)
 
-    def test_create_event(self):
-        event_manager = EventManager()
-        self.assertEqual('foo' in event_manager._events, False)
-        event = event_manager.getEvent('foo')
-        self.assertEqual('foo' in event_manager._events, True)
-        self.assertEqual(event_manager._events['foo'], event)
-        self.assertEqual(len(event_manager._events), 1)
+    def test_get_creates_event(self):
+        em = EventManager()
+        self.assertFalse('newbie' in em._events)
+        self.assertEqual(em.eventAddedEvent._fireCount, 0)
 
-    def test_get_existing_event(self):
-        event_manager = EventManager()
-        event1 = event_manager.getEvent('bar')
-        event2 = event_manager.getEvent('bar')
+        event = em.get('newbie') # creates new event with this ID
+        self.assertTrue('newbie' in em._events)
+        self.assertEqual(len(em._events), 1)
+        self.assertEqual(em._events['newbie'], event)
+        self.assertEqual(em.eventAddedEvent._fireCount, 1)
+        self.assertTrue('fire' in dir(event))
+        self.assertTrue('subscribe' in dir(event))
+        self.assertTrue('unsubscribe' in dir(event))
+
+    def test_get_returns_existing_event(self):
+        em = EventManager()
+        event1 = em.get('bar')
+        event2 = em.get('bar')
         self.assertEqual(event1, event2)
-        self.assertEqual(len(event_manager._events), 1)
+        self.assertEqual(len(em._events), 1)
 
-    def test_non_existing_event(self):
-        event_manager = EventManager()
-        event1 = event_manager.getEvent('bar')
-        event2 = event_manager.getEvent('foo', create=False)
-        event3 = event_manager.getEvent('bar', create=False)
+    def test_get_returns_none_for_non_existing_events(self):
+        em = EventManager()
+        event1 = em.get('bar')
+        event2 = em.get('foo', create=False)
+        event3 = em.get('bar', create=False)
         self.assertIsNone(event2)
         self.assertEqual(event1, event3)
 
-    def test_getEvent_maps_non_string_params(self):
+    def test_get_maps_non_string_params_to_strings(self):
         em = EventManager()
-        self.assertEqual(em.getEvent(3), em.getEvent('3'))
-        self.assertEqual(em.getEvent(True), em.getEvent('True'))
+        self.assertEqual(em.get(3), em.get('3'))
+        self.assertEqual(em.get(True), em.get('True'))
+
+    def test_fire_existing(self):
+        em = EventManager()
+        event = em.get('some_event')
+        self.assertEqual(event._fireCount, 0)
+        em.fire('some_event')
+        self.assertEqual(event._fireCount, 1)
+        event.fire()
+        self.assertEqual(event._fireCount, 2)
+        event()
+        self.assertEqual(event._fireCount, 3)
+        em.fire('some_event')
+        self.assertEqual(event._fireCount, 4)
+
+    def test_fire_new(self):
+        em = EventManager()
+        em.fire('another')
+        event = em.get('another')
+        self.assertEqual(event._fireCount, 1)
+
+    def test_fire_doesnt_create_event(self):
+        em = EventManager()
+        em.fire('another', create=False)
+        event = em.get('another')
+        self.assertEqual(event._fireCount, 0)
+
+    def test_config_to_events_with_iterable_input_returns_input(self):
+        em = EventManager()
+        self.assertEqual(em.config_to_events(['abc', 'def']), [em.get('abc'), em.get('def')])
+
+    def test_config_to_events_with_non_iterable_input_returns_list_with_input_as_single_value(self):
+        em = EventManager()
+        self.assertEqual(em.config_to_events('abc'), [em.get('abc')])

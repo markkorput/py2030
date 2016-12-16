@@ -1,18 +1,22 @@
 py2030:
   profiles:
-    'MarkBookPro_local':
-      start_event: 'go'
+    ssh:
+      stop_event: 'finished'
 
       ssh_remotes: # this component still has to be implemented
-        rpi2:
-          host: 'rpi2.local'
+        local:
+          verbose: true
+          hostname: 'localhost'
+          username: 'pi'
+          password: 'raspberry'
+          done_event: 'finished'
           files:
             # copies changes to local config.yml to rpi2.local
-            '_project_name_/config.yml': '/home/pi/_project_name_/'
-            # copies all new or updated files to rpi2.local:/home/pi/_project_name_/*
-            '_project_name_/rpi2/*': '/home/pi/_project_name_/'
+            'examples/three-slave*/*': '~/Public'
 
-    default:
+    looper: # profile
+      start_event: 'loop'
+
       delay_events:
         looper: # name/ID
           source: 'loop'
@@ -20,10 +24,6 @@ py2030:
           target: 'loop'
           halt: 'stop'
           pause: 'pause'
-
-      event_to_event:
-        'start': ['load', 'loop']
-        'stop': ['stoploop', 'unload']
 
       # video playback component
       omxvideo:
@@ -35,55 +35,44 @@ py2030:
           - '/home/pi/videos/vid3.mov'
           - '/home/pi/videos/vid4.mov'
           - '/home/pi/videos/vid5.mov'
+        input_events:
+          # format: <event_id>: <omx-action>
+          'loop': 'start' # loads and start video. Accepts a number but defaults to zero (0), meaning first video in playlist
+          'stop': 'stop' # stop playback
+          'pause': 'toggle' # toggle between play/pause
+          # '': 'play' # start/resume playback
+          # '': 'pause' # pause, does nothing when already paused
+          # '': 'seek' # jump to specified playback position (specified in seconds from start of video)
+          # '': 'load' # load a video (by playlist number)
 
-      # send osc messages
+      # send osc messages to other devices
       osc_outputs:
         bcast:
           verbose: true
           ip: 192.168.2.255
           # hostname: 'rpi4.local'
           port: 2030
-
-      event_to_osc:
-        bcast:
-          verbose: true
-          loop: '/loop'
-          stop: '/stop'
-          pause: '/pause'
-
-      omx_osc_output:
-        bcast:
-          verbose: true
-          start: '/py2030/vid/start'
-          pause: '/py2030/vid/pause'
-          stop: '/py2030/vid/stop'
+          input_events:
+            loop: '/loop'
+            stop: '/stop'
+            pause: '/pause'
 
       midi_inputs:
         akai:
           port: 1
           verbose: true
-
-      midi_to_event:
-        akai:
-          verbose: true
-          144: # midi message type; note on
-            36: 'start0' # midi note 36 triggers event start0
-            37: 'start1'
-            38: 'start2'
-            39: 'start3'
-            40: 'start4'
-            41: 'pause'
-            42: 'stop'
-            43: 'stop'
-
-      event_to_omx:
-        verbose: true
-        loop:
-          action: 'start'
-          # params:
-          # - 0
-        pause: 'toggle'
-        stop: 'stop'
+          output_events:
+            144: # midi message type; note on
+              36: 'start' # midi note 36 triggers event start0
+              37:
+                event: 'start'
+                params: [1]
+              38: 'start2'
+              39: 'start3'
+              40: 'start4'
+              41: 'pause'
+              42: 'stop'
+              43: 'stop'
 
     osc_to_event: # profile
       reload_event: '/reload'
@@ -93,12 +82,9 @@ py2030:
           ip: ''
           port: 2030
           verbose: true
-
-      osc_to_event: # mapping component
-        broadcast: # osc input component
-          verbose: true
-          auto: true
-          '/some_message': 'some_event'
+          output_events:
+            auto: true
+            '/some_message': 'some_event'
 
     reloader:
       reload_event: '/reload'
@@ -108,8 +94,16 @@ py2030:
           ip: ''
           port: 2030
           verbose: true
+          output_events:
+            auto: true
 
-      osc_to_event:
-        bcast:
-          verbose: true
-          auto: true
+    event_demo:
+      some_components:
+        input_events:
+          # specify actions and the events they are triggerd by
+          # format:
+          # <component-specific action-to-be-triggerd>: <event_name>
+          # OR
+          # <component-specific action-to-be-triggerd>: [<event_name1>, <event_name2>, ...]
+          action1: 'eventName1' # event takes no arguments
+          action2: ['eventName2a', 'eventName2b']

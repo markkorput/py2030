@@ -113,9 +113,9 @@ class DelayEvents:
                 continue
 
             delay = params['delay']
-            sourceEvent = self.event_manager.getEvent(params['source'])
-            targetEvent = self.event_manager.getEvent(params['target'])
-            haltEvent = self.event_manager.getEvent(params['halt']) if 'halt' in params else None
-            pauseEvent = self.event_manager.getEvent(params['pause']) if 'pause' in params else None
+            sourceEvent = self.event_manager.get(params['source'])
+            targetEvent = self.event_manager.get(params['target'])
+            haltEvent = self.event_manager.get(params['halt']) if 'halt' in params else None
+            pauseEvent = self.event_manager.get(params['pause']) if 'pause' in params else None
             delay_items.append(DelayItem(_id, sourceEvent, delay, targetEvent, halt=haltEvent, pause=pauseEvent, logger=self.logger))
         return delay_items

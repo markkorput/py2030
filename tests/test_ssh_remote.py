@@ -5,6 +5,11 @@ from glob import glob
 from py2030.components.ssh_remote import SshRemote
 from py2030.event_manager import EventManager
 
+try:
+    import paramiko
+except ImportError as err:
+    paramiko = False
+
 class TestSshRemote(unittest.TestCase):
     def setUp(self):
         logging.basicConfig()
@@ -30,7 +35,10 @@ class TestSshRemote(unittest.TestCase):
         sr = SshRemote({'hostname': 'localhost', 'username': 'pi'})
         sr.setup()
         self.assertEqual(sr.ip, '127.0.0.1')
-        self.assertIsNotNone(sr.client)
+        if paramiko:
+            self.assertIsNotNone(sr.client)
+        else:
+            self.assertIsNone(sr.client)
         self.assertFalse(sr.connected)
 
     def test_setup_creates_file_sync_operations_queue(self):

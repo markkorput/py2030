@@ -1,6 +1,12 @@
-import socket, logging, paramiko
+import socket, logging
 from scp import SCPClient, SCPException
 from glob import glob
+
+try:
+    import paramiko
+except ImportError as err:
+    paramiko = None
+    logging.getLogger(__name__).warning("importing of paramiko failed, SshRemote component will not work.")
 
 class SshRemote:
     def __init__(self, options = {}):
@@ -70,6 +76,10 @@ class SshRemote:
         return len(self._operations) <= 0
 
     def connect(self):
+        if not paramiko:
+            self.logger.warning("Paramiko not loaded, can't connect")
+            return False
+
         if not self.ip:
             self.logger.warning("Can't connect without ip")
             return False

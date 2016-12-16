@@ -11,7 +11,7 @@ py2030:
           password: 'raspberry'
           done_event: 'finished'
           files:
-            # copies changes to local config.yml to rpi2.local
+            # copies these local file to the remote machine using SCP
             'examples/three-slave*/*': '~/Public'
 
     looper: # profile

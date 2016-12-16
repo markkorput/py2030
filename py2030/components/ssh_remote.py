@@ -1,11 +1,17 @@
 import socket, logging
-from scp import SCPClient, SCPException
 from glob import glob
+
+try:
+    from scp import SCPClient, SCPException
+except ImportError as err:
+    SCPClient = False
+    SCPException = False
+    logging.getLogger(__name__).warning("importing of SCP classes failed, SshRemote component will not work.")
 
 try:
     import paramiko
 except ImportError as err:
-    paramiko = None
+    paramiko = False
     logging.getLogger(__name__).warning("importing of paramiko failed, SshRemote component will not work.")
 
 class SshRemote:
@@ -124,6 +130,11 @@ class SshRemote:
 
     def put(self, local_file_path, remote_file_name):
         self.logger.debug('PUT ({2}) {0} -> {1} '.format(local_file_path, remote_file_name, self.ip if self.ip else self.hostname))
+
+        if not SCPClient:
+            self.logger.warning("SCPClient not available, cannot perform SCP-PUT operation")
+            return
+
         with SCPClient(self.client.get_transport()) as scp:
             try:
                 scp.put(local_file_path, remote_file_name)
@@ -132,6 +143,11 @@ class SshRemote:
 
     def get(self, remote_file_name):
         self.logger.debug('Performing get command with remote file path {0}'.format(remote_file_name))
+
+        if not SCPClient:
+            self.logger.warning("SCPClient not available, cannot perform SCP-GET operation")
+            return
+
         with SCPClient(self.client.get_transport()) as scp:
             scp.get(remote_file_name)
 

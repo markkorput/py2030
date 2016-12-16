@@ -190,6 +190,14 @@ class ComponentManager:
                 self._add_component(comp)
             del SshRemote
 
+        if 'web_servers' in profile_data:
+            from .components.web_server import WebServer
+            for data in profile_data['web_servers'].values():
+                comp = WebServer(data)
+                comp.setup(self.event_manager)
+                self._add_component(comp)
+            del WebServer
+
     def _add_component(self, comp):
         if hasattr(comp, 'update') and type(comp.update).__name__ == 'instancemethod':
             self.update_components.append(comp)

@@ -4,8 +4,9 @@ py2030:
       stop_event: 'stop'
       reload_event: 'reload'
 
-      webservers: # configurations for WebServer components
+      web_servers: # configurations for WebServer components
         web1:
+          verbose: true
           # url: ''
           port: 2031
           serve: 'web/' # serve folder
@@ -20,6 +21,6 @@ py2030:
           verbose: true
           port: 2030
           ip: 192.168.2.255
-          output_events:
+          input_events:
             'start': '/start'
             'stop': '/stop'

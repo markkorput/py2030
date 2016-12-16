@@ -95,7 +95,7 @@ class WebServer(threading.Thread):
 
     # thread function
     def run(self):
-        self.logger.debug('Starting HTTP server on port {0}'.format(self.port()))
+        self.logger.info('Starting HTTP server on port {0}'.format(self.port()))
         HandlerClass = createRequestHandler(self.event_manager, self.options)
         self.http_server = HTTPServer(('', self.port()), HandlerClass)
 
@@ -108,7 +108,7 @@ class WebServer(threading.Thread):
                 print 'http exception:'
                 print exc
 
-        self.logger.debug('Closing HTTP server at port {0}'.format(self.port()))
+        self.logger.info('Closing HTTP server at port {0}'.format(self.port()))
         self.http_server.server_close()
         self.http_server = None
 

@@ -6,6 +6,10 @@ logging.basicConfig(level=logging.WARNING)
 from .event_manager import EventManager
 from .utils.config_file import ConfigFile
 
+class Context:
+    def __init__(self, event_manager):
+        self.event_manager = event_manager
+
 class ComponentManager:
     def __init__(self, options = {}):
         # config
@@ -22,7 +26,8 @@ class ComponentManager:
         self.components = []
         self.update_components = []
         self.destroy_components = []
-        self.event_manager = EventManager()
+        self.context = Context(EventManager())
+        self.event_manager = self.context.event_manager
         self._profile_data = None
         self._operation_queue = []
         self.running = False
@@ -50,10 +55,10 @@ class ComponentManager:
         self._load_components(self._profile_data)
 
         if 'reload_event' in self._profile_data:
-            self.event_manager.get(self._profile_data['reload_event']).subscribe(self._onReloadEvent)
+            self.context.event_manager.get(self._profile_data['reload_event']).subscribe(self._onReloadEvent)
 
         if 'stop_event' in self._profile_data:
-            self.event_manager.get(self._profile_data['stop_event']).subscribe(self._onStopEvent)
+            self.context.event_manager.get(self._profile_data['stop_event']).subscribe(self._onStopEvent)
 
         if len(self.components) > 0:
             self.running = True
@@ -62,7 +67,7 @@ class ComponentManager:
 
         if 'start_event' in self._profile_data:
             self.logger.debug('triggering start_event: ' + str(self._profile_data['start_event']))
-            self.event_manager.get(self._profile_data['start_event']).fire()
+            self.context.event_manager.get(self._profile_data['start_event']).fire()
 
     def _onStopEvent(self):
         self.logger.debug('stop_event triggered')
@@ -81,7 +86,7 @@ class ComponentManager:
 
     def destroy(self):
         if self._profile_data and 'reload_event' in self._profile_data:
-            self.event_manager.get(self._profile_data['reload_event']).unsubscribe(self._onReloadEvent)
+            self.context.event_manager.get(self._profile_data['reload_event']).unsubscribe(self._onReloadEvent)
 
         for comp in self.destroy_components:
             comp.destroy()
@@ -100,121 +105,52 @@ class ComponentManager:
             op()
         self._operation_queue = []
 
-    def _found_component_modules(self):
-        if hasattr(self, '_found_component_modules_cache'):
-            return self._found_component_modules_cache
-
-        self._found_component_modules_cache = []
+    def _found_component_classes(self):
+        klasses = []
 
         import py2030.components as comp_modules
+        from py2030.base_component import BaseComponent
+
         for module_name in comp_modules.__all__:
+            # ignore the __init__.py file
             if module_name == '__init__':
                 continue
+
+            # import file
             mod = __import__('py2030.components.'+module_name, fromlist=['py2030.components'])
 
-            if hasattr(mod, 'component_config_name') and hasattr(mod, 'create_components'):
-                self._found_component_modules_cache.append(mod)
-        del comp_modules
+            # find component class inside the module
+            for klass in mod.__dict__.values():
+                # most will have BaseComponent imported, ignore that one
+                if klass == BaseComponent:
+                    continue
 
-        return self._found_component_modules_cache
+                # only grab the classes that have config_name and create_components attributes
+                if hasattr(klass, 'config_name') and hasattr(klass, 'create_components'):
+                    klasses.append(klass)
+
+        del comp_modules
+        del BaseComponent
+
+        return klasses
 
     def _load_components(self, profile_data = None):
-        # read profile data form config file
-        if not profile_data:
-            profile_data = {}
+        klasses = self._found_component_classes()
 
-        if 'event_to_event' in profile_data:
-            from .components.event_to_event import EventToEvent
-            comp = EventToEvent(profile_data['event_to_event'])
-            comp.setup(self.event_manager)
-            self._add_component(comp)
-            del EventToEvent
+        # loop over all configurations in our profile
+        for config_name, config_data in profile_data.items():
+            # let all classes that say they are responsible for this piece of configuration generate component(s)
+            for klass in filter(lambda cls: cls.config_name == config_name, klasses):
+                comps = klass.create_components(config_data, self.context)
 
-        if 'delay_events' in profile_data:
-            from .components.delay_events import DelayEvents
-            comp = DelayEvents(profile_data['delay_events'])
-            comp.setup(self.event_manager)
-            self._add_component(comp)
-            del DelayEvents
-
-        omxvideo = None
-        if 'omxvideo' in profile_data:
-            from .components.omxvideo import OmxVideo
-            omxvideo = OmxVideo(profile_data['omxvideo'])
-            omxvideo.setup(self.event_manager)
-            self._add_component(omxvideo)
-            del OmxVideo
-
-        if omxvideo and 'omxsyncer' in profile_data:
-            from .components.omxsyncer import OmxSyncer
-            comp = OmxSyncer(profile_data['omxsyncer'])
-            comp.setup(omxvideo)
-            self._add_component(comp)
-            del OmxSyncer
-
-        osc_inputs = {}
-        if 'osc_inputs' in profile_data:
-            from .components.osc_input import OscInput
-
-            # loop over each osc_input profile
-            for name in profile_data['osc_inputs']:
-                data = profile_data['osc_inputs'][name]
-                comp = OscInput(data)
-                comp.setup(self.event_manager)
-                self._add_component(comp) # auto-starts
-                osc_inputs[name] = comp
-
-            del OscInput
-
-        osc_outputs = {}
-        if 'osc_outputs' in profile_data:
-            from .components.osc_output import OscOutput
-            # loop over each osc_output profile
-            for name in profile_data['osc_outputs']:
-                data = profile_data['osc_outputs'][name]
-                comp = OscOutput(data)
-                comp.setup(self.event_manager)
-                self._add_component(comp) # auto-starts
-                osc_outputs[name] = comp
-            del OscOutput
-
-        midi_inputs = {}
-        if 'midi_inputs' in profile_data:
-            from .components.midi_input import MidiInput
-            for name in profile_data['midi_inputs']:
-                data = profile_data['midi_inputs'][name]
-                comp = MidiInput(data)
-                comp.setup(self.event_manager)
-                self._add_component(comp)
-                midi_inputs[name] = comp
-            del MidiInput
-
-        if 'osx_osc_video_resumer' in profile_data:
-            from .components.osx_osc_video_resumer import OsxOscVideoResumer
-            for name in profile_data['osx_osc_video_resumer']:
-                if not name in osc_inputs:
-                    self.logger.warning('unknown osc_input name: {0}'.format(name))
+                if not hasattr(comps, '__iter__'):
+                    self.logger.warning("Module with component_config_name {0} returned non-iterable components list".format(config_name))
                     continue
-                comp = OsxOscVideoResumer(profile_data['osx_osc_video_resumer'][name])
-                comp.setup(osc_inputs[name])
-                self._add_component(comp)
-            del OsxOscVideoResumer
 
-        if 'ssh_remotes' in profile_data:
-            from .components.ssh_remote import SshRemote
-            for data in profile_data['ssh_remotes'].values():
-                comp = SshRemote(data)
-                comp.setup(self.event_manager)
-                self._add_component(comp)
-            del SshRemote
+                for comp in comps:
+                    self._add_component(comp)
 
-        if 'web_servers' in profile_data:
-            from .components.web_server import WebServer
-            for data in profile_data['web_servers'].values():
-                comp = WebServer(data)
-                comp.setup(self.event_manager)
-                self._add_component(comp)
-            del WebServer
+        return
 
     def _add_component(self, comp):
         if hasattr(comp, 'update') and type(comp.update).__name__ == 'instancemethod':

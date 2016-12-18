@@ -1,17 +1,13 @@
 import socket
 import logging
 from evento import Event
+from py2030.base_component import BaseComponent
 
 try:
     import OSC
 except ImportError:
     logging.getLogger(__name__).warning("importing embedded version of pyOSC library")
     import py2030.dependencies.OSC as OSC
-
-component_config_name = 'osc_outputs'
-
-def create_components(config, context):
-    pass
 
 DEFAULT_PORT = 2030
 DEFAULT_HOST = '255.255.255.255'
@@ -34,7 +30,9 @@ class EventMessage:
     def _send(self):
         self.osc_output.send(self.message)
 
-class OscOutput:
+class OscOutput(BaseComponent):
+    config_name = 'osc_outputs'
+
     def __init__(self, options = {}):
         # config
         self.options = options

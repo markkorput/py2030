@@ -1,5 +1,6 @@
 import socket, logging
 from glob import glob
+from py2030.base_component import BaseComponent
 
 try:
     from scp import SCPClient, SCPException
@@ -14,13 +15,11 @@ except ImportError as err:
     paramiko = False
     logging.getLogger(__name__).warning("importing of paramiko failed, SshRemote component will not work.")
 
-component_config_name = 'ssh_remotes'
-
-def create_components(config, context):
-    pass
 
 
-class SshRemote:
+class SshRemote(BaseComponent):
+    config_name = 'ssh_remotes'
+
     def __init__(self, options = {}):
         self.options = options
         self.ip = self.options['ip'] if 'ip' in options else None

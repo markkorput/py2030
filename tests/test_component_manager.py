@@ -23,6 +23,7 @@ class TestComponentManager(unittest.TestCase):
         cm = ComponentManager({'profile_data': {'osc_outputs': {'sender': {'ip': '127.0.0.1'}}}})
         cm.setup()
         self.assertEqual(len(cm.components), 1)
+        self.assertEqual(cm.components[0].__class__.__name__, 'OscOutput')
         self.assertTrue(cm.running)
 
     def test_start_event(self):
@@ -81,8 +82,15 @@ class TestComponentManager(unittest.TestCase):
         cm.setup()
         self.assertFalse(cm.running)
 
-    def test_found_component_modules(self):
-        prefix = join(dirname(__file__), '..', 'py2030', 'components', '')
-        module_names = map(lambda x: x.replace(prefix, '')[:-3], glob(prefix+'*.py'))
-        module_names.remove('__init__')
-        self.assertEqual(map(lambda x: x.__name__, ComponentManager()._found_component_modules()), map(lambda x: 'py2030.components.'+x, module_names))
+    def test_found_component_classes(self):
+        self.assertEqual(map(lambda cls: cls.__name__, ComponentManager()._found_component_classes()), [
+            'DelayItem',
+            'EventToEvent',
+            'MidiInput',
+            'OmxSyncer',
+            'OmxVideo',
+            'OscInput',
+            'OscOutput',
+            'OsxOscVideoResumer',
+            'SshRemote',
+            'WebServer'])

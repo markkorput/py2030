@@ -1,14 +1,8 @@
 import logging, threading, time, socket, httplib, os
 
+from py2030.base_component import BaseComponent
 from BaseHTTPServer import HTTPServer
 from SimpleHTTPServer import SimpleHTTPRequestHandler
-
-component_config_name = 'web_servers'
-
-def create_components(config, context):
-    pass
-
-
 
 def createRequestHandler(event_manager = None, _options = {}):
     class CustomHandler(SimpleHTTPRequestHandler, object):
@@ -66,7 +60,9 @@ def createRequestHandler(event_manager = None, _options = {}):
 
     return CustomHandler
 
-class WebServer(threading.Thread):
+class WebServer(BaseComponent, threading.Thread):
+    config_name = 'web_servers'
+
     def __init__(self, options = {}):
         threading.Thread.__init__(self)
         self.options = options

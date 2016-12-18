@@ -1,5 +1,6 @@
 import logging
 from evento import Event
+from py2030.base_component import BaseComponent
 
 try:
     from OSC import OSCServer, NoCallbackError
@@ -7,16 +8,12 @@ except ImportError:
     logging.getLogger(__name__).warning("importing embedded version of pyOSC library")
     from py2030.dependencies.OSC import OSCServer, NoCallbackError
 
-component_config_name = 'osc_inputs'
-
-def create_components(config, context):
-    pass
-
-
 DEFAULT_PORT = 2030
 DEFAULT_IP = ''
 
-class OscInput:
+class OscInput(BaseComponent):
+    config_name = 'osc_inputs'
+
     def __init__(self, options = {}):
         # attributes
         self.osc_server = None

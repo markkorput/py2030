@@ -1,12 +1,10 @@
 import logging
 from time import time
+from py2030.base_component import BaseComponent
 
-component_config_name = 'delay_events'
+class DelayItem(BaseComponent):
+    config_name = 'delay_events'
 
-def create_components(config, context):
-    pass
-
-class DelayItem:
     def __init__(self, _id, source, delay, target, halt=None, pause=None, logger=None):
         self.id = _id
         self.sourceEvent = source

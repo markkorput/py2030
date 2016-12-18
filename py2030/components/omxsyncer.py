@@ -1,4 +1,5 @@
 import logging
+from py2030.base_component import BaseComponent
 
 try:
     from omxsync import Receiver
@@ -8,12 +9,9 @@ except ImportError:
     Receiver = None
     Broadcaster = None
 
-component_config_name = 'omx_syncers'
+class OmxSyncer(BaseComponent):
+    config_name = 'omx_syncers'
 
-def create_components(config, context):
-    pass
-
-class OmxSyncer:
     def __init__(self, options = {}):
         # config
         self.options = options

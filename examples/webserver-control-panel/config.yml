@@ -7,7 +7,6 @@ py2030:
       web_servers: # configurations for WebServer components
         web1:
           verbose: true
-          # url: ''
           port: 2031
           serve: 'web/' # serve folder
           output_events:

@@ -6,7 +6,7 @@ The instructions below assume your computer has the py2030 package installed and
 
 It is also assumed you have cd-ed into this example project folder.
 
-## USAGE
+## Usage
 
 To upload files to remote devices run the following command:
 ```shell

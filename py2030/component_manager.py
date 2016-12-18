@@ -27,7 +27,6 @@ class ComponentManager:
         self.update_components = []
         self.destroy_components = []
         self.context = Context(EventManager())
-        self.event_manager = self.context.event_manager
         self._profile_data = None
         self._operation_queue = []
         self.running = False

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import unittest, os, requests
+import unittest, os, urllib
 from py2030.components.web_server import WebServer
 from py2030.event_manager import EventManager
 
@@ -48,12 +48,11 @@ class TestWebServer(unittest.TestCase):
         self.assertEqual(WebServer({'port': 1234}).port(), 1234)
 
     def test_serve_options(self):
-        response = requests.get('http://localhost:'+str(self.webserver.port())+'/config.yml').text
+        response = urllib.urlopen('http://localhost:'+str(self.webserver.port())+'/config.yml').read()
         with open(os.path.join(os.path.dirname(__file__), 'data', 'config.yml')) as f:
             self.assertEqual(response, f.read())
 
     def test_output_event(self):
         self.assertEqual(self.event_manager.get('event1')._fireCount, 0)
-        # self.connection.request('GET', '/api/start')
-        requests.get('http://localhost:'+str(self.webserver.port())+'/api/start')
+        urllib.urlopen('http://localhost:'+str(self.webserver.port())+'/api/start').read()
         self.assertEqual(self.event_manager.get('startEvent')._fireCount, 1)

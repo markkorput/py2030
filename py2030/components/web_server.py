@@ -13,14 +13,21 @@ def createRequestHandler(event_manager = None, _options = {}):
             super(CustomHandler, self).__init__(*args, **kwargs)
 
         def process_request(self):
+            result = False
             if self.event_manager != None and 'output_events' in self.options:
                 if self.path in self.options['output_events']:
                     self.event_manager.fire(self.options['output_events'][self.path])
-                    # self.send_error(204)
-                    self.send_response(200)
-                    self.end_headers()
-                    return True
-            return False
+                    result = True
+
+            if 'responses' in self.options and self.path in self.options['responses']:
+                self.wfile.write(self.options['responses'][self.path])
+                # self.wfile.close()
+                result = True
+            elif result == True:
+                self.send_response(200)
+                self.end_headers()
+
+            return result
 
         def do_HEAD(self):
             if self.process_request():

@@ -1,9 +1,19 @@
 #!/usr/bin/env python
-import unittest, httplib, os
+import unittest, os, requests
 from py2030.components.web_server import WebServer
 from py2030.event_manager import EventManager
 
 class TestWebServer(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.event_manager = EventManager()
+        cls.webserver = WebServer({'port': 2033, 'serve': 'tests/data', 'output_events': {'/api/start': 'startEvent'}})
+        cls.webserver.setup(cls.event_manager)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.webserver.destroy()
+
     def test_init(self):
         webserver = WebServer()
         self.assertFalse(webserver.isAlive())
@@ -11,19 +21,15 @@ class TestWebServer(unittest.TestCase):
         self.assertTrue(webserver.daemon)
 
     def test_setup(self):
-        webserver = WebServer()
-        webserver.setup()
-        self.assertTrue(webserver.isAlive())
-        self.assertIsNone(webserver.event_manager)
-        webserver.destroy()
+        self.assertTrue(self.webserver.isAlive())
+        self.assertEqual(self.webserver.event_manager, self.event_manager)
 
-    def test_setup_with_event_manager(self):
-        webserver = WebServer()
-        em = EventManager()
-        webserver.setup(em)
-        self.assertTrue(webserver.isAlive())
-        self.assertEqual(webserver.event_manager, em)
-        webserver.destroy()
+    def test_setup_without_event_manager(self):
+        self.webserver = WebServer()
+        self.webserver.setup()
+        self.assertTrue(self.webserver.isAlive())
+        self.assertIsNone(self.webserver.event_manager)
+        self.webserver.destroy()
 
     def test_destroy(self):
         webserver = WebServer()
@@ -41,32 +47,13 @@ class TestWebServer(unittest.TestCase):
     def test_port_config_option(self):
         self.assertEqual(WebServer({'port': 1234}).port(), 1234)
 
-    def test_request(self):
-        webserver = WebServer()
-        webserver.setup()
-        connection = httplib.HTTPConnection('127.0.0.1', webserver.port())
-        connection.request('GET', '/tests/data/config.yml')
-        response = connection.getresponse().read()
-        with open(os.path.join(os.path.dirname(__file__), 'data', 'config.yml')) as f:
-            self.assertEqual(response, f.read())
-        webserver.destroy()
-
     def test_serve_options(self):
-        webserver = WebServer({'serve': 'tests/data'})
-        webserver.setup()
-        connection = httplib.HTTPConnection('127.0.0.1', webserver.port())
-        connection.request('GET', 'config.yml')
-        response = connection.getresponse().read()
+        response = requests.get('http://localhost:'+str(self.webserver.port())+'/config.yml').text
         with open(os.path.join(os.path.dirname(__file__), 'data', 'config.yml')) as f:
             self.assertEqual(response, f.read())
-        webserver.destroy()
 
     def test_output_event(self):
-        webserver = WebServer({'output_events': {'/api/start': 'startEvent'}})
-        em = EventManager()
-        webserver.setup(em)
-        connection = httplib.HTTPConnection('127.0.0.1', webserver.port())
-        self.assertEqual(em.get('event1')._fireCount, 0)
-        connection.request('GET', '/api/start')
-        webserver.destroy()
-        self.assertEqual(em.get('startEvent')._fireCount, 1)
+        self.assertEqual(self.event_manager.get('event1')._fireCount, 0)
+        # self.connection.request('GET', '/api/start')
+        requests.get('http://localhost:'+str(self.webserver.port())+'/api/start')
+        self.assertEqual(self.event_manager.get('startEvent')._fireCount, 1)

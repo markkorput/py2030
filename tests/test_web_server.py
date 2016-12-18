@@ -7,7 +7,11 @@ class TestWebServer(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.event_manager = EventManager()
-        cls.webserver = WebServer({'port': 2033, 'serve': 'tests/data', 'output_events': {'/api/start': 'startEvent'}})
+        cls.webserver = WebServer({
+            'port': 2033,
+            'serve': 'tests/data',
+            'output_events': {'/api/start': 'startEvent'},
+            'responses': {'/system/stop': 'Shutting down...'}})
         cls.webserver.setup(cls.event_manager)
 
     @classmethod
@@ -56,3 +60,8 @@ class TestWebServer(unittest.TestCase):
         self.assertEqual(self.event_manager.get('event1')._fireCount, 0)
         urllib.urlopen('http://localhost:'+str(self.webserver.port())+'/api/start').read()
         self.assertEqual(self.event_manager.get('startEvent')._fireCount, 1)
+
+    def test_responses(self):
+        response = urllib.urlopen('http://localhost:'+str(self.webserver.port())+'/system/stop')
+        self.assertEqual(response.getcode(), 200)
+        self.assertEqual(response.read(), 'Shutting down...')

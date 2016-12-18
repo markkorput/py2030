@@ -10,7 +10,7 @@ python application to control video playback for video installations using multi
 pip install py2030
 ```
 
-## usage
+## Usage
 
 First you need a config file for your project which contains the profiles (configurations)
 for all machines. Create a minimal config file in your current directory using the following command:
@@ -54,4 +54,4 @@ python -m py2030.app -p master
 ```
 
 ### config.yml documentation
-TODO
+TODO, for now have a look at [the example projects](https://github.com/markkorput/py2030/tree/master/examples/).

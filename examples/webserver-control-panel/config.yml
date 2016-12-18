@@ -7,13 +7,14 @@ py2030:
       web_servers: # configurations for WebServer components
         web1:
           verbose: true
-          # url: ''
           port: 2031
           serve: 'web/' # serve folder
           output_events:
             '/api/start': 'start'
             '/api/stop': 'stop'
             '/api/reload': 'reload'
+          responses:
+            '/api/stop': 'Shutting down...'
 
       # component for sending OSC message
       osc_outputs:

@@ -1,4 +1,4 @@
-import json, socket
+import socket
 import logging
 from evento import Event
 
@@ -7,6 +7,11 @@ try:
 except ImportError:
     logging.getLogger(__name__).warning("importing embedded version of pyOSC library")
     import py2030.dependencies.OSC as OSC
+
+component_config_name = 'osc_outputs'
+
+def create_components(config, context):
+    pass
 
 DEFAULT_PORT = 2030
 DEFAULT_HOST = '255.255.255.255'

@@ -3,6 +3,13 @@ import logging, threading, time, socket, httplib, os
 from BaseHTTPServer import HTTPServer
 from SimpleHTTPServer import SimpleHTTPRequestHandler
 
+component_config_name = 'web_servers'
+
+def create_components(config, context):
+    pass
+
+
+
 def createRequestHandler(event_manager = None, _options = {}):
     class CustomHandler(SimpleHTTPRequestHandler, object):
         def __init__(self, *args, **kwargs):

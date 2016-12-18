@@ -1,4 +1,5 @@
 import logging
+from evento import Event
 
 try:
     from OSC import OSCServer, NoCallbackError
@@ -6,8 +7,11 @@ except ImportError:
     logging.getLogger(__name__).warning("importing embedded version of pyOSC library")
     from py2030.dependencies.OSC import OSCServer, NoCallbackError
 
-from evento import Event
-import json
+component_config_name = 'osc_inputs'
+
+def create_components(config, context):
+    pass
+
 
 DEFAULT_PORT = 2030
 DEFAULT_IP = ''

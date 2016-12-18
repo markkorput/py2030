@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import unittest
+from os.path import dirname, join
+from glob import glob
 
 from py2030.component_manager import ComponentManager
 
@@ -78,3 +80,9 @@ class TestComponentManager(unittest.TestCase):
         cm = ComponentManager({'profile_data': {'stop_event': 'quit', 'start_event': 'quit'}})
         cm.setup()
         self.assertFalse(cm.running)
+
+    def test_found_component_modules(self):
+        prefix = join(dirname(__file__), '..', 'py2030', 'components', '')
+        module_names = map(lambda x: x.replace(prefix, '')[:-3], glob(prefix+'*.py'))
+        module_names.remove('__init__')
+        self.assertEqual(map(lambda x: x.__name__, ComponentManager()._found_component_modules()), map(lambda x: 'py2030.components.'+x, module_names))

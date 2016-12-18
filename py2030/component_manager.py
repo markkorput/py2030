@@ -100,6 +100,24 @@ class ComponentManager:
             op()
         self._operation_queue = []
 
+    def _found_component_modules(self):
+        if hasattr(self, '_found_component_modules_cache'):
+            return self._found_component_modules_cache
+
+        self._found_component_modules_cache = []
+
+        import py2030.components as comp_modules
+        for module_name in comp_modules.__all__:
+            if module_name == '__init__':
+                continue
+            mod = __import__('py2030.components.'+module_name, fromlist=['py2030.components'])
+
+            if hasattr(mod, 'component_config_name') and hasattr(mod, 'create_components'):
+                self._found_component_modules_cache.append(mod)
+        del comp_modules
+
+        return self._found_component_modules_cache
+
     def _load_components(self, profile_data = None):
         # read profile data form config file
         if not profile_data:

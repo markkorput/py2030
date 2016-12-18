@@ -8,6 +8,11 @@ except ImportError:
     Receiver = None
     Broadcaster = None
 
+component_config_name = 'omx_syncers'
+
+def create_components(config, context):
+    pass
+
 class OmxSyncer:
     def __init__(self, options = {}):
         # config

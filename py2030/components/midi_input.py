@@ -9,6 +9,12 @@ except ImportError as err:
     logging.getLogger(__name__).warning("Importing of rtmidi.midiutil failed, MidiInput component will not work.")
     open_midiport = False
 
+component_config_name = 'midi_inputs'
+
+def create_components(config, context):
+    pass
+
+
 class MidiInput:
     def __init__(self, options = {}):
         # params

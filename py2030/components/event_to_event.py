@@ -1,3 +1,8 @@
+component_config_name = 'event_to_event'
+
+def create_components(config, context):
+    pass
+
 class EventToEvent:
     def __init__(self, options = {}):
         self.options = options

@@ -1,6 +1,11 @@
 import logging
 from time import time
 
+component_config_name = 'delay_events'
+
+def create_components(config, context):
+    pass
+
 class DelayItem:
     def __init__(self, _id, source, delay, target, halt=None, pause=None, logger=None):
         self.id = _id

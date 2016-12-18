@@ -14,6 +14,12 @@ except ImportError as err:
     paramiko = False
     logging.getLogger(__name__).warning("importing of paramiko failed, SshRemote component will not work.")
 
+component_config_name = 'ssh_remotes'
+
+def create_components(config, context):
+    pass
+
+
 class SshRemote:
     def __init__(self, options = {}):
         self.options = options

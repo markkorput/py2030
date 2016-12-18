@@ -1,12 +1,16 @@
+import logging
+from evento import Event
+
 try:
     from omxplayer import OMXPlayer
 except:
     print "Could not load OMXPlayer"
     OMXPlayer = None
 
-import logging
+component_config_name = 'omxvideos'
 
-from evento import Event
+def create_components(config, context):
+    pass
 
 class OmxVideo:
   def __init__(self, options = {}):

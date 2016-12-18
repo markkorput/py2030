@@ -1,6 +1,11 @@
 import os
 import logging
 
+component_config_name = 'osx_osc_video_resumers'
+
+def create_components(config, context):
+    pass
+
 class OsxOscVideoResumer:
     def __init__(self, options = {}):
         self.options = options

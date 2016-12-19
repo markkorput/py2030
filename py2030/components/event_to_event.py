@@ -1,4 +1,8 @@
-class EventToEvent:
+from py2030.base_component import BaseComponent
+
+class EventToEvent(BaseComponent):
+    config_name = 'event_to_event'
+
     def __init__(self, options = {}):
         self.options = options
         self.event_manager = None

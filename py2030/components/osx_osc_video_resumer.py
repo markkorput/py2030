@@ -1,7 +1,10 @@
 import os
 import logging
+from py2030.base_component import BaseComponent
 
-class OsxOscVideoResumer:
+class OsxOscVideoResumer(BaseComponent):
+    config_name = 'osx_osc_video_resumers'
+
     def __init__(self, options = {}):
         self.options = options
         self.resume_on = options['resume_on'] if 'resume_on' in self.options else []

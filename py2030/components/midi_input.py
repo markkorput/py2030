@@ -2,6 +2,7 @@
 import time
 import logging
 from evento import Event
+from py2030.base_component import BaseComponent
 
 try:
     from rtmidi.midiutil import open_midiport
@@ -9,7 +10,9 @@ except ImportError as err:
     logging.getLogger(__name__).warning("Importing of rtmidi.midiutil failed, MidiInput component will not work.")
     open_midiport = False
 
-class MidiInput:
+class MidiInput(BaseComponent):
+    config_name = 'midi_inputs'
+
     def __init__(self, options = {}):
         # params
         self.options = options

@@ -26,24 +26,25 @@ py2030:
           pause: 'pause'
 
       # video playback component
-      omxvideo:
-        verbose: true
-        args: ['--no-osd', '--adev', 'local', '-b']
-        playlist:
-          - '/home/pi/videos/vid1.mov'
-          - '/home/pi/videos/vid2.mov'
-          - '/home/pi/videos/vid3.mov'
-          - '/home/pi/videos/vid4.mov'
-          - '/home/pi/videos/vid5.mov'
-        input_events:
-          # format: <event_id>: <omx-action>
-          'loop': 'start' # loads and start video. Accepts a number but defaults to zero (0), meaning first video in playlist
-          'stop': 'stop' # stop playback
-          'pause': 'toggle' # toggle between play/pause
-          # '': 'play' # start/resume playback
-          # '': 'pause' # pause, does nothing when already paused
-          # '': 'seek' # jump to specified playback position (specified in seconds from start of video)
-          # '': 'load' # load a video (by playlist number)
+      omxvideos:
+        omx1:
+          verbose: true
+          args: ['--no-osd', '--adev', 'local', '-b']
+          playlist:
+            - '/home/pi/videos/vid1.mov'
+            - '/home/pi/videos/vid2.mov'
+            - '/home/pi/videos/vid3.mov'
+            - '/home/pi/videos/vid4.mov'
+            - '/home/pi/videos/vid5.mov'
+          input_events:
+            # format: <event_id>: <omx-action>
+            'loop': 'start' # loads and start video. Accepts a number but defaults to zero (0), meaning first video in playlist
+            'stop': 'stop' # stop playback
+            'pause': 'toggle' # toggle between play/pause
+            # '': 'play' # start/resume playback
+            # '': 'pause' # pause, does nothing when already paused
+            # '': 'seek' # jump to specified playback position (specified in seconds from start of video)
+            # '': 'load' # load a video (by playlist number)
 
       # send osc messages to other devices
       osc_outputs:

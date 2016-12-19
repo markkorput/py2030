@@ -1,5 +1,5 @@
 class BaseComponent:
-    config_name = 'undefined'
+    config_name = None
 
     @classmethod
     def create_components(cls, config, context):

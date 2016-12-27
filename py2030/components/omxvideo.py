@@ -5,7 +5,7 @@ from py2030.base_component import BaseComponent
 try:
     from omxplayer import OMXPlayer
 except:
-    print "Could not load OMXPlayer"
+    print("Could not load OMXPlayer")
     OMXPlayer = None
 
 class OmxVideo(BaseComponent):

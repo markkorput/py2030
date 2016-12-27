@@ -64,7 +64,7 @@ class MidiInput(BaseComponent):
         try:
             self.midiin, self.port_name = open_midiport(self.port)
         except IOError as err:
-            print "Failed to initialize MIDI interface:", err
+            print("Failed to initialize MIDI interface:", err)
             self.midiin = None
             self.port_name = None
             self.connected = False

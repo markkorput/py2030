@@ -131,7 +131,7 @@ class SshRemote(BaseComponent):
             try:
                 self.logger.warning("stderr response:\n{0}".format("\n".join(errlines)))
             except UnicodeEncodeError as err:
-                print 'unicode issue with printing stderr response'
+                print('unicode issue with printing stderr response')
 
     def put(self, local_file_path, remote_file_name):
         self.logger.debug('PUT ({2}) {0} -> {1} '.format(local_file_path, remote_file_name, self.ip if self.ip else self.hostname))

@@ -115,8 +115,8 @@ class WebServer(BaseComponent, threading.Thread):
             try:
                 self.http_server.handle_request()
             except Exception as exc:
-                print 'http exception:'
-                print exc
+                print('http exception:')
+                print(exc)
 
         self.logger.info('Closing HTTP server at port {0}'.format(self.port()))
         self.http_server.server_close()
@@ -134,6 +134,6 @@ if __name__ == '__main__':
         while True:
             time.sleep(.1)
     except KeyboardInterrupt:
-        print 'KeyboardInterrupt. Quitting.'
+        print('KeyboardInterrupt. Quitting.')
 
     ws.destroy()

@@ -78,3 +78,23 @@ class TestSineMethods(unittest.TestCase):
         sine.update()
         t2 = time.time()
         self.assertGreater(t2-t1, 0.6)
+
+    def test_base_option(self):
+        # without base
+        sine = Sine()
+        sine.setup()
+        self.assertEqual(sine.base, 0.0)
+        sine.update(0.0)
+        self.assertLess(sine._lastValue, 0.01)
+        sine.update(0.25)
+        self.assertGreater(sine._lastValue, 0.99)
+
+        # with base
+        sine = Sine({'base': 5.0})
+        sine.setup()
+        self.assertEqual(sine.base, 5.0)
+        sine.update(0.0)
+        self.assertGreater(sine._lastValue, 4.99)
+        self.assertLess(sine._lastValue, 5.01)
+        sine.update(0.25)
+        self.assertGreater(sine._lastValue, 5.99)

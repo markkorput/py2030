@@ -27,8 +27,8 @@ class EventMessage:
             self.event -= self._send
             self.event = None
 
-    def _send(self):
-        self.osc_output.send(self.message)
+    def _send(self, *args, **kargs):
+        self.osc_output.send(self.message, args)
 
 class OscOutput(BaseComponent):
     config_name = 'osc_outputs'

@@ -28,6 +28,10 @@ class Sine(BaseComponent):
             # dummy event
             self.valueEvent = Event()
 
+        self.sleep = None
+        if 'sleep' in self.options:
+            self.sleep = self.options['sleep']
+
         self.lastUpdateTime = time.time()
 
     def update(self, dt=None):
@@ -38,3 +42,6 @@ class Sine(BaseComponent):
 
         self.cursor += self.cursorSpeed * dt
         self.valueEvent(math.sin(self.cursor) * self.amplitude)
+
+        if self.sleep:
+            time.sleep(self.sleep)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import unittest
+import unittest, time
 
 from py2030.components.sine import Sine
 from py2030.event_manager import EventManager
@@ -61,3 +61,20 @@ class TestSineMethods(unittest.TestCase):
 
     def _test_update_timed_callback(self, value):
         self._test_update_values.append(value)
+
+    def test_sleep(self):
+        # without sleep
+        sine = Sine()
+        sine.setup()
+        t1 = time.time()
+        sine.update()
+        t2 = time.time()
+        self.assertLess(t2-t1, 0.01)
+
+        # with sleep
+        sine = Sine({'sleep': 0.6})
+        sine.setup()
+        t1 = time.time()
+        sine.update()
+        t2 = time.time()
+        self.assertGreater(t2-t1, 0.6)

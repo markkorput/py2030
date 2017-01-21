@@ -1,14 +1,16 @@
+import logging
+from evento import Event
+from py2030.base_component import BaseComponent
+
 try:
     from omxplayer import OMXPlayer
 except:
-    print "Could not load OMXPlayer"
+    print("Could not load OMXPlayer")
     OMXPlayer = None
 
-import logging
+class OmxVideo(BaseComponent):
+  config_name = 'omxvideos'
 
-from evento import Event
-
-class OmxVideo:
   def __init__(self, options = {}):
     # config
     self.options = options

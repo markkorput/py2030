@@ -29,6 +29,6 @@ if __name__ == '__main__':
         while cm.running:
             cm.update()
     except KeyboardInterrupt:
-        print 'KeyboardInterrupt. Quitting.'
+        print('KeyboardInterrupt. Quitting.')
 
     cm.destroy()

@@ -1,5 +1,6 @@
 import socket, logging
 from glob import glob
+from py2030.base_component import BaseComponent
 
 try:
     from scp import SCPClient, SCPException
@@ -14,7 +15,11 @@ except ImportError as err:
     paramiko = False
     logging.getLogger(__name__).warning("importing of paramiko failed, SshRemote component will not work.")
 
-class SshRemote:
+
+
+class SshRemote(BaseComponent):
+    config_name = 'ssh_remotes'
+
     def __init__(self, options = {}):
         self.options = options
         self.ip = self.options['ip'] if 'ip' in options else None
@@ -126,7 +131,7 @@ class SshRemote:
             try:
                 self.logger.warning("stderr response:\n{0}".format("\n".join(errlines)))
             except UnicodeEncodeError as err:
-                print 'unicode issue with printing stderr response'
+                print('unicode issue with printing stderr response')
 
     def put(self, local_file_path, remote_file_name):
         self.logger.debug('PUT ({2}) {0} -> {1} '.format(local_file_path, remote_file_name, self.ip if self.ip else self.hostname))

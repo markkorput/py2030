@@ -3,7 +3,7 @@ py2030:
     ssh:
       stop_event: 'finished'
 
-      ssh_remotes: # this component still has to be implemented
+      ssh_remotes:
         local:
           verbose: true
           hostname: 'localhost'
@@ -11,7 +11,7 @@ py2030:
           password: 'raspberry'
           done_event: 'finished'
           files:
-            # copies changes to local config.yml to rpi2.local
+            # copies these local file to the remote machine using SCP
             'examples/three-slave*/*': '~/Public'
 
     looper: # profile
@@ -26,24 +26,25 @@ py2030:
           pause: 'pause'
 
       # video playback component
-      omxvideo:
-        verbose: true
-        args: ['--no-osd', '--adev', 'local', '-b']
-        playlist:
-          - '/home/pi/videos/vid1.mov'
-          - '/home/pi/videos/vid2.mov'
-          - '/home/pi/videos/vid3.mov'
-          - '/home/pi/videos/vid4.mov'
-          - '/home/pi/videos/vid5.mov'
-        input_events:
-          # format: <event_id>: <omx-action>
-          'loop': 'start' # loads and start video. Accepts a number but defaults to zero (0), meaning first video in playlist
-          'stop': 'stop' # stop playback
-          'pause': 'toggle' # toggle between play/pause
-          # '': 'play' # start/resume playback
-          # '': 'pause' # pause, does nothing when already paused
-          # '': 'seek' # jump to specified playback position (specified in seconds from start of video)
-          # '': 'load' # load a video (by playlist number)
+      omxvideos:
+        omx1:
+          verbose: true
+          args: ['--no-osd', '--adev', 'local', '-b']
+          playlist:
+            - '/home/pi/videos/vid1.mov'
+            - '/home/pi/videos/vid2.mov'
+            - '/home/pi/videos/vid3.mov'
+            - '/home/pi/videos/vid4.mov'
+            - '/home/pi/videos/vid5.mov'
+          input_events:
+            # format: <event_id>: <omx-action>
+            'loop': 'start' # loads and start video. Accepts a number but defaults to zero (0), meaning first video in playlist
+            'stop': 'stop' # stop playback
+            'pause': 'toggle' # toggle between play/pause
+            # '': 'play' # start/resume playback
+            # '': 'pause' # pause, does nothing when already paused
+            # '': 'seek' # jump to specified playback position (specified in seconds from start of video)
+            # '': 'load' # load a video (by playlist number)
 
       # send osc messages to other devices
       osc_outputs:
@@ -74,7 +75,7 @@ py2030:
               42: 'stop'
               43: 'stop'
 
-    osc_to_event: # profile
+    osc_broadcaster: # profile
       reload_event: '/reload'
 
       osc_inputs: # input component
@@ -86,7 +87,7 @@ py2030:
             auto: true
             '/some_message': 'some_event'
 
-    reloader:
+    osc_reloader:
       reload_event: '/reload'
 
       osc_inputs:
@@ -94,16 +95,29 @@ py2030:
           ip: ''
           port: 2030
           verbose: true
+          # for every incoming osc message it will trigger
+          # an event with the same name as the message's address
           output_events:
             auto: true
 
-    event_demo:
-      some_components:
-        input_events:
-          # specify actions and the events they are triggerd by
-          # format:
-          # <component-specific action-to-be-triggerd>: <event_name>
-          # OR
-          # <component-specific action-to-be-triggerd>: [<event_name1>, <event_name2>, ...]
-          action1: 'eventName1' # event takes no arguments
-          action2: ['eventName2a', 'eventName2b']
+    midi_master:
+      midi_inputs:
+        akai:
+          port: 1
+          verbose: true
+          output_events:
+            144: # midi message type; note on
+              36: # midi note 36 triggers event start with a single param
+                event: 'start'
+                params: 0
+              37:
+                event: 'start'
+                params: 1
+              38:
+                event: 'start'
+                params: 2
+              39:
+                event: 'start'
+                params: 3
+              41: 'pause' # midi note 41 trigger the pause event
+              42: 'stop' # midi note 42 trigger the stop event

@@ -1,6 +1,7 @@
-import json, socket
+import socket
 import logging
 from evento import Event
+from py2030.base_component import BaseComponent
 
 try:
     import OSC
@@ -29,7 +30,9 @@ class EventMessage:
     def _send(self):
         self.osc_output.send(self.message)
 
-class OscOutput:
+class OscOutput(BaseComponent):
+    config_name = 'osc_outputs'
+
     def __init__(self, options = {}):
         # config
         self.options = options

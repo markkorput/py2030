@@ -48,7 +48,9 @@ class ComponentManager:
             self.config_file.load()
             self._profile_data = self.config_file.get_value('py2030.profiles.'+self.profile, default_value={})
             if self._profile_data == {}:
-                self.logger.warning("No profile data found")
+                self.logger.warning("No profile data found for profile: {0}\nTrying 'default'".format(self.profile))
+                self.profile = 'default'
+                self._profile_data = self.config_file.get_value('py2030.profiles.'+self.profile, default_value={})
 
         # load components based on profile configuration
         self._load_components(self._profile_data)

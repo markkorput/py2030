@@ -92,5 +92,6 @@ class TestComponentManager(unittest.TestCase):
             'OscInput',
             'OscOutput',
             'OsxOscVideoResumer',
+            'Sine',
             'SshRemote',
             'WebServer'])

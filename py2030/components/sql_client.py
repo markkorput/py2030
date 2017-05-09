@@ -28,7 +28,11 @@ class SqlClient(BaseComponent):
         if self.event_manager:
             # self.output_events = self.options['output_events'] if 'output_events' in self.options else {}
             if 'config_options' in self.options:
-                self.event_manager.get(self.options['config_options']) += self._onConfig
+                self.event_manager.get(self.options['config_options']).subscribe(self._onConfig)
+
+            if 'query_options' in self.options:
+                self.event_manager.get(self.options['config_options']).subscribe(self._onQuery)
+
         # connect, only if we have all info we need
         if 'host' in self.options and 'database' in self.options and 'username' in self.options and 'password' in self.options:
             self._connect()
@@ -39,7 +43,7 @@ class SqlClient(BaseComponent):
         self._disconnect()
 
     def _connect(self):
-        if(self._connected)
+        if(self._connected):
             self._disconnect()
 
         host = self.options['host'] if 'host' in self.options else '127.0.0.1'
@@ -63,36 +67,6 @@ class SqlClient(BaseComponent):
         if 'host' in self.options and 'database' in self.options and 'username' in self.options and 'password' in self.options:
             self._connect() # (re-)connect
 
-
-# #!/usr/bin/env python
-# from optparse import OptionParser
-#
-# import _mssql
-#
-# def doInfo(opts):
-#     # jdbc:jtds:sqlserver://192.168.1.25:1433
-#     print("\nserver: "+opts.server)
-#     print("database: "+opts.db)
-#     print("usr: "+opts.user)
-#     print("psw: "+opts.password)
-#
-#     conn = _mssql.connect(server=opts.server, user=opts.user, password=opts.password, database=opts.db)
-#     query = "SELECT TOP 3 * FROM dbo.medialibrary;"
-#     print("\nRunning query:\n"+query)
-#     result = conn.execute_row(query)
-#     print("\nResult:")
-#     print(str(result)+"\n")
-#
-#
-# if __name__ == '__main__':
-#     parser = OptionParser()
-#     parser.add_option("-i", "--info", dest="info", action="store_true")
-#     parser.add_option("-s", "--server", dest="server", default="192.168.1.25:1433")
-#     parser.add_option("-d", "--db", dest="db", default="cubo")
-#     parser.add_option("-u", "--user", dest="user", default="cubo")
-#     parser.add_option("-p", "--psw", "--password", dest="password", default="cubo")
-#
-#     options, args = parser.parse_args()
-#
-#     if options.info:
-#         doInfo(options)
+    def _onQuery(self, opts={}):
+        print('TODO: query')
+        print(opts)

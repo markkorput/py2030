@@ -1,0 +1,10 @@
+py2030:
+  profiles:
+    default:
+      osc_inputs:
+        bcast:
+          verbose: true
+          ip: ''
+          port: 8080
+        #   output_events:
+        #     auto: true

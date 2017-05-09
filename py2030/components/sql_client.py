@@ -85,10 +85,11 @@ class SqlClient(BaseComponent):
             self._connect() # (re-)connect
 
     def _onQuery(self, opts={}):
-        self.logger.warn('TODO: query for options: '+str(opts))
-
         query = "SELECT TOP 3 * FROM dbo.documents;"
         self.logger.info("running SQL query: "+query)
         result = self._connection.execute_row(query)
         data = getResponseDict(self._connection)
-        self.logger.warn("TODO: trigger response event with: "+str(data))
+
+        if 'response_event' in self.options and self.event_manager:
+            event = self.event_manager.get(self.options['response_event'])
+            event.fire(json.dumps(data))

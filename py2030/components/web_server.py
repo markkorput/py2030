@@ -12,10 +12,16 @@ def createRequestHandler(event_manager = None, _options = {}):
             self.options = _options
             self.root_path = self.options['serve'] if 'serve' in _options else '.'
             self.event_manager = event_manager
-
             self.logger = logging.getLogger(__name__)
+            self.response_code = None
+            self.response_type = None
+            self.response_content = None
+
             if 'verbose' in self.options and self.options['verbose']:
                 self.logger.setLevel(logging.DEBUG)
+
+            if 'response_content_event' in self.options and self.event_manager:
+                self.event_manager.get(self.options['response_content_event']).subscribe(self._onResponseContent)
 
             super(CustomHandler, self).__init__(*args, **kwargs)
 
@@ -23,7 +29,12 @@ def createRequestHandler(event_manager = None, _options = {}):
             # print("PATH: " + self.path)
             urlParseResult = urlparse(self.path)
             # print("URLPARSERESULT:", urlParseResult)
-            result = False
+
+
+            if self.event_manager != None and 'output_events' in self.options:
+                if urlParseResult.path in self.options['output_events']:
+                    self.event_manager.fire(self.options['output_events'][urlParseResult.path])
+                    self.response_code = 200
 
             if self.event_manager != None and 'output_options' in self.options:
                 if urlParseResult.path in self.options['output_options']:
@@ -37,28 +48,31 @@ def createRequestHandler(event_manager = None, _options = {}):
                         opts = {}
 
                     # self.logger.warn('triggering options event `'+event_name+'` with: '+str(opts))
+                    self.response_code = 200
                     event.fire(opts)
-                    result = True
-
-            if self.event_manager != None and 'output_events' in self.options:
-                if urlParseResult.path in self.options['output_events']:
-                    self.event_manager.fire(self.options['output_events'][urlParseResult.path])
-                    result = True
 
             if 'responses' in self.options and urlParseResult.path in self.options['responses']:
-                self.send_response(200)
-                self.send_header("Content-type", "text/plain")
-                self.end_headers()
-                # print('headers done')
-                self.wfile.write(self.options['responses'][urlParseResult.path])
-                self.wfile.close()
-                result = True
-            elif result == True:
-                self.send_response(200)
-                self.end_headers()
-                self.wfile.close()
+                self.response_content = self.options['responses'][urlParseResult.path]
+                # self.send_response(200)
+                # self.send_header("Content-type", "text/plain")
+                # self.end_headers()
+                # # print('headers done')
+                # self.wfile.write()
+                # self.wfile.close()
 
-            return result
+            if self.response_code == None:
+                self.send_response(404)
+                self.end_headers()
+                self.wfile.close()
+                return False
+
+            self.send_response(self.response_code)
+            self.send_header("Content-type", self.response_type if self.response_type else "text/plain")
+            self.end_headers()
+            if self.response_content:
+               self.wfile.write(self.response_content)
+            self.wfile.close()
+            return True
 
         def do_HEAD(self):
             if self.process_request():
@@ -87,6 +101,10 @@ def createRequestHandler(event_manager = None, _options = {}):
 
             relative_path = path[1:] if path.startswith('/') else path
             return SimpleHTTPRequestHandler.translate_path(self, os.path.join(self.root_path, relative_path))
+
+        def _onResponseContent(self, json):
+            self.logger.warn('response CONTENT: '+str(json))
+            self.response_content = json
 
     return CustomHandler
 

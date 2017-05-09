@@ -152,6 +152,6 @@ class OscInput(BaseComponent):
         if addr in self.output_events:
             self.logger.debug('triggering output event: {0}'.format(self.output_events[addr]))
             self.event_manager.fire(self.output_events[addr])
-        elif self.output_events['auto'] == True:
+        elif 'auto' in self.output_events and self.output_events['auto'] == True:
             self.logger.debug('triggering auto-output event: {0}'.format(addr))
             self.event_manager.fire(addr)

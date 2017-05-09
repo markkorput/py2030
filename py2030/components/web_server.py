@@ -29,7 +29,13 @@ def createRequestHandler(event_manager = None, _options = {}):
                 if urlParseResult.path in self.options['output_options']:
                     event_name = self.options['output_options'][urlParseResult.path]
                     event = self.event_manager.get(event_name)
-                    opts = dict(qc.split("=") for qc in urlParseResult.query.split("&"))
+                    opts = {}
+
+                    try:
+                        opts = dict(qc.split("=") for qc in urlParseResult.query.split("&"))
+                    except ValueError as err:
+                        opts = {}
+
                     # self.logger.warn('triggering options event `'+event_name+'` with: '+str(opts))
                     event.fire(opts)
                     result = True

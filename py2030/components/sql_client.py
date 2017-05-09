@@ -1,6 +1,25 @@
-import logging, _mssql
+import logging, _mssql, unicodedata, json
 from evento import Event
 from py2030.base_component import BaseComponent
+
+def rowToDict(row):
+    d = {}
+    for k in row.iterkeys():
+        if type(k).__name__ == 'unicode':
+            value = row[k]
+            if type(value).__name__ == 'unicode':
+                # value = str(value)
+                value = unicodedata.normalize('NFKD', value).encode('ascii','ignore')
+            d[str(k)] = value
+
+    return d
+
+def getResponseDict(conn):
+    data = []
+    for row in conn:
+        data.append(rowToDict(row))
+    return data
+
 
 class SqlClient(BaseComponent):
     config_name = 'sql_clients'
@@ -67,3 +86,9 @@ class SqlClient(BaseComponent):
 
     def _onQuery(self, opts={}):
         self.logger.warn('TODO: query for options: '+str(opts))
+
+        query = "SELECT TOP 3 * FROM dbo.documents;"
+        self.logger.info("running SQL query: "+query)
+        result = self._connection.execute_row(query)
+        data = getResponseDict(self._connection)
+        self.logger.warn("TODO: trigger response event with: "+str(data))

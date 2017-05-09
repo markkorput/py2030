@@ -1,4 +1,5 @@
 import logging, threading, time, socket, httplib, os
+from urlparse import urlparse
 
 from py2030.base_component import BaseComponent
 from BaseHTTPServer import HTTPServer
@@ -14,19 +15,28 @@ def createRequestHandler(event_manager = None, _options = {}):
             super(CustomHandler, self).__init__(*args, **kwargs)
 
         def process_request(self):
+            # print("PATH: " + self.path)
+            urlParseResult = urlparse(self.path)
+            # print("URLPARSERESULT:", urlParseResult)
+
             result = False
             if self.event_manager != None and 'output_events' in self.options:
                 if self.path in self.options['output_events']:
                     self.event_manager.fire(self.options['output_events'][self.path])
                     result = True
 
-            if 'responses' in self.options and self.path in self.options['responses']:
-                self.wfile.write(self.options['responses'][self.path])
-                # self.wfile.close()
+            if 'responses' in self.options and urlParseResult.path in self.options['responses']:
+                self.send_response(200)
+                self.send_header("Content-type", "text/plain")
+                self.end_headers()
+                # print('headers done')
+                self.wfile.write(self.options['responses'][urlParseResult.path])
+                self.wfile.close()
                 result = True
             elif result == True:
                 self.send_response(200)
                 self.end_headers()
+                self.wfile.close()
 
             return result
 

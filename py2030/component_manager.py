@@ -30,6 +30,7 @@ class ComponentManager:
         self._profile_data = None
         self._operation_queue = []
         self.running = False
+        self.shutdown_message = "py2030, over and out.\n"
 
     def __del__(self):
         self.destroy()
@@ -69,6 +70,9 @@ class ComponentManager:
         if 'start_event' in self._profile_data:
             self.logger.debug('triggering start_event: ' + str(self._profile_data['start_event']))
             self.context.event_manager.get(self._profile_data['start_event']).fire()
+
+        if 'shutdown_message' in self._profile_data:
+            self.shutdown_message = self._profile_data['shutdown_message']
 
     def _onStopEvent(self):
         self.logger.debug('stop_event triggered')

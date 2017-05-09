@@ -103,7 +103,7 @@ def createRequestHandler(event_manager = None, _options = {}):
             return SimpleHTTPRequestHandler.translate_path(self, os.path.join(self.root_path, relative_path))
 
         def _onResponseContent(self, json):
-            self.logger.warn('response CONTENT: '+str(json))
+            # self.logger.warn('response CONTENT: '+str(json))
             self.response_type = "application/json"
             self.response_content = json
 

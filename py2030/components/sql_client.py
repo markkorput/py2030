@@ -14,8 +14,11 @@ def rowToDict(row):
 
     return d
 
-def getResponseDict(conn):
+def getResponseDict(conn, result=None):
     data = []
+    if result:
+        data.append(rowToDict(result))
+
     for row in conn:
         data.append(rowToDict(row))
     return data
@@ -85,11 +88,11 @@ class SqlClient(BaseComponent):
             self._connect() # (re-)connect
 
     def _onQuery(self, opts={}):
-        query = "SELECT TOP 3 * FROM dbo.documents;"
+        query = "SELECT TOP 10 * FROM dbo.documents;"
         self.logger.info("running SQL query: "+query)
         result = self._connection.execute_row(query)
-        data = getResponseDict(self._connection)
-
+        data = getResponseDict(self._connection, result)
+        self.logger.debug("query result size: "+str(len(data)))
         if 'response_event' in self.options and self.event_manager:
             event = self.event_manager.get(self.options['response_event'])
             event.fire(json.dumps(data))

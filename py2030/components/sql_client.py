@@ -15,11 +15,6 @@ class SqlClient(BaseComponent):
         if 'verbose' in options and options['verbose']:
             self.logger.setLevel(logging.DEBUG)
 
-        # events
-        # self.connectEvent = Event()
-        # self.disconnectEvent = Event()
-        # self.messageEvent = Event()
-
     def __del__(self):
         self.destroy()
 
@@ -31,7 +26,7 @@ class SqlClient(BaseComponent):
                 self.event_manager.get(self.options['config_options']).subscribe(self._onConfig)
 
             if 'query_options' in self.options:
-                self.event_manager.get(self.options['config_options']).subscribe(self._onQuery)
+                self.event_manager.get(self.options['query_options']).subscribe(self._onQuery)
 
         # connect, only if we have all info we need
         if 'host' in self.options and 'database' in self.options and 'username' in self.options and 'password' in self.options:
@@ -43,6 +38,7 @@ class SqlClient(BaseComponent):
         self._disconnect()
 
     def _connect(self):
+        # self.logger.warn('SqlClient _connect')
         if(self._connected):
             self._disconnect()
 
@@ -62,11 +58,12 @@ class SqlClient(BaseComponent):
             pass
             self._connected = False
 
-    def _onConfig(self, opts={}):
+    def _onConfig(self, opts):
+        # self.logger.warn('SqlClient _onConfig, with: '+str(opts))
+
         self.options.update(opts)
         if 'host' in self.options and 'database' in self.options and 'username' in self.options and 'password' in self.options:
             self._connect() # (re-)connect
 
     def _onQuery(self, opts={}):
-        print('TODO: query')
-        print(opts)
+        self.logger.warn('TODO: query for options: '+str(opts))

@@ -12,17 +12,31 @@ def createRequestHandler(event_manager = None, _options = {}):
             self.options = _options
             self.root_path = self.options['serve'] if 'serve' in _options else '.'
             self.event_manager = event_manager
+
+            self.logger = logging.getLogger(__name__)
+            if 'verbose' in self.options and self.options['verbose']:
+                self.logger.setLevel(logging.DEBUG)
+
             super(CustomHandler, self).__init__(*args, **kwargs)
 
         def process_request(self):
             # print("PATH: " + self.path)
             urlParseResult = urlparse(self.path)
             # print("URLPARSERESULT:", urlParseResult)
-
             result = False
+
+            if self.event_manager != None and 'output_options' in self.options:
+                if urlParseResult.path in self.options['output_options']:
+                    event_name = self.options['output_options'][urlParseResult.path]
+                    event = self.event_manager.get(event_name)
+                    opts = dict(qc.split("=") for qc in urlParseResult.query.split("&"))
+                    # self.logger.warn('triggering options event `'+event_name+'` with: '+str(opts))
+                    event.fire(opts)
+                    result = True
+
             if self.event_manager != None and 'output_events' in self.options:
-                if self.path in self.options['output_events']:
-                    self.event_manager.fire(self.options['output_events'][self.path])
+                if urlParseResult.path in self.options['output_events']:
+                    self.event_manager.fire(self.options['output_events'][urlParseResult.path])
                     result = True
 
             if 'responses' in self.options and urlParseResult.path in self.options['responses']:

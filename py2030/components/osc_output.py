@@ -16,7 +16,17 @@ class EventMessage:
     def __init__(self, osc_output, event, message):
         self.event = event
         self.osc_output = osc_output
-        self.message = message
+
+        # if type(message) == type([]) or type(message) == type(()):
+        if hasattr(message, '__iter__'):
+            tmp = self
+            if len(message) > 0:
+                self.message = message[0] # first one is the OSC-message
+                self.arguments= message[1:] # all except first one are the OSC arguments
+        else:
+            self.message = message # only a message
+            self.arguments = [] # no arguments
+
         self.event += self._send
 
     def __del__(self):
@@ -28,7 +38,12 @@ class EventMessage:
             self.event = None
 
     def _send(self, *args, **kargs):
-        self.osc_output.send(self.message, args)
+        if len(args) == 0:
+            # take arguments from the initial configuration
+            self.osc_output.send(self.message, self.arguments)
+        else:
+            # take arguments from the triggered event
+            self.osc_output.send(self.message, args)
 
 class OscOutput(BaseComponent):
     config_name = 'osc_outputs'
@@ -71,12 +86,14 @@ class OscOutput(BaseComponent):
             self._disconnect()
 
     def _registerCallbacks(self, _register=True):
+        # UNregister
         if not _register:
             for event_message in self._event_messages:
                 event_message.destroy()
             self._event_messages = []
             return
 
+        # nothing to register?
         if not 'input_events' in self.options:
             return
 

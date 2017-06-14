@@ -1,6 +1,11 @@
-import logging, _mssql, unicodedata, json
+import logging, unicodedata, json
 from evento import Event
 from py2030.base_component import BaseComponent
+
+try:
+    import _mssql
+except ImportError:
+    _mssql = None
 
 def rowToDict(row):
     d = {}
@@ -41,6 +46,8 @@ class SqlClient(BaseComponent):
         self.destroy()
 
     def setup(self, event_manager=None):
+        if not _mssql:
+            logging.getLogger(__name__).warning("_mssql module not available, sql_clients will not work")
         self.event_manager = event_manager
         if self.event_manager:
             # self.output_events = self.options['output_events'] if 'output_events' in self.options else {}
@@ -71,7 +78,8 @@ class SqlClient(BaseComponent):
         psw = self.options['password'] if 'password' in self.options else 'password'
 
         self.logger.info("SqlClient connecting to: "+host+':'+str(port))
-        self._connection = _mssql.connect(server=host+':'+str(port), user=usr, password=psw, database=db)
+        if _mssql:
+            self._connection = _mssql.connect(server=host+':'+str(port), user=usr, password=psw, database=db)
         self._connected = True
         return self._connected
 
@@ -88,6 +96,8 @@ class SqlClient(BaseComponent):
             self._connect() # (re-)connect
 
     def _onQuery(self, opts={}):
+        if not self._connection:
+            return
         query = "SELECT TOP 10 * FROM dbo.documents;"
         self.logger.info("running SQL query: "+query)
         result = self._connection.execute_row(query)

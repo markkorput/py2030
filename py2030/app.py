@@ -32,3 +32,4 @@ if __name__ == '__main__':
         print('KeyboardInterrupt. Quitting.')
 
     cm.destroy()
+    print(cm.shutdown_message)

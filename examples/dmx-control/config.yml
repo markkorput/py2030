@@ -8,9 +8,53 @@ py2030:
         output_events:
           frame: 'frame'
 
-      dmx_output:
+      dmx_outputs:
         dmx1:
           verbose: true
           fps: 2.0
           deviceName: 'cu.usbserial-EN114902'
           deviceNumber_: 0
+          channel_event_prefix: 'ch'
+          num_channels: 24
+
+      dmx_formatter:
+        channels:
+          winch: 1
+          light: 23
+          rotator: 10
+
+      sines:
+
+        sineWinchVelocity:
+          verbose: true
+          frequency: 0.1
+          sleep_DISABLED_BLOCKING: 1.0
+          amplitude: 0.3
+          base: 0.5
+          output_events:
+            'value': 'ch3'
+
+        sineRotatorVelocity:
+          verbose: true
+          frequency: 0.01
+          sleep_DISABLED_BLOCKING: 1.0
+          amplitude: 0.2
+          base: 0.3
+          output_events:
+            'value': 'ch14'
+
+        sineLight:
+          verbose: true
+          frequency: 6.0
+          sleep_DISABLED_BLOCKING: 1.0
+          amplitude: 0.5
+          base: 0.5
+          output_events:
+            'value': 'ch23'
+
+        # sine2:
+        #   verbose: false
+        #   frequency: 10.5
+        #   sleep: 0.3
+        #   output_events:
+        #     'value': 'ch2'

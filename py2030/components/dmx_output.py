@@ -83,5 +83,5 @@ class DmxOutput(BaseComponent):
     def _setChannel(self, idx, val):
         # self.logger.debug('_setChannel: '+str(idx+1)+' with: '+str(val)+' ('+str(int(val * 255.0))+')')
         if self.dmx != None:
-            self.dmx.setChannel(idx+2, int(val * 255.0))
+            self.dmx.setChannel(idx+2, int(val * 255.0)) # +2?!
         self.dirty = True

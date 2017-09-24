@@ -32,7 +32,7 @@ class DmxOutput(BaseComponent):
         self.dirty = True;
         self.nextFrameTime = 0.0
 
-    def setup(self, event_manager=None, midi_port=None):
+    def setup(self, event_manager=None):
         self.event_manager = event_manager
 
         for i in range(self.num_channels):
@@ -47,14 +47,16 @@ class DmxOutput(BaseComponent):
             # dmx update
             self.logger.debug('DMX update')
             self.nextFrameTime = t + self.frameTime
+            self.dirty = False
 
     def destroy(self):
-        # if self.midiin:
-        #     self._disconnect()
+        # remove events from event manager, good idea?
+        for i in range(self.num_channels):
+            self.event_manager.remove(self.channel_event_prefix+str(i))
 
         self.event_manager = None
         self.output_events = None
 
     def _setChannel(self, idx, val):
-        self.logger.debug('_setChannel: '+str(idx)+' with: '+str(val))
+        # self.logger.debug('_setChannel: '+str(idx)+' with: '+str(val))
         self.dirty = True

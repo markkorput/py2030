@@ -8,7 +8,7 @@ py2030:
         output_events:
           frame: 'frame'
 
-      dmx_outputs:
+      dmx_outputs_DISABLED:
         dmx1:
           verbose: true
           fps: 2.0
@@ -17,14 +17,16 @@ py2030:
           channel_event_prefix: 'ch'
           num_channels: 24
 
-      dmx_formatter:
-        channels:
-          winch: 1
-          light: 23
-          rotator: 10
+      lightCeremonyDmxOutputs:
+        theOne:
+          verbose: true
+          fps: 2.0
+          deviceName: 'cu.usbserial-EN114902'
+          deviceNumber_: 0
+          channel_event_prefix: 'ch'
+          num_channels: 24
 
       sines:
-
         sineWinchVelocity:
           verbose: true
           frequency: 0.1

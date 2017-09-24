@@ -36,6 +36,9 @@ class EventManager:
         # don't create, return None
         return None
 
+    def remove(self, _id):
+        return self._events.pop(str(_id), None)
+
     def fire(self, _id, create=True):
         event = self.get(_id, create)
         if event != None:

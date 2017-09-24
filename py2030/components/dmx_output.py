@@ -50,7 +50,7 @@ class DmxOutput(BaseComponent):
             self.dmx.clear()
 
         for i in range(self.num_channels):
-            evt = self.event_manager.get(self.channel_event_prefix+str(i))
+            evt = self.event_manager.get(self.channel_event_prefix+str(i+1))
             evt += lambda val, idx=i: self._setChannel(idx, val)
 
         self.logger.debug('registered event listeners for '+str(self.num_channels)+' channels')
@@ -81,7 +81,7 @@ class DmxOutput(BaseComponent):
         self.output_events = None
 
     def _setChannel(self, idx, val):
-        # self.logger.debug('_setChannel: '+str(idx)+' with: '+str(val))
+        # self.logger.debug('_setChannel: '+str(idx+1)+' with: '+str(val)+' ('+str(int(val * 255.0))+')')
         if self.dmx != None:
             self.dmx.setChannel(idx+1, int(val * 255.0))
         self.dirty = True

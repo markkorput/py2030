@@ -19,22 +19,34 @@ py2030:
 
       lightCeremonyDmxOutputs:
         theOne:
-          verbose: true
+          verbose: false
           fps: 2.0
           deviceName: '/dev/cu.usbserial-EN114902'
           deviceNumber_: 0
           channel_event_prefix: 'ch'
           num_channels: 24
+          winchVelocityEvent: 'winchVel'
+          winchStartChannel: 1
+
+      sines:
+        sineLight:
+          verbose: true
+          frequency: 0.1
+          sleep_DISABLED_BLOCKING: 1.0
+          amplitude: 0.2
+          base: 0.2
+          output_events:
+            'value': 'ch24'
 
       sines_:
         sineWinchVelocity:
           verbose: true
           frequency: 0.1
           sleep_DISABLED_BLOCKING: 1.0
-          amplitude: 0.3
-          base: 0.5
+          amplitude: 1.0
+          base: 0.0
           output_events:
-            'value': 'ch3'
+            'value': 'winchVel'
 
         sineRotatorVelocity:
           verbose: true

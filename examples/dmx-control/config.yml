@@ -21,12 +21,12 @@ py2030:
         theOne:
           verbose: true
           fps: 2.0
-          deviceName: 'cu.usbserial-EN114902'
+          deviceName: '/dev/cu.usbserial-EN114902'
           deviceNumber_: 0
           channel_event_prefix: 'ch'
           num_channels: 24
 
-      sines:
+      sines_:
         sineWinchVelocity:
           verbose: true
           frequency: 0.1

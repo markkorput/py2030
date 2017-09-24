@@ -1,0 +1,16 @@
+py2030:
+  profiles:
+    default:
+      file_frame_reader:
+        reader1:
+          verbose: true
+          file: 'anim.csv'
+        output_events:
+          frame: 'frame'
+
+      dmx_output:
+        dmx1:
+          verbose: true
+          fps: 2.0
+          deviceName: 'cu.usbserial-EN114902'
+          deviceNumber_: 0

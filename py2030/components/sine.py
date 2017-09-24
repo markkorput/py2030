@@ -20,7 +20,7 @@ class Sine(BaseComponent):
         self.event_manager = event_manager
 
 
-        self.cursor = 0.0
+        self.cursor = float(self.options['cursorStart']) if 'cursorStart' in self.options else 0.0
         self.cursorSpeed = self.frequency * math.pi * 2.0
 
         if self.event_manager and 'output_events' in self.options and 'value' in self.options['output_events']:

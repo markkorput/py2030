@@ -23,9 +23,11 @@ class LightCeremonyDmxOutput(DmxOutput):
 
     def _onWinchVelocity(self, vel):
         if vel > 0:
+            # self.logger.debug('up, vel: '+str(vel))
             self._winchToPos(1.0, vel) # up
         else:
-            self._winchToPos(0.0, vel) # down
+            # self.logger.debug('down, vel: '+str(-vel))
+            self._winchToPos(0.0, -vel) # down
 
     def _winchToPos(self, pos, velocity):
         self._setChannel(self.CH_WINCH_POS_ROUGH, pos)

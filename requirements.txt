@@ -6,3 +6,4 @@ pyOSC==0.3.5b-5294
 omxplayer-wrapper==0.0.2
 omxsync==0.1.1
 pysimpledmx==0.1.1
+python-rtmidi==1.1.0 #0.5b1

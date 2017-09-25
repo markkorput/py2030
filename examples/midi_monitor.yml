@@ -1,0 +1,28 @@
+py2030:
+  profiles:
+    default:
+      midi_inputs:
+        midi1:
+          verbose: true
+          port: 1
+          # DEBUG:py2030.components.midi_input:midi message: ([177, 10, 127], 14.760130298000002)
+          # DEBUG:py2030.components.midi_input:midi message: ([177, 11, 127], 0.25812145200000003)
+          # DEBUG:py2030.components.midi_input:midi message: ([177, 12, 127], 0.257519172)
+          # DEBUG:py2030.components.midi_input:midi message: ([177, 13, 127], 0.246643523)
+          # DEBUG:py2030.components.midi_input:midi message: ([177, 14, 127], 0.24721736000000002)
+          # DEBUG:py2030.components.midi_input:midi message: ([177, 15, 127], 0.23224302000000002)
+          # DEBUG:py2030.components.midi_input:midi message: ([177, 16, 127], 0.25887939000000004)
+          # DEBUG:py2030.components.midi_input:midi message: ([177, 17, 127], 0.239752666)
+          # DEBUG:py2030.components.midi_input:midi message: ([177, 18, 127], 0.244493493)
+          output_events:
+            177:
+              10: 'midi10'
+              11: 'midi11'
+
+      osc_outputs: # just for debugging; to see if midi event are actually triggered
+        osc1:
+          verbose: true
+          ip: 127.0.0.1
+          input_events:
+            'midi10': '/midi/10'
+            'midi11': '/midi/11'

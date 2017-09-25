@@ -3,8 +3,14 @@ py2030:
     default:
       midi_inputs:
         midi1:
-          verbose: true
+          verbose: false
           port: 1
+          output_events:
+            179:
+              10: 'midi10'
+              11: 'midi11'
+
+          # BTNS
           # DEBUG:py2030.components.midi_input:midi message: ([177, 10, 127], 14.760130298000002)
           # DEBUG:py2030.components.midi_input:midi message: ([177, 11, 127], 0.25812145200000003)
           # DEBUG:py2030.components.midi_input:midi message: ([177, 12, 127], 0.257519172)
@@ -14,10 +20,26 @@ py2030:
           # DEBUG:py2030.components.midi_input:midi message: ([177, 16, 127], 0.25887939000000004)
           # DEBUG:py2030.components.midi_input:midi message: ([177, 17, 127], 0.239752666)
           # DEBUG:py2030.components.midi_input:midi message: ([177, 18, 127], 0.244493493)
-          output_events:
-            177:
-              10: 'midi10'
-              11: 'midi11'
+          # DIALS
+          # DEBUG:py2030.components.midi_input:midi message: ([179, 3, 73], 0.041248671)
+          # DEBUG:py2030.components.midi_input:midi message: ([179, 4, 1], 0.030220664)
+
+      midi_outputs:
+        midi1:
+          verbose: true
+          port: 1
+          input_events:
+            channel_values:
+              '179':
+                '1': 'sine1'
+                '2': 'sine1'
+                '3': 'sine1'
+                '4': 'sine1'
+                '5': 'sine1'
+                '6': 'sine1'
+                '7': 'sine1'
+                '8': 'sine1'
+                '9': 'sine1'
 
       osc_outputs: # just for debugging; to see if midi event are actually triggered
         osc1:
@@ -26,3 +48,12 @@ py2030:
           input_events:
             'midi10': '/midi/10'
             'midi11': '/midi/11'
+
+      sines:
+        sine1:
+          verbose: false
+          frequency: 2.0
+          amplitude: 100
+          base: 64
+          output_events:
+            'value': 'sine1'

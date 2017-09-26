@@ -30,6 +30,7 @@ py2030:
           winchStartChannel: 1
           rotatorStartChannel: 10
           resetDownDeltaPos: 0.05
+          winchVelEasing: 7.0
           input_events:
             winchVelocity: 'winchVel'
             winchResetUpVelocity: 'winchResetUpVel'

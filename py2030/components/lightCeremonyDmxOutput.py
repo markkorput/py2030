@@ -38,6 +38,10 @@ class LightCeremonyDmxOutput(DmxOutput):
 
         self.bResetDownActive = False
 
+        self.winchVelEaseFactor = 1.0 / self.getOption('winchVelEasing', 5.0)
+        self.curWinchVel = 0.0
+        self.targetWinchVel = None
+
     def update(self):
         if self.bResetDownActive:
             t = time.time()
@@ -51,16 +55,36 @@ class LightCeremonyDmxOutput(DmxOutput):
             self.event_manager.get('resetDownPos').fire(self.resetDownPos)
             self.logger.debug('reset down pos: '+str(self.resetDownPos))
 
+        # winch velocity easing
+        if self.targetWinchVel != None:
+            dist = self.targetWinchVel - self.curWinchVel
+
+            if abs(dist) < 0.01: # very little left; consider easing done
+                self.curWinchVel = self.targetWinchVel
+                self.targetWinchVel = None
+            else:
+                self.curWinchVel = self.curWinchVel + dist * self.winchVelEaseFactor
+
+            if self.curWinchVel > 0:
+                # self.logger.debug('up, vel: '+str(vel))
+                self._winchToPos(1.0, self.curWinchVel) # up
+            else:
+                # self.logger.debug('down, vel: '+str(-vel))
+                self._winchToPos(self.bottomPosition, -self.curWinchVel) # down
+
         # super
         DmxOutput.update(self)
 
     def _onWinchVelocity(self, vel):
-        if vel > 0:
-            # self.logger.debug('up, vel: '+str(vel))
-            self._winchToPos(1.0, vel) # up
-        else:
-            # self.logger.debug('down, vel: '+str(-vel))
-            self._winchToPos(self.bottomPosition, -vel) # down
+        # smoothed; see update method
+        self.targetWinchVel = vel
+
+        # if vel > 0:
+        #     # self.logger.debug('up, vel: '+str(vel))
+        #     self._winchToPos(1.0, vel) # up
+        # else:
+        #     # self.logger.debug('down, vel: '+str(-vel))
+        #     self._winchToPos(self.bottomPosition, -vel) # down
 
     def _winchToPos(self, pos, velocity):
         # self.logger.debug('winch to pos: '+str(pos)+' with velocity: '+str(velocity))

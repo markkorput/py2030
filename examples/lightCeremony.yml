@@ -7,9 +7,10 @@ py2030:
         theOne:
           verbose: true
           resetUpMaxDuration: 15.0 # seconds
-          resetUpVelocity: 0.7
+          resetUpVelocity: 0.5
           resetDownMaxDuration: 20.0 # seconds
-          resetDownVelocity: 0.2
+          resetDownVelocity: 0.5
+          resetDownDeltaPos: 0.001
 
           input_events:
             resetUp: 'cmd-reset-up'

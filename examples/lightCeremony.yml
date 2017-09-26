@@ -24,13 +24,14 @@ py2030:
           verbose: false
           fps: 10.0
           deviceName: '/dev/ttyUSB0'
-          bottomPosition: 0.5
+          bottomPosition: 0.522
           channel_event_prefix: 'ch'
           num_channels: 24
           winchStartChannel: 1
           rotatorStartChannel: 10
           resetDownDeltaPos: 0.05
           winchVelEasing: 7.0
+          winchEaseDoneAt: 0.05
           input_events:
             winchVelocity: 'winchVel'
             winchResetUpVelocity: 'winchResetUpVel'

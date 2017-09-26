@@ -39,6 +39,7 @@ class LightCeremonyDmxOutput(DmxOutput):
         self.bResetDownActive = False
 
         self.winchVelEaseFactor = 1.0 / self.getOption('winchVelEasing', 5.0)
+        self.winchEaseDoneAt = self.getOption('winchEaseDoneAt', 0.05)
         self.curWinchVel = 0.0
         self.targetWinchVel = None
 
@@ -59,7 +60,7 @@ class LightCeremonyDmxOutput(DmxOutput):
         if self.targetWinchVel != None:
             dist = self.targetWinchVel - self.curWinchVel
 
-            if abs(dist) < 0.01: # very little left; consider easing done
+            if abs(dist) < self.winchEaseDoneAt: # very little left; consider easing done
                 self.curWinchVel = self.targetWinchVel
                 self.targetWinchVel = None
             else:
@@ -125,3 +126,8 @@ class LightCeremonyDmxOutput(DmxOutput):
 
     def _onBlack(self):
         self.black()
+
+    def black(self):
+        self.bResetDownActive = False
+        self.targetWinchVel = 0.0
+        DmxOutput.black(self)

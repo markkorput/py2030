@@ -69,6 +69,7 @@ py2030:
           verbose: true
           resetUpMaxDuration: 10.0 # seconds
           resetUpVelocity: 0.25
+          resetDownMaxDuration: 20.0 # seconds
           resetDownVelocity: 0.2
 
           input_events:

@@ -33,12 +33,19 @@ class LightCeremonyController(BaseComponent):
 
     def update(self):
         t = time.time()
+
         if self.bResetUpActive and t >= self.resetUpEndTime:
             self._endResetUp()
+
+        if self.bResetDownActive and t >= self.resetDownEndTime:
+            self._endResetDown()
 
     # RESET UP
 
     def _onResetUpCmd(self):
+        if self.bResetDownActive:
+            return;
+
         if self.bResetUpActive:
             self._endResetUp()
         else:
@@ -59,6 +66,9 @@ class LightCeremonyController(BaseComponent):
     # RESET DOWN
 
     def _onResetDownCmd(self):
+        if self.bResetUpActive:
+            return;
+
         if self.bResetDownActive:
             self._endResetDown()
         else:
@@ -66,6 +76,8 @@ class LightCeremonyController(BaseComponent):
 
     def _startResetDown(self):
         self.logger.debug('starting reset down...')
+        t = time.time()
+        self.resetDownEndTime = t + self.getOption('resetDownMaxDuration', 20.0)
         self.event_manager.get('winchResetDownVel').fire(self.getOption('resetDownVelocity', 0.2))
         self.bResetDownActive = True
 

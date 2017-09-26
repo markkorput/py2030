@@ -9,22 +9,49 @@ try:
 except ImportError as err:
     logging.getLogger(__name__).warning("Importing of rtmidi failed, MidiOutput component will not work.")
     rtmidi = None
+del rtmidi
+rtmidi = None
 
-
-class Record:
-    def __init__(self, midi, cmd, ch, event):
+class ValueListener:
+    def __init__(self, midi, cmd, ch, event, logger):
         self.midi = midi
         self.cmd = cmd
         self.ch = ch
         self.event = event
         self.event += self._output
+        self.logger = logger
 
     def _output(self, val):
         if not self.midi:
             return
 
-        msg = [int(self.cmd), int(self.ch), int(max(0, val))]
-        self.midi.send_message(msg)
+        val = int(max(0,val))
+        msg = [int(self.cmd), int(self.ch), val]
+        if self.midi:
+            self.midi.send_message(msg)
+        self.logger.debug('midi output value: '+str(val))
+
+class PercentageListener:
+    def __init__(self, midi, cmd, ch, event, logger):
+        self.midi = midi
+        self.cmd = cmd
+        self.ch = ch
+        self.event = event
+
+        self.minValue = 0.0 # make configurable?
+        self.maxValue = 127.0 # make configurable?
+        self.valueRangeSize = self.maxValue - self.minValue
+        self.logger = logger
+
+        self.event += self._output
+
+    def _output(self, percentage):
+        # percentage to value
+        val = int(self.minValue + self.valueRangeSize * min(1.0, max(0.0, percentage)));
+        msg = [int(self.cmd), int(self.ch), val]
+        if self.midi:
+            self.midi.send_message(msg)
+        self.logger.debug('midi output percentage value: '+str(val))
 
 class MidiOutput(BaseComponent):
     config_name = 'midi_outputs'
@@ -39,7 +66,7 @@ class MidiOutput(BaseComponent):
         self.limit = 10
         self.connected = False
         self.event_manager = None
-        self.records = []
+        self.listeners = []
 
         self.logger = logging.getLogger(__name__)
         if 'verbose' in options and options['verbose']:
@@ -67,14 +94,26 @@ class MidiOutput(BaseComponent):
             if 'channel_values' in self.options['input_events']:
                 self._setup_input_channel_values(self.options['input_events']['channel_values'])
 
+            if 'channel_percentages' in self.options['input_events']:
+                self._setup_input_channel_percentages(self.options['input_events']['channel_percentages'])
+
     def _setup_input_channel_values(self, data):
         for cmd in data:
             for channel in data[cmd]:
                 event_name = data[cmd][channel]
                 self.logger.debug('input event for cmd: '+str(cmd)+' and ch: '+str(channel)+' event: '+event_name)
                 event = self.event_manager.get(event_name)
-                rec = Record(self.midi, cmd, channel, event)
-                self.records.append(rec)
+                rec = ValueListener(self.midi, cmd, channel, event, self.logger)
+                self.listeners.append(rec)
+
+    def _setup_input_channel_percentages(self, data):
+        for cmd in data:
+            for channel in data[cmd]:
+                event_name = data[cmd][channel]
+                self.logger.debug('percentage input event for cmd: '+str(cmd)+' and ch: '+str(channel)+' event: '+event_name)
+                event = self.event_manager.get(event_name)
+                rec = PercentageListener(self.midi, cmd, channel, event, self.logger)
+                self.listeners.append(rec)
 
     def destroy(self):
         if self.midi:

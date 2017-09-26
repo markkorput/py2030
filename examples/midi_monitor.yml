@@ -26,7 +26,7 @@ py2030:
 
       midi_outputs:
         midi1:
-          verbose: true
+          verbose: false
           port: 1
           input_events:
             channel_values:
@@ -40,6 +40,17 @@ py2030:
                 '7': 'sine1'
                 '8': 'sine1'
                 '9': 'sine1'
+            channel_percentages:
+              '179':
+                '1': 'sine2'
+                '2': 'sine2'
+                '3': 'sine2'
+                '4': 'sine2'
+                '5': 'sine2'
+                '6': 'sine2'
+                '7': 'sine2'
+                '8': 'sine2'
+                '9': 'sine2'
 
       osc_outputs: # just for debugging; to see if midi event are actually triggered
         osc1:
@@ -57,3 +68,11 @@ py2030:
           base: 64
           output_events:
             'value': 'sine1'
+
+        sine2:
+          verbose: false
+          frequency: 0.2
+          amplitude: 0.5
+          base: 0.5
+          output_events:
+            'value': 'sine2'

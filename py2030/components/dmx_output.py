@@ -5,9 +5,11 @@ from evento import Event
 from py2030.base_component import BaseComponent
 
 try:
-    import pysimpledmx
+    # import pysimpledmx
+    from py2030.dependencies import pysimpledmx
 except ImportError:
     pysimpledmx = None
+
 
 class DmxOutput(BaseComponent):
     config_name = 'dmx_outputs'
@@ -41,10 +43,15 @@ class DmxOutput(BaseComponent):
             self.logger.warn("pysimpledmx lib not loaded")
             self.dmx = None
         else:
-            if self.deviceName != None:
-                self.dmx = pysimpledmx.DMXConnection(self.deviceName)
-            elif self.deviceNumber != None:
-                self.dmx = pysimpledmx.DMXConnection(self.deviceNumber)
+            try:
+                if self.deviceName != None:
+                    self.dmx = pysimpledmx.DMXConnection(self.deviceName)
+                elif self.deviceNumber != None:
+                    self.dmx = pysimpledmx.DMXConnection(self.deviceNumber)
+            except RuntimeError as err:
+                self.logger.warn("Failed to open DMX serial device:")
+                self.logger.warn(str(err))
+                self.dmx = None
 
         if self.dmx:
             self.dmx.clear()

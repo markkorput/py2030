@@ -64,22 +64,16 @@ py2030:
     default:
       start_event: 'cmd-reset-up'
 
-      file_frame_reader:
-        reader1:
-          verbose: true
-          file: 'anim.csv'
-        output_events:
-          frame: 'frame'
-
       lightCeremonyControllers:
         theOne:
           verbose: true
           resetUpMaxDuration: 10.0 # seconds
+          resetUpVelocity: 0.25
+          resetDownVelocity: 0.2
+
           input_events:
             resetUp: 'cmd-reset-up'
-            resetUpStop: 'cmd-reset-up-stop'
             resetDown: 'cmd-reset-down'
-            resetDownStop: 'cmd-reset-down-stop'
             togglePlayShow: 'cmd-play-pause'
             stopShow: 'cmd-stop'
 
@@ -90,13 +84,31 @@ py2030:
           deviceName: '/dev/cu.usbserial-EN114902'
           channel_event_prefix: 'ch'
           num_channels: 24
-          winchVelocityEvent: 'winchVel'
           winchStartChannel: 1
-          rotatorVelocityEvent: 'rotVel'
           rotatorStartChannel: 10
+          input_events:
+            winchVelocity: 'winchVel'
+            winchResetUpVelocity: 'winchResetUpVel'
+            winchResetDownVelocity: 'winchResetDownVel'
+            rotatorVelocity: 'rotVel'
 
+      midi_inputs:
+        midi_in_1:
+          verbose: false
+          port: 1
+          output_events:
+            179:
+              10: '_foo_'
+              11: '_foo_'
+              12: '_foo_'
+              13: '_foo_'
+              14: '_foo_'
+              15: '_foo_'
+              16: '_foo_'
+              17: 'cmd-reset-down'
+              18: 'cmd-reset-up'
 
-      sines:
+      sines__:
         sineLight:
           verbose: true
           frequency: 0.2

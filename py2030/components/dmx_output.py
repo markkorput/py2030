@@ -5,9 +5,11 @@ from evento import Event
 from py2030.base_component import BaseComponent
 
 try:
-    import pysimpledmx
+    # import pysimpledmx
+    from py2030.dependencies import pysimpledmx
 except ImportError:
     pysimpledmx = None
+
 
 class DmxOutput(BaseComponent):
     config_name = 'dmx_outputs'
@@ -22,7 +24,7 @@ class DmxOutput(BaseComponent):
         self.deviceName = self.options['deviceName'] if 'deviceName' in self.options else None
         self.deviceNumber = int(self.options['deviceNumber']) if 'deviceNumber' in self.options else None
 
-        self.fps = self.options['fps'] if 'fps' in self.options else 4.0
+        self.fps = self.getOption('fps', 4.0)
         self.frameTime = 1.0 / self.fps
 
         self.logger = logging.getLogger(__name__)
@@ -41,10 +43,15 @@ class DmxOutput(BaseComponent):
             self.logger.warn("pysimpledmx lib not loaded")
             self.dmx = None
         else:
-            if self.deviceName != None:
-                self.dmx = pysimpledmx.DMXConnection(self.deviceName)
-            elif self.deviceNumber != None:
-                self.dmx = pysimpledmx.DMXConnection(self.deviceNumber)
+            try:
+                if self.deviceName != None:
+                    self.dmx = pysimpledmx.DMXConnection(self.deviceName)
+                elif self.deviceNumber != None:
+                    self.dmx = pysimpledmx.DMXConnection(self.deviceNumber)
+            except RuntimeError as err:
+                self.logger.warn("Failed to open DMX serial device:")
+                self.logger.warn(str(err))
+                self.dmx = None
 
         if self.dmx:
             self.dmx.clear()
@@ -53,16 +60,17 @@ class DmxOutput(BaseComponent):
             evt = self.event_manager.get(self.channel_event_prefix+str(i+1))
             evt += lambda val, idx=i: self._setChannel(idx, val)
 
-        self.logger.debug('registered event listeners for '+str(self.num_channels)+' channels')
+        # self.logger.debug('registered event listeners for '+str(self.num_channels)+' channels')
 
     def update(self):
         t = time.time()
+
         if self.dirty and t >= self.nextFrameTime:
             # dmx update
             if self.dmx != None:
                 self.dmx.render()
 
-            self.logger.debug('DMX update')
+            # self.logger.debug('DMX update')
             self.nextFrameTime = t + self.frameTime
             self.dirty = False
 
@@ -82,6 +90,13 @@ class DmxOutput(BaseComponent):
 
     def _setChannel(self, idx, val):
         # self.logger.debug('_setChannel: '+str(idx+1)+' with: '+str(val)+' ('+str(int(val * 255.0))+')')
+        dmxVal = int(val * 255.0)
+
         if self.dmx != None:
-            self.dmx.setChannel(idx+2, int(val * 255.0)) # +2?!
+            self.dmx.setChannel(idx+2, dmxVal) # +2?!
         self.dirty = True
+        # self.logger.debug('new value for channel '+str(idx+1)+": "+str(dmxVal))
+
+    def black(self):
+        for i in range(self.num_channels):
+            self._setChannel(i, 0.0)

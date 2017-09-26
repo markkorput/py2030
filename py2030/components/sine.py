@@ -26,6 +26,7 @@ class Sine(BaseComponent):
         if self.event_manager and 'output_events' in self.options and 'value' in self.options['output_events']:
             # get the event to use for distributing the sine-value during update
             self.valueEvent = self.event_manager.get(self.options['output_events']['value'])
+            self.logger.debug('sine outputting values to event: '+self.options['output_events']['value'])
         else:
             # dummy event
             self.valueEvent = Event()
@@ -46,7 +47,7 @@ class Sine(BaseComponent):
         self.cursor += self.cursorSpeed * dt
         self._lastValue = self.base + math.sin(self.cursor) * self.amplitude
         self.valueEvent(self._lastValue)
-        self.logger.debug("sine value: "+str(self._lastValue))
+        # self.logger.debug("sine value: "+str(self._lastValue))
 
         if self.sleep:
             time.sleep(self.sleep)

@@ -6,7 +6,7 @@ py2030:
       lightCeremonyControllers:
         theOne:
           verbose: true
-          resetUpMaxDuration: 10.0 # seconds
+          resetUpMaxDuration: 15.0 # seconds
           resetUpVelocity: 0.7
           resetDownMaxDuration: 20.0 # seconds
           resetDownVelocity: 0.2
@@ -16,6 +16,7 @@ py2030:
             resetDown: 'cmd-reset-down'
             togglePlayShow: 'cmd-play-pause'
             stopShow: 'cmd-stop'
+            play1: 'cmd-play1'
 
       lightCeremonyDmxOutputs:
         theOne:
@@ -46,7 +47,7 @@ py2030:
               13: '_foo_'
               14: '_foo_'
               15: '_foo_'
-              16: '_foo_'
+              16: 'cmd-play1'
               17: 'cmd-reset-down'
               18: 'cmd-reset-up'
 

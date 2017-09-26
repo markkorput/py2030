@@ -33,7 +33,7 @@ class LightCeremonyController(BaseComponent):
         self.getInputEvent('resetDown').subscribe(self._onResetDownCmd)
         self.getInputEvent('play1').subscribe(self._onPlay1)
         self.event_manager.get('play1-winchVel').subscribe(self._onPlay1WinchVel)
-        self.event_manager.get('play1-rotVel').subscribe(self._onPlay1rotVel)
+        self.event_manager.get('play1-rotVel').subscribe(self._onPlay1RotVel)
 
     def update(self):
         t = time.time()

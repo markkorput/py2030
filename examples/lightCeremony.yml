@@ -43,13 +43,13 @@ py2030:
           port: 1
           output_events:
             179:
-              10: '_foo_'
-              11: '_foo_'
+              10: 'cmd-play1'
+              11: 'cmd-play2'
               12: '_foo_'
               13: '_foo_'
               14: '_foo_'
               15: '_foo_'
-              16: 'cmd-play1'
+              16: '_foo_'
               17: 'cmd-reset-down'
               18: 'cmd-reset-up'
 

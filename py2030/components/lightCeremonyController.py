@@ -98,7 +98,7 @@ class LightCeremonyController(BaseComponent):
         if self.bPlaying:
             self.bPlaying = False
             self.event_manager.get('dmxBlack').fire()
-        else
+        else:
             self.bPlaying = True
 
     def _onPlay1WinchVel(self, vel):

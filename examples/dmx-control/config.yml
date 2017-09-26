@@ -1,77 +1,9 @@
 py2030:
   profiles:
     raspberrypi:
-      file_frame_reader:
-        reader1:
-          verbose: true
-          file: 'anim.csv'
-        output_events:
-          frame: 'frame'
+      start_event_: 'cmd-reset-up'
 
-      lightCeremonyDmxOutputs:
-        theOne:
-          verbose: false
-          fps: 10.0
-          deviceName: '/dev/ttyUSB0'
-          channel_event_prefix: 'ch'
-          num_channels: 24
-          winchVelocityEvent: 'winchVel'
-          winchStartChannel: 1
-          rotatorVelocityEvent: 'rotVel'
-          rotatorStartChannel: 10
-
-      sines:
-        sineLight:
-          verbose: true
-          frequency: 0.2
-          sleep_DISABLED_BLOCKING: 1.0
-          amplitude: 0.3
-          base: 0.3
-          cursorStart: -0.5
-          output_events:
-            'value': 'ch23'
-
-        sineWinchVelocity:
-          verbose: true
-          frequency: 0.1
-          sleep_DISABLED_BLOCKING: 1.0
-          amplitude: 0.1
-          base: -0.032
-          cursorStart: 0.0
-          output_events:
-            'value': 'winchVel'
-
-        sineRotatorVelocity:
-          verbose: true
-          frequency: 0.1
-          sleep_DISABLED_BLOCKING: 1.0
-          amplitude: 0.8
-          base: 0
-          cursorStart: 0.0
-          output_events:
-            'value': 'rotVel'
-
-        sineWinchVelocity_almost_in_balance:
-          verbose: true
-          frequency: 0.1
-          sleep_DISABLED_BLOCKING: 1.0
-          amplitude: 0.1
-          base: -0.032
-          cursorStart: 3.0
-          output_events:
-            'value': 'winchVel_DISABLED'
-
-    default:
-      start_event: 'cmd-reset-up'
-
-      file_frame_reader:
-        reader1:
-          verbose: true
-          file: 'anim.csv'
-        output_events:
-          frame: 'frame'
-
-      lightCeremonyControllers:
+      lightCeremonyControllers__:
         theOne:
           verbose: true
           resetUpMaxDuration: 10.0 # seconds
@@ -85,20 +17,22 @@ py2030:
 
       lightCeremonyDmxOutputs:
         theOne:
-          verbose: false
+          verbose: true
           fps: 10.0
-          deviceName: '/dev/cu.usbserial-EN114902'
+          deviceName: '/dev/ttyUSB0'
           channel_event_prefix: 'ch'
           num_channels: 24
-          winchVelocityEvent: 'winchVel'
           winchStartChannel: 1
-          rotatorVelocityEvent: 'rotVel'
           rotatorStartChannel: 10
-
+          input_events:
+            winchVelocity: 'winchVel'
+            winchResetUpVelocity: 'winchResetUpVel'
+            winchResetDownVelocity: 'winchResetDownVel'
+            rotatorVelocity: 'rotVel'
 
       sines:
         sineLight:
-          verbose: true
+          verbose: false
           frequency: 0.2
           sleep_DISABLED_BLOCKING: 1.0
           amplitude: 0.3
@@ -108,7 +42,7 @@ py2030:
             'value': 'ch23'
 
         sineWinchVelocity:
-          verbose: true
+          verbose: false
           frequency: 0.1
           sleep_DISABLED_BLOCKING: 1.0
           amplitude: 0.1
@@ -118,7 +52,7 @@ py2030:
             'value': 'winchVel'
 
         sineRotatorVelocity:
-          verbose: true
+          verbose: false
           frequency: 0.1
           sleep_DISABLED_BLOCKING: 1.0
           amplitude: 0.8
@@ -127,12 +61,63 @@ py2030:
           output_events:
             'value': 'rotVel'
 
-        sineWinchVelocity_almost_in_balance:
+    default:
+      start_event_: 'cmd-reset-up'
+
+      lightCeremonyControllers__:
+        theOne:
           verbose: true
+          resetUpMaxDuration: 10.0 # seconds
+          input_events:
+            resetUp: 'cmd-reset-up'
+            resetUpStop: 'cmd-reset-up-stop'
+            resetDown: 'cmd-reset-down'
+            resetDownStop: 'cmd-reset-down-stop'
+            togglePlayShow: 'cmd-play-pause'
+            stopShow: 'cmd-stop'
+
+      lightCeremonyDmxOutputs:
+        theOne:
+          verbose: true
+          fps: 10.0
+          deviceName: '/dev/cu.usbserial-EN114902'
+          channel_event_prefix: 'ch'
+          num_channels: 24
+          winchStartChannel: 1
+          rotatorStartChannel: 10
+          input_events:
+            winchVelocity: 'winchVel'
+            winchResetUpVelocity: 'winchResetUpVel'
+            winchResetDownVelocity: 'winchResetDownVel'
+            rotatorVelocity: 'rotVel'
+
+      sines:
+        sineLight:
+          verbose: false
+          frequency: 0.2
+          sleep_DISABLED_BLOCKING: 1.0
+          amplitude: 0.3
+          base: 0.3
+          cursorStart: -0.5
+          output_events:
+            'value': 'ch23'
+
+        sineWinchVelocity:
+          verbose: false
           frequency: 0.1
           sleep_DISABLED_BLOCKING: 1.0
           amplitude: 0.1
           base: -0.032
-          cursorStart: 3.0
+          cursorStart: 0.0
           output_events:
-            'value': 'winchVel_DISABLED'
+            'value': 'winchVel'
+
+        sineRotatorVelocity:
+          verbose: false
+          frequency: 0.1
+          sleep_DISABLED_BLOCKING: 1.0
+          amplitude: 0.8
+          base: 0
+          cursorStart: 0.0
+          output_events:
+            'value': 'rotVel'

@@ -1,26 +1,73 @@
 py2030:
   profiles:
     raspberrypi:
-      file_frame_reader:
-        reader1:
+      start_event_DISABLED: 'cmd-reset-up'
+
+      lightCeremonyControllers:
+        theOne:
           verbose: true
-          file: 'anim.csv'
-        output_events:
-          frame: 'frame'
+          resetUpMaxDuration: 10.0 # seconds
+          resetUpVelocity: 0.25
+          resetDownMaxDuration: 20.0 # seconds
+          resetDownVelocity: 0.2
+
+          input_events:
+            resetUp: 'cmd-reset-up'
+            resetDown: 'cmd-reset-down'
+            togglePlayShow: 'cmd-play-pause'
+            stopShow: 'cmd-stop'
 
       lightCeremonyDmxOutputs:
         theOne:
           verbose: false
           fps: 10.0
           deviceName: '/dev/ttyUSB0'
+          deviceName_: '/dev/cu.usbserial-EN114902'
+          bottomPosition: 0.5
           channel_event_prefix: 'ch'
           num_channels: 24
-          winchVelocityEvent: 'winchVel'
           winchStartChannel: 1
-          rotatorVelocityEvent: 'rotVel'
           rotatorStartChannel: 10
+          resetDownDeltaPos: 0.05
+          input_events:
+            winchVelocity: 'winchVel'
+            winchResetUpVelocity: 'winchResetUpVel'
+            winchResetDownVelocity: 'winchResetDownVel'
+            rotatorVelocity: 'rotVel'
 
-      sines:
+      midi_inputs:
+        midi_in_1:
+          verbose: false
+          port: 1
+          output_events:
+            179:
+              10: '_foo_'
+              11: '_foo_'
+              12: '_foo_'
+              13: '_foo_'
+              14: '_foo_'
+              15: '_foo_'
+              16: '_foo_'
+              17: 'cmd-reset-down'
+              18: 'cmd-reset-up'
+
+      midi_outputs:
+        midi1:
+          verbose: false
+          port: 1
+          input_events:
+            channel_percentages:
+              '179':
+                '1': '__foo__'
+                '2': '__foo__'
+                '3': '__foo__'
+                '4': '__foo__'
+                '5': '__foo__'
+                '6': '__foo__'
+                '7': '__foo__'
+                '8': 'resetDownPos'
+                '9': 'resetUpActive'
+      sines__:
         sineLight:
           verbose: true
           frequency: 0.2

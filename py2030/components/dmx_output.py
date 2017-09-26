@@ -24,7 +24,7 @@ class DmxOutput(BaseComponent):
         self.deviceName = self.options['deviceName'] if 'deviceName' in self.options else None
         self.deviceNumber = int(self.options['deviceNumber']) if 'deviceNumber' in self.options else None
 
-        self.fps = self.options['fps'] if 'fps' in self.options else 4.0
+        self.fps = self.getOption('fps', 4.0)
         self.frameTime = 1.0 / self.fps
 
         self.logger = logging.getLogger(__name__)
@@ -64,6 +64,7 @@ class DmxOutput(BaseComponent):
 
     def update(self):
         t = time.time()
+
         if self.dirty and t >= self.nextFrameTime:
             # dmx update
             if self.dmx != None:
@@ -94,4 +95,4 @@ class DmxOutput(BaseComponent):
         if self.dmx != None:
             self.dmx.setChannel(idx+2, dmxVal) # +2?!
         self.dirty = True
-        self.logger.debug('new value for channel '+str(idx+1)+": "+str(dmxVal))
+        # self.logger.debug('new value for channel '+str(idx+1)+": "+str(dmxVal))

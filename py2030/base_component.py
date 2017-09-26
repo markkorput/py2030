@@ -1,3 +1,5 @@
+from evento import Event
+
 class BaseComponent:
     config_name = None
 

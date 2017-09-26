@@ -9,7 +9,6 @@ class LightCeremonyDmxOutput(DmxOutput):
     def setup(self, event_manager=None):
         DmxOutput.setup(self, event_manager)
         self.bottomPosition = self.getOption('bottomPosition', 0.5)
-
         self.winchStartChannelIdx = int(self.getOption('winchStartChannel', 1))-1
 
         self.CH_WINCH_POS_ROUGH = self.winchStartChannelIdx + 0
@@ -33,8 +32,7 @@ class LightCeremonyDmxOutput(DmxOutput):
         self.CH_ROT_CW_VELOCITY = self.rotatorStartChannel + 3
         self.CH_ROT_CCW_VELOCITY = self.rotatorStartChannel + 4
 
-        event = self.getInputEvent('rotatorVelocity')
-        event += self._onRotatorVelocity
+        self.getInputEvent('rotatorVelocity').subscribe(self._onRotatorVelocity)
         # self.logger.debug('registed listener for rotator velocity event: '+self.options['rotatorVelocity'])
 
         self.bResetDownActive = False
@@ -51,6 +49,9 @@ class LightCeremonyDmxOutput(DmxOutput):
             self._winchToPos(self.resetDownPos, self.resetDownVelocity)
             self.event_manager.get('resetDownPos').fire(self.resetDownPos)
             self.logger.debug('reset down pos: '+str(self.resetDownPos))
+
+        # super
+        DmxOutput.update(self)
 
     def _onWinchVelocity(self, vel):
         if vel > 0:

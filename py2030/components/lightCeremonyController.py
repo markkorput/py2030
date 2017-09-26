@@ -56,11 +56,13 @@ class LightCeremonyController(BaseComponent):
         t = time.time()
         self.resetUpEndTime = t + self.resetUpMaxDuration
         self.event_manager.get('winchResetUpVel').fire(self.getOption('resetUpVelocity', 0.25))
+        self.event_manager.get('resetUpActive').fire(0.5) # midi out;
         self.bResetUpActive = True
 
     def _endResetUp(self):
         self.logger.debug('ending reset-up...')
         self.event_manager.get('winchResetUpVel').fire(0.0)
+        self.event_manager.get('resetUpActive').fire(0.0) # midi out; 
         self.bResetUpActive = False
 
     # RESET DOWN

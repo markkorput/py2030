@@ -39,7 +39,6 @@ class LightCeremonyDmxOutput(DmxOutput):
 
         self.bResetDownActive = False
 
-
     def update(self):
         if self.bResetDownActive:
             t = time.time()
@@ -50,6 +49,7 @@ class LightCeremonyDmxOutput(DmxOutput):
 
             self.resetDownPos -= dt * self.getOption('resetDownDeltaPos', 0.05)
             self._winchToPos(self.resetDownPos, self.resetDownVelocity)
+            self.event_manager.get('resetDownPos').fire(self.resetDownPos)
             self.logger.debug('reset down pos: '+str(self.resetDownPos))
 
     def _onWinchVelocity(self, vel):
@@ -93,4 +93,5 @@ class LightCeremonyDmxOutput(DmxOutput):
         self.logger.debug('ending winch reset-down...')
         self.bResetDownActive = False
         self.bottomPosition = self.resetDownPos
+        self.event_manager.get('resetDownPos').fire(0.0)
         self.logger.info("winch reset-down finished at position: "+str(self.bottomPosition))

@@ -1,5 +1,66 @@
 py2030:
   profiles:
+    raspberrypi:
+      file_frame_reader:
+        reader1:
+          verbose: true
+          file: 'anim.csv'
+        output_events:
+          frame: 'frame'
+
+      lightCeremonyDmxOutputs:
+        theOne:
+          verbose: false
+          fps: 10.0
+          deviceName: '/dev/ttyUSB0'
+          channel_event_prefix: 'ch'
+          num_channels: 24
+          winchVelocityEvent: 'winchVel'
+          winchStartChannel: 1
+          rotatorVelocityEvent: 'rotVel'
+          rotatorStartChannel: 10
+
+      sines:
+        sineLight:
+          verbose: true
+          frequency: 0.2
+          sleep_DISABLED_BLOCKING: 1.0
+          amplitude: 0.3
+          base: 0.3
+          cursorStart: -0.5
+          output_events:
+            'value': 'ch23'
+
+        sineWinchVelocity:
+          verbose: true
+          frequency: 0.1
+          sleep_DISABLED_BLOCKING: 1.0
+          amplitude: 0.1
+          base: -0.032
+          cursorStart: 0.0
+          output_events:
+            'value': 'winchVel'
+
+        sineRotatorVelocity:
+          verbose: true
+          frequency: 0.1
+          sleep_DISABLED_BLOCKING: 1.0
+          amplitude: 0.8
+          base: 0
+          cursorStart: 0.0
+          output_events:
+            'value': 'rotVel'
+
+        sineWinchVelocity_almost_in_balance:
+          verbose: true
+          frequency: 0.1
+          sleep_DISABLED_BLOCKING: 1.0
+          amplitude: 0.1
+          base: -0.032
+          cursorStart: 3.0
+          output_events:
+            'value': 'winchVel_DISABLED'
+
     default:
       file_frame_reader:
         reader1:

@@ -46,6 +46,7 @@ class Sine(BaseComponent):
         self.cursor += self.cursorSpeed * dt
         self._lastValue = self.base + math.sin(self.cursor) * self.amplitude
         self.valueEvent(self._lastValue)
+        self.logger.debug("sine value: "+str(self._lastValue))
 
         if self.sleep:
             time.sleep(self.sleep)

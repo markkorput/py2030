@@ -92,6 +92,6 @@ class DmxOutput(BaseComponent):
         dmxVal = int(val * 255.0)
 
         if self.dmx != None:
-            self.dmx.setChannel(idx+1, dmxVal) # +2?!
+            self.dmx.setChannel(idx+2, dmxVal) # +2?!
         self.dirty = True
         self.logger.debug('new value for channel '+str(idx+1)+": "+str(dmxVal))

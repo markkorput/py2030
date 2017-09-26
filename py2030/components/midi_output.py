@@ -9,8 +9,6 @@ try:
 except ImportError as err:
     logging.getLogger(__name__).warning("Importing of rtmidi failed, MidiOutput component will not work.")
     rtmidi = None
-del rtmidi
-rtmidi = None
 
 class ValueListener:
     def __init__(self, midi, cmd, ch, event, logger):
@@ -129,17 +127,24 @@ class MidiOutput(BaseComponent):
         try:
             self.midi = rtmidi.MidiOut().open_port(self.port)
         except IOError as err:
-            print("Failed to initialize MIDI interface:", err)
+            print("Failed to initialize MIDI-out interface:", err)
             self.midi = None
             # self.port_name = None
             self.connected = False
             return
         except EOFError as err:
-            print("Failed to initialize MIDI interface")
+            print("Failed to initialize MIDI-out interface")
             self.midi = None
             # self.port_name = None
             self.connected = False
             return
+        except RuntimeError as err:
+            print("Failed to initialize MIDI-out interface")
+            self.midi = None
+            # self.port_name = None
+            self.connected = False
+            return
+
         print("Midi output initialized on port: " + str(self.port))
         self.connected = True
 

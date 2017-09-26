@@ -96,3 +96,7 @@ class DmxOutput(BaseComponent):
             self.dmx.setChannel(idx+2, dmxVal) # +2?!
         self.dirty = True
         # self.logger.debug('new value for channel '+str(idx+1)+": "+str(dmxVal))
+
+    def black(self):
+        for i in range(self.num_channels):
+            self._setChannel(i, 0.0)

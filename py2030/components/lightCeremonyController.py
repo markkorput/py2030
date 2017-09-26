@@ -95,7 +95,11 @@ class LightCeremonyController(BaseComponent):
         self.bResetDownActive = False
 
     def _onPlay1(self):
-        self.bPlaying = True
+        if self.bPlaying:
+            self.bPlaying = False
+            self.event_manager.get('dmxBlack').fire()
+        else
+            self.bPlaying = True
 
     def _onPlay1WinchVel(self, vel):
         if self.bPlaying:

@@ -8,7 +8,7 @@ py2030:
           verbose: true
           resetUpMaxDuration: 15.0 # seconds
           resetUpVelocity: 0.5
-          resetDownMaxDuration: 20.0 # seconds
+          resetDownMaxDuration: 30.0 # seconds
           resetDownVelocity: 0.5
           resetDownDeltaPos: 0.001
 
@@ -35,6 +35,7 @@ py2030:
             winchResetUpVelocity: 'winchResetUpVel'
             winchResetDownVelocity: 'winchResetDownVel'
             rotatorVelocity: 'rotVel'
+            black: 'dmxBlack'
 
       midi_inputs:
         midi_in_1:

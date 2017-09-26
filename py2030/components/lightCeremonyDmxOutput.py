@@ -34,6 +34,7 @@ class LightCeremonyDmxOutput(DmxOutput):
 
         self.getInputEvent('rotatorVelocity').subscribe(self._onRotatorVelocity)
         # self.logger.debug('registed listener for rotator velocity event: '+self.options['rotatorVelocity'])
+        self.getInputEvent('black').subscribe(self._onBlack)
 
         self.bResetDownActive = False
 
@@ -45,7 +46,7 @@ class LightCeremonyDmxOutput(DmxOutput):
                 dt = t-self.resetPreviousTime
             self.resetPreviousTime = t
 
-            self.resetDownPos -= dt * self.getOption('resetDownDeltaPos', 0.05)
+            self.resetDownPos -= dt * self.getOption('resetDownDeltaPos', 0.001)
             self._winchToPos(self.resetDownPos, self.resetDownVelocity)
             self.event_manager.get('resetDownPos').fire(self.resetDownPos)
             self.logger.debug('reset down pos: '+str(self.resetDownPos))
@@ -97,3 +98,6 @@ class LightCeremonyDmxOutput(DmxOutput):
         self.event_manager.get('resetDownPos').fire(0.0)
         self._winchToPos(1.0, 0.5) # move back up
         self.logger.warn("winch reset-down finished at position: "+str(self.bottomPosition))
+
+    def _onBlack(self):
+        self.black()

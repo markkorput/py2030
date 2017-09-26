@@ -95,4 +95,5 @@ class LightCeremonyDmxOutput(DmxOutput):
         self.bResetDownActive = False
         self.bottomPosition = self.resetDownPos
         self.event_manager.get('resetDownPos').fire(0.0)
-        self.logger.info("winch reset-down finished at position: "+str(self.bottomPosition))
+        self._winchToPos(1.0, 0.5) # move back up
+        self.logger.warn("winch reset-down finished at position: "+str(self.bottomPosition))

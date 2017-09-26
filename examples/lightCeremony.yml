@@ -7,7 +7,7 @@ py2030:
         theOne:
           verbose: true
           resetUpMaxDuration: 10.0 # seconds
-          resetUpVelocity: 0.25
+          resetUpVelocity: 0.7
           resetDownMaxDuration: 20.0 # seconds
           resetDownVelocity: 0.2
 
@@ -22,7 +22,6 @@ py2030:
           verbose: false
           fps: 10.0
           deviceName: '/dev/ttyUSB0'
-          deviceName_: '/dev/cu.usbserial-EN114902'
           bottomPosition: 0.5
           channel_event_prefix: 'ch'
           num_channels: 24
@@ -67,7 +66,9 @@ py2030:
                 '7': '__foo__'
                 '8': 'resetDownPos'
                 '9': 'resetUpActive'
-      sines__:
+
+
+      sines:
         sineLight:
           verbose: true
           frequency: 0.2
@@ -82,11 +83,11 @@ py2030:
           verbose: true
           frequency: 0.1
           sleep_DISABLED_BLOCKING: 1.0
-          amplitude: 0.1
-          base: -0.032
+          amplitude: 1.0
+          base: 0
           cursorStart: 0.0
           output_events:
-            'value': 'winchVel'
+            'value': 'play1-winchVel'
 
         sineRotatorVelocity:
           verbose: true
@@ -96,7 +97,7 @@ py2030:
           base: 0
           cursorStart: 0.0
           output_events:
-            'value': 'rotVel'
+            'value': 'play1-rotVel'
 
         sineWinchVelocity_almost_in_balance:
           verbose: true
@@ -174,7 +175,9 @@ py2030:
                 '7': '__foo__'
                 '8': 'resetDownPos'
                 '9': 'resetUpActive'
-      sines__:
+
+
+      sines:
         sineLight:
           verbose: true
           frequency: 0.2
@@ -189,11 +192,11 @@ py2030:
           verbose: true
           frequency: 0.1
           sleep_DISABLED_BLOCKING: 1.0
-          amplitude: 0.1
-          base: -0.032
+          amplitude: 1.0
+          base: 0
           cursorStart: 0.0
           output_events:
-            'value': 'winchVel'
+            'value': 'play1-winchVel'
 
         sineRotatorVelocity:
           verbose: true
@@ -203,7 +206,7 @@ py2030:
           base: 0
           cursorStart: 0.0
           output_events:
-            'value': 'rotVel'
+            'value': 'play1-rotVel'
 
         sineWinchVelocity_almost_in_balance:
           verbose: true

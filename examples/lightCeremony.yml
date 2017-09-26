@@ -62,7 +62,7 @@ py2030:
             'value': 'winchVel_DISABLED'
 
     default:
-      start_event: 'cmd-reset-up'
+      start_event_DISABLED: 'cmd-reset-up'
 
       lightCeremonyControllers:
         theOne:
@@ -80,13 +80,15 @@ py2030:
 
       lightCeremonyDmxOutputs:
         theOne:
-          verbose: false
+          verbose: true
           fps: 10.0
           deviceName: '/dev/cu.usbserial-EN114902'
+          bottomPosition: 0.5
           channel_event_prefix: 'ch'
           num_channels: 24
           winchStartChannel: 1
           rotatorStartChannel: 10
+          resetDownDeltaPos: 0.05
           input_events:
             winchVelocity: 'winchVel'
             winchResetUpVelocity: 'winchResetUpVel'

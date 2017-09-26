@@ -60,7 +60,7 @@ class DmxOutput(BaseComponent):
             evt = self.event_manager.get(self.channel_event_prefix+str(i+1))
             evt += lambda val, idx=i: self._setChannel(idx, val)
 
-        self.logger.debug('registered event listeners for '+str(self.num_channels)+' channels')
+        # self.logger.debug('registered event listeners for '+str(self.num_channels)+' channels')
 
     def update(self):
         t = time.time()
@@ -69,7 +69,7 @@ class DmxOutput(BaseComponent):
             if self.dmx != None:
                 self.dmx.render()
 
-            self.logger.debug('DMX update')
+            # self.logger.debug('DMX update')
             self.nextFrameTime = t + self.frameTime
             self.dirty = False
 
@@ -89,6 +89,9 @@ class DmxOutput(BaseComponent):
 
     def _setChannel(self, idx, val):
         # self.logger.debug('_setChannel: '+str(idx+1)+' with: '+str(val)+' ('+str(int(val * 255.0))+')')
+        dmxVal = int(val * 255.0)
+
         if self.dmx != None:
-            self.dmx.setChannel(idx+2, int(val * 255.0)) # +2?!
+            self.dmx.setChannel(idx+1, dmxVal) # +2?!
         self.dirty = True
+        self.logger.debug('new value for channel '+str(idx+1)+": "+str(dmxVal))

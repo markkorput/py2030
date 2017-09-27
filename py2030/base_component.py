@@ -1,3 +1,4 @@
+import logging
 from evento import Event
 
 class BaseComponent:
@@ -5,6 +6,10 @@ class BaseComponent:
 
     def __init__(self, options):
         self.options = options
+
+        self.logger = logging.getLogger(self.config_name)
+        if 'verbose' in options and options['verbose']:
+            self.logger.setLevel(logging.DEBUG)
 
     def setup(self, event_manager):
         self.event_manager = event_manager

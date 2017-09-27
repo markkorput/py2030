@@ -1,1 +1,1 @@
-scp -r ./* pi@raspberrypi.local:~/py2030
+scp -r ../py2030 pi@raspberrypi.local:/home/pi/

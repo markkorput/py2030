@@ -1,4 +1,12 @@
-from evento import Event
+import time
+
+Event = None
+while Event == None:
+    try:
+        from evento import Event
+    except ImportError:
+        evento = None
+        time.sleep(1.0)
 
 class ParamsEvent(Event):
     def setup(self, event, params=[]):

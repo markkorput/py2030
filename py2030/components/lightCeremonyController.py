@@ -26,14 +26,17 @@ class LightCeremonyController(BaseComponent):
         self.bResetUpActive = False
         self.bResetDownActive = False
         self.bPlaying = False
+        self.bPlaying1 = False
+        self.bPlaying2 = False
 
     def setup(self, event_manager=None):
         self.event_manager = event_manager
         self.getInputEvent('resetUp').subscribe(self._onResetUpCmd)
         self.getInputEvent('resetDown').subscribe(self._onResetDownCmd)
         self.getInputEvent('play1').subscribe(self._onPlay1)
-        self.event_manager.get('play1-winchVel').subscribe(self._onPlay1WinchVel)
-        self.event_manager.get('play1-rotVel').subscribe(self._onPlay1RotVel)
+        self.getInputEvent('play2').subscribe(self._onPlay1)
+        self.event_manager.get('play-winchVel').subscribe(self._onPlayWinchVel)
+        self.event_manager.get('play-rotVel').subscribe(self._onPlayRotVel)
 
     def update(self):
         t = time.time()
@@ -95,16 +98,57 @@ class LightCeremonyController(BaseComponent):
         self.bResetDownActive = False
 
     def _onPlay1(self):
-        if self.bPlaying:
+        if self.bPlaying1:
+            if self.bPlaying:
+                # pause
+                self.bPlaying = False
+                self.event_manager.get('cmd-anim1-pause')
+                self.event_manager.get('dmxBlack').fire()
+            else:
+                self.bPlaying = True
+                self.event_manager.get('cmd-anim1-play')
+
+        elif self.bPlaying2:
+            self.event_manager.get('cmd-anim2-stop').fire()
+            self.bPlaying2 = False
             self.bPlaying = False
             self.event_manager.get('dmxBlack').fire()
+            self._onPlay1() # try again
+
         else:
             self.bPlaying = True
+            self.bPlaying1 = True
+            self.event_manager.get('cmd-anim1-start')
 
-    def _onPlay1WinchVel(self, vel):
+    def _onPlay2(self):
+        if self.bPlaying2:
+            if self.bPlaying:
+                # pause
+                self.bPlaying = False
+                self.event_manager.get('cmd-anim2-pause')
+                self.event_manager.get('dmxBlack').fire()
+            else:
+                # resume
+                self.bPlaying = True
+                self.event_manager.get('cmd-anim2-play')
+
+        elif self.bPlaying1:
+            self.event_manager.get('cmd-anim1-stop').fire()
+            self.bPlaying1 = False
+            self.bPlaying = False
+            self.event_manager.get('dmxBlack').fire()
+            self._onPlay2() # try again
+
+        else:
+            self.bPlaying = True
+            self.bPlaying2 = True
+            self.event_manager.get('cmd-anim2-start')
+
+
+    def _onPlayWinchVel(self, vel):
         if self.bPlaying:
             self.event_manager.get('winchVel').fire(vel)
 
-    def _onPlay1RotVel(self, vel):
+    def _onPlayRotVel(self, vel):
         if self.bPlaying:
             self.event_manager.get('rotVel').fire(vel)

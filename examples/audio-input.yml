@@ -1,0 +1,7 @@
+py2030:
+  profiles:
+    default:
+      audio_inputs:
+        audio1:
+          verbose: true
+          device: 1

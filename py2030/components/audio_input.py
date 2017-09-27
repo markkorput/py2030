@@ -32,6 +32,7 @@ class AudioInput(BaseComponent):
 
     def setup(self, event_manager):
         BaseComponent.setup(self, event_manager)
+        self.levelEvent = self.getOutputEvent('level', True)
 
         if not pyaudio:
             self.stream = None
@@ -54,16 +55,6 @@ class AudioInput(BaseComponent):
             self.stream.close()
             self.stream = None
 
-    # def update(self):
-    #     if self.stream:
-    #         # Read raw microphone data
-    #         rawsamps = self.stream.read(1024)
-    #         # Convert raw data to NumPy array
-    #         samps = numpy.fromstring(rawsamps, dtype=numpy.int16)
-    #         # Show the volume and pitch
-    #         self.logger.debug('loudness: ', analyse.loudness(samps))
-    #         # print analyse.loudness(samps), analyse.musical_detect_pitch(samps)
-
     def _streamCallback(self, in_data, frame_count, time_info, flag):
         if numpy:
             # audio_data = numpy.fromstring(in_data, dtype=numpy.float32)
@@ -73,34 +64,13 @@ class AudioInput(BaseComponent):
             # self.logger.warn('fulldaata')
             # self.logger.warn(self.fulldata)
             level = audioop.rms(in_data, 2)
+            self.levelEvent.fire(level)
+
             s = "level: "
             i = 0
             while i < level:
                 i += 10
                 s += "#"
             self.logger.debug(s)
+
         return (in_data, pyaudio.paContinue)
-
-
-#
-#
-#
-# # Initialize PyAudio
-# pyaud = pyaudio.PyAudio()
-#
-# # Open input stream, 16-bit mono at 44100 Hz
-# # On my system, device 4 is a USB microphone
-# stream = pyaud.open(
-#     format = pyaudio.paInt16,
-#     channels = 1,
-#     rate = 44100,
-#     input_device_index = 2,
-#     input = True)
-#
-# while True:
-#     # Read raw microphone data
-#     rawsamps = stream.read(1024)
-#     # Convert raw data to NumPy array
-#     samps = numpy.fromstring(rawsamps, dtype=numpy.int16)
-#     # Show the volume and pitch
-#     print analyse.loudness(samps), analyse.musical_detect_pitch(samps)

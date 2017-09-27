@@ -5,3 +5,5 @@ py2030:
         audio1:
           verbose: true
           device: 1
+          output_events:
+            level: 'audio-level'

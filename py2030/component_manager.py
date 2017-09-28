@@ -1,4 +1,4 @@
-import copy
+import copy, sys
 from datetime import datetime
 import logging
 logging.basicConfig(level=logging.WARNING)
@@ -16,6 +16,8 @@ class ComponentManager:
         self.options = options
 
         logging.basicConfig()
+        logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+
         self.logger = logging.getLogger(__name__)
         if 'verbose' in self.options and self.options['verbose']:
             self.logger.setLevel(logging.DEBUG)

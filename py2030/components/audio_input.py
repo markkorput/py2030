@@ -13,23 +13,11 @@ def loadDependencies():
     import sys
 
     try:
-        import numpy
-    except ImportError:
-        numpy = None
-        sys.stderr.write("could not load numpy library, audio_input will not function properly\n")
-
-    try:
         import pyaudio as pya
         pyaudio = pya
     except ImportError:
         pyaudio = None
         sys.stderr.write("could not load pyaudio library, audio_input will not function properly\n")
-
-    # try:
-    #     import analyse
-    # except ImportError:
-    #     analyse = None
-    #     sys.stderr.write("could not load analyse library, audio_input will not function properly\n")
 
     try:
         import audioop
@@ -40,9 +28,7 @@ def loadDependencies():
     del sys
 
     deps = {}
-    deps['numpy'] = numpy
     deps['pyaudio'] = pyaudio
-    # deps['analyse'] = analyse
     deps['audioop'] = audioop
     return deps
 
@@ -52,8 +38,6 @@ class AudioInput(BaseComponent):
     def setup(self, event_manager):
         deps = loadDependencies()
         self.pyaudio = deps['pyaudio']
-        self.numpy = deps['numpy']
-        # self.analyse = deps['analyse']
         self.audioop = deps['audioop']
 
         BaseComponent.setup(self, event_manager)
@@ -69,8 +53,6 @@ class AudioInput(BaseComponent):
                 #input_device_index=2,
                 input=True,
                 stream_callback=self._streamCallback)
-            self.fulldata = self.numpy.array([])
-            self.dry_data = self.numpy.array([])
 
             self.stream.start_stream()
 
@@ -81,22 +63,15 @@ class AudioInput(BaseComponent):
             self.stream = None
 
     def _streamCallback(self, in_data, frame_count, time_info, flag):
-        if self.numpy:
-            # audio_data = self.numpy.fromstring(in_data, dtype=self.numpy.float32)
-            # self.dry_data = self.numpy.append(self.dry_data,audio_data)
-            # #do processing here
-            # self.fulldata = self.numpy.append(self.fulldata,audio_data)
-            # self.logger.warn('fulldaata')
-            # self.logger.warn(self.fulldata)
-            level = self.audioop.rms(in_data, 2)
-            self.levelEvent.fire(level)
+        level = self.audioop.rms(in_data, 2)
+        self.levelEvent.fire(level)
 
-            s = "level: "
-            i = 0
-            while i < level:
-                i += 10
-                s += "#"
-            self.logger.debug(s)
+        s = "level: "
+        i = 0
+        while i < level:
+            i += 10
+            s += "#"
+        self.logger.debug(s)
 
         if self.pyaudio:
             return (in_data, self.pyaudio.paContinue)

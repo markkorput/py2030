@@ -15,6 +15,4 @@ pysimpledmx==0.1.1
 python-rtmidi==1.1.0 #0.5b1
 
 # audio
-numpy==1.13.1
-analyse==1.0.0
 pyaudio==0.2.11

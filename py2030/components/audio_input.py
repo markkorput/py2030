@@ -87,7 +87,7 @@ class AudioInput(BaseComponent):
                 for i in range(self.pyaudio.PyAudio().get_device_count()):
                     name = self.pyaudio.PyAudio().get_device_info_by_index(i)['name']
                     log = 'Audio device: ' + name
-                    if name == device_name:
+                    if name == device_name or name.lower().find(device_name.lower()) >= 0:
                         device_index = i
                         log += '\t<-----'
 

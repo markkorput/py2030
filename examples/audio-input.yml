@@ -5,6 +5,11 @@ py2030:
         audio1:
           verbose: true
           device_index_: 3
-          device_name: 'USB Audio Device'
+          device_name: 'USB Audio device'
           output_events:
             level: 'audio-level'
+
+      midi_inputs:
+        midi_in_1:
+          verbose: true
+          port: 1

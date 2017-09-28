@@ -36,12 +36,12 @@ class AudioInput(BaseComponent):
     config_name = 'audio_inputs'
 
     def setup(self, event_manager):
+        BaseComponent.setup(self, event_manager)
+        self.levelEvent = self.getOutputEvent('level', True)
+
         deps = loadDependencies()
         self.pyaudio = deps['pyaudio']
         self.audioop = deps['audioop']
-
-        BaseComponent.setup(self, event_manager)
-        self.levelEvent = self.getOutputEvent('level', True)
 
         if not self.pyaudio:
             self.stream = None
@@ -50,7 +50,7 @@ class AudioInput(BaseComponent):
                 format=self.pyaudio.paInt16, # self.pyaudio.paFloat32
                 channels=1,
                 rate=44100,
-                #input_device_index=2,
+                input_device_index=self._getDeviceIndex(),
                 input=True,
                 stream_callback=self._streamCallback)
 
@@ -66,12 +66,31 @@ class AudioInput(BaseComponent):
         level = self.audioop.rms(in_data, 2)
         self.levelEvent.fire(level)
 
-        s = "level: "
-        i = 0
-        while i < level:
-            i += 10
-            s += "#"
-        self.logger.debug(s)
+        if self.verbose:
+            s = "level: "
+            i = 0
+            while i < level:
+                i += 50
+                s += "#"
+            self.logger.debug(s)
 
         if self.pyaudio:
             return (in_data, self.pyaudio.paContinue)
+
+    def _getDeviceIndex(self):
+        device_index = self.getOption('device_index', None)
+
+        if not device_index:
+            device_name = self.getOption('device_name', None)
+
+            if device_name:
+                for i in range(self.pyaudio.PyAudio().get_device_count()):
+                    name = self.pyaudio.PyAudio().get_device_info_by_index(i)['name']
+                    log = 'Audio device: ' + name
+                    if name == device_name:
+                        device_index = i
+                        log += '\t<-----'
+
+                    self.logger.debug(log)
+
+        return device_index

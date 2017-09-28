@@ -28,7 +28,7 @@ class ComponentManager:
         self.destroy_components = []
         self.context = Context(EventManager())
         self._profile_data = None
-        self._operation_queue = []
+        self.gotNextUpdateOps = False
         self.running = False
         self.shutdown_message = "py2030, over and out.\n"
 
@@ -80,7 +80,7 @@ class ComponentManager:
 
     def _onReloadEvent(self):
         self.logger.debug('reload_event triggered')
-        self._operation_queue.append(self._reload)
+        self.nextUpdate(self._reload)
 
     def _reload(self):
         self.logger.info('-- Reloading --')
@@ -106,9 +106,11 @@ class ComponentManager:
         for comp in self.update_components:
             comp.update()
 
-        for op in self._operation_queue:
-            op()
-        self._operation_queue = []
+        if self.gotNextUpdateOps:
+            for op in self._op_queue:
+                op()
+            del self._op_queue
+            self.gotNextUpdateOps = False
 
     def _found_component_classes(self):
         klasses = []
@@ -165,3 +167,11 @@ class ComponentManager:
             self.destroy_components.append(comp)
 
         self.components.append(comp)
+
+    # operation
+
+    def nextUpdate(self, func):
+        if not hasattr(self, '_op_queue'):
+            self._op_queue = []
+        self._op_queue.append(func)
+        self.gotNextUpdateOps = True

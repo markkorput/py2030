@@ -1,51 +1,76 @@
 #!/usr/bin/env python
-import sys, logging
-from evento import Event
 from py2030.base_component import BaseComponent
 
-try:
-    import numpy
-except ImportError:
-    numpy = None
-    sys.stderr.write("could not load numpy library, audio_input will not function properly\n")
+# dependencies are lazy-loaded because not every component will be loaded,
+# so not every component's dependencies should have to be imported
+deps = {}
+def loadDependencies():
+    global deps
 
-try:
-    import pyaudio
-except ImportError:
-    pyaudio = None
-    sys.stderr.write("could not load pyaudio library, audio_input will not function properly\n")
+    if deps:
+        return deps
 
-try:
-    import analyse
-except ImportError:
-    analyse = None
-    sys.stderr.write("could not load analyse library, audio_input will not function properly\n")
+    import sys
 
-try:
-    import audioop
-except ImportError:
-    audioop = None
-    sys.stderr.write("could not load audioop library, audio_input will not function properly\n")
+    try:
+        import numpy
+    except ImportError:
+        numpy = None
+        sys.stderr.write("could not load numpy library, audio_input will not function properly\n")
+
+    try:
+        import pyaudio as pya
+        pyaudio = pya
+    except ImportError:
+        pyaudio = None
+        sys.stderr.write("could not load pyaudio library, audio_input will not function properly\n")
+
+    # try:
+    #     import analyse
+    # except ImportError:
+    #     analyse = None
+    #     sys.stderr.write("could not load analyse library, audio_input will not function properly\n")
+
+    try:
+        import audioop
+    except ImportError:
+        audioop = None
+        sys.stderr.write("could not load audioop library, audio_input will not function properly\n")
+
+    del sys
+
+    deps = {}
+    deps['numpy'] = numpy
+    deps['pyaudio'] = pyaudio
+    # deps['analyse'] = analyse
+    deps['audioop'] = audioop
+    return deps
 
 class AudioInput(BaseComponent):
     config_name = 'audio_inputs'
 
     def setup(self, event_manager):
+        deps = loadDependencies()
+        self.pyaudio = deps['pyaudio']
+        self.numpy = deps['numpy']
+        # self.analyse = deps['analyse']
+        self.audioop = deps['audioop']
+
         BaseComponent.setup(self, event_manager)
         self.levelEvent = self.getOutputEvent('level', True)
 
-        if not pyaudio:
+        if not self.pyaudio:
             self.stream = None
         else:
-            self.stream = pyaudio.PyAudio().open(
-                format=pyaudio.paInt16, # pyaudio.paFloat32
+            self.stream = self.pyaudio.PyAudio().open(
+                format=self.pyaudio.paInt16, # self.pyaudio.paFloat32
                 channels=1,
                 rate=44100,
                 #input_device_index=2,
                 input=True,
                 stream_callback=self._streamCallback)
-            self.fulldata = numpy.array([])
-            self.dry_data = numpy.array([])
+            self.fulldata = self.numpy.array([])
+            self.dry_data = self.numpy.array([])
 
             self.stream.start_stream()
 
@@ -56,14 +81,14 @@ class AudioInput(BaseComponent):
             self.stream = None
 
     def _streamCallback(self, in_data, frame_count, time_info, flag):
-        if numpy:
-            # audio_data = numpy.fromstring(in_data, dtype=numpy.float32)
-            # self.dry_data = numpy.append(self.dry_data,audio_data)
+        if self.numpy:
+            # audio_data = self.numpy.fromstring(in_data, dtype=self.numpy.float32)
+            # self.dry_data = self.numpy.append(self.dry_data,audio_data)
             # #do processing here
-            # self.fulldata = numpy.append(self.fulldata,audio_data)
+            # self.fulldata = self.numpy.append(self.fulldata,audio_data)
             # self.logger.warn('fulldaata')
             # self.logger.warn(self.fulldata)
-            level = audioop.rms(in_data, 2)
+            level = self.audioop.rms(in_data, 2)
             self.levelEvent.fire(level)
 
             s = "level: "
@@ -73,4 +98,5 @@ class AudioInput(BaseComponent):
                 s += "#"
             self.logger.debug(s)
 
-        return (in_data, pyaudio.paContinue)
+        if self.pyaudio:
+            return (in_data, self.pyaudio.paContinue)

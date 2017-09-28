@@ -38,6 +38,7 @@ class AudioInput(BaseComponent):
     def setup(self, event_manager):
         BaseComponent.setup(self, event_manager)
         self.levelEvent = self.getOutputEvent('level', True)
+        self.frame_size = self.getOption('frame_size', 1024)
 
         deps = loadDependencies()
         self.pyaudio = deps['pyaudio']
@@ -52,7 +53,8 @@ class AudioInput(BaseComponent):
                 rate=44100,
                 input_device_index=self._getDeviceIndex(),
                 input=True,
-                stream_callback=self._streamCallback)
+                frames_per_buffer=self.frame_size)
+                #stream_callback=self._streamCallback)
 
             self.stream.start_stream()
 
@@ -61,6 +63,11 @@ class AudioInput(BaseComponent):
             self.stream.stop_stream()
             self.stream.close()
             self.stream = None
+
+    def update(self):
+        if self.stream:
+            dat = self.stream.read(self.frame_size, exception_on_overflow=False)
+            self._streamCallback(dat, None, None, None);
 
     def _streamCallback(self, in_data, frame_count, time_info, flag):
         level = self.audioop.rms(in_data, 2)

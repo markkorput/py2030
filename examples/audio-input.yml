@@ -6,6 +6,7 @@ py2030:
           verbose: true
           device_index_: 3
           device_name: 'USB Audio device'
+          frame_size_: 1024
           output_events:
             level: 'audio-level'
 

@@ -1,6 +1,6 @@
 py2030:
   profiles:
-    raspberrypi:
+    raspberrypi: # default
       start_event_DISABLED: 'cmd-reset-up'
 
       lightCeremonyAnimReaders:
@@ -142,7 +142,7 @@ py2030:
           output_events:
             'value': 'winchVel_DISABLED'
 
-    default:
+    MarkBookProRetina_local:
       start_event_DISABLED: 'cmd-reset-up'
 
       lightCeremonyControllers:
@@ -159,7 +159,7 @@ py2030:
             togglePlayShow: 'cmd-play-pause'
             stopShow: 'cmd-stop'
 
-      lightCeremonyDmxOutputs:
+      lightCeremonyDmxOutputs_DIS:
         theOne:
           verbose: true
           fps: 10.0
@@ -176,7 +176,7 @@ py2030:
             winchResetDownVelocity: 'winchResetDownVel'
             rotatorVelocity: 'rotVel'
 
-      midi_inputs:
+      midi_inputs_DIS:
         midi_in_1:
           verbose: false
           port: 1
@@ -192,7 +192,7 @@ py2030:
               17: 'cmd-reset-down'
               18: 'cmd-reset-up'
 
-      midi_outputs:
+      midi_outputs_DIS:
         midi1:
           verbose: false
           port: 1
@@ -208,7 +208,6 @@ py2030:
                 '7': '__foo__'
                 '8': 'resetDownPos'
                 '9': 'resetUpActive'
-
 
       sines:
         sineLight:

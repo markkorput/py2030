@@ -162,7 +162,7 @@ py2030:
             frame: 'csv-frame'
             end: 'csv-end'
 
-      lightCeremonyControllers:
+      lightCeremonyControllers_:
         theOne:
           verbose: true
           resetUpMaxDuration: 10.0 # seconds
@@ -175,6 +175,18 @@ py2030:
             resetDown: 'cmd-reset-down'
             togglePlayShow: 'cmd-play-pause'
             stopShow: 'cmd-stop'
+
+      lightCeremonyOscOutputs:
+        debug:
+          verbose: verbose
+          ip: 127.0.0.1
+          port: 2030
+          events:
+            frame: 'csv-frame'
+          input_events:
+            'osc-winchVel': '/light/winchVel'
+            'osc-rotVel': '/light/rotVel'
+            'osc-lightBright': '/light/lightBright'
 
       lightCeremonyDmxOutputs_DIS:
         theOne:
@@ -225,44 +237,3 @@ py2030:
                 '7': '__foo__'
                 '8': 'resetDownPos'
                 '9': 'resetUpActive'
-
-      sines:
-        sineLight:
-          verbose: true
-          frequency: 0.2
-          sleep_DISABLED_BLOCKING: 1.0
-          amplitude: 0.3
-          base: 0.3
-          cursorStart: -0.5
-          output_events:
-            'value': 'ch23'
-
-        sineWinchVelocity:
-          verbose: true
-          frequency: 0.1
-          sleep_DISABLED_BLOCKING: 1.0
-          amplitude: 1.0
-          base: 0
-          cursorStart: 0.0
-          output_events:
-            'value': 'play-winchVel'
-
-        sineRotatorVelocity:
-          verbose: true
-          frequency: 0.1
-          sleep_DISABLED_BLOCKING: 1.0
-          amplitude: 0.8
-          base: 0
-          cursorStart: 0.0
-          output_events:
-            'value': 'play-rotVel'
-
-        sineWinchVelocity_almost_in_balance:
-          verbose: true
-          frequency: 0.1
-          sleep_DISABLED_BLOCKING: 1.0
-          amplitude: 0.1
-          base: -0.032
-          cursorStart: 3.0
-          output_events:
-            'value': 'winchVel_DISABLED'

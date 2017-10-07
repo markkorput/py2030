@@ -34,13 +34,14 @@ class BaseComponent:
         return default
 
     def getInputEvent(self, eventName, dummy=True):
-        if 'input_events' in self.options and eventName in self.options['input_events'] and self.event_manager:
-            return self.event_manager.get(self.options['input_events'][eventName])
-        # else
-        return Event() if dummy else None
+        return self.getEventFrom('input_events', eventName, dummy)
 
     def getOutputEvent(self, eventName, dummy=True):
-        if 'output_events' in self.options and eventName in self.options['output_events'] and self.event_manager:
-            return self.event_manager.get(self.options['output_events'][eventName])
+        return self.getEventFrom('output_events', eventName, dummy)
+
+    def getEventFrom(self, configName, eventName, dummy=True):
+        if configName in self.options and eventName in self.options[configName] and self.event_manager:
+            return self.event_manager.get(self.options[configName][eventName])
+
         # else
         return Event() if dummy else None

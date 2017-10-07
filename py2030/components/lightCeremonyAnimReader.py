@@ -26,22 +26,22 @@ class LightCeremonyController(BaseComponent):
         self.bPlaying = False
         self.pendingFrame = None
 
-        self.frameEvent = self.getOutputEvent('frame')
-        self.endEvent = self.getOutputEvent('end')
-
     def setup(self, event_manager):
         self.event_manager = event_manager
         self.framesReader = CsvFramesFile(path=self.getOption('file'), loop=self.getOption('loop', False), verbose=self.getOption('verbose', False))
         self.framesReader.open()
 
-        if self.getOption('autoStart', False):
-            self._start()
+        self.frameEvent = self.getOutputEvent('frame')
+        self.endEvent = self.getOutputEvent('end')
 
         self.getInputEvent('start').subscribe(self._start)
         self.getInputEvent('stop').subscribe(self._stop)
         self.getInputEvent('pause').subscribe(self._pause)
         self.getInputEvent('resume').subscribe(self._resume)
         self.getInputEvent('togglePaused').subscribe(self._togglePaused)
+
+        if self.getOption('autoStart', False):
+            self._start()
 
     def update(self):
         if not self.bPlaying:

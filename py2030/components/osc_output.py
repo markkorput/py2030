@@ -98,7 +98,10 @@ class OscOutput(BaseComponent):
             return
 
         for event_id, message in self.options['input_events'].items():
-            self._event_messages.append(EventMessage(self, self.event_manager.get(event_id), message))
+            self._registerEventMessage(event_id, message)
+
+    def _registerEventMessage(self, event_id, message):
+        self._event_messages.append(EventMessage(self, self.event_manager.get(event_id), message))
 
     def _onEvent(self, event_id):
         if event_id in self.options['input_events']:

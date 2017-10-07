@@ -155,8 +155,9 @@ py2030:
           input_events:
             start: 'cmd-anim1-start'
             stop: 'cmd-anim1-stop'
-            play: 'cmd-anim1-play'
+            resume: 'cmd-anim1-play'
             pause: 'cmd-anim1-pause'
+            togglePaused: 'cmd-anim1-toggle'
           output_events:
             frame: 'csv-frame'
             end: 'csv-end'

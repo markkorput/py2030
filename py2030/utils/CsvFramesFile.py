@@ -39,6 +39,10 @@ class CsvFramesFile:
             self.logger.warn("could not open csv frames file: %s" % self.path)
             self.file = None
 
+    def rewind(self):
+        if self.file:
+            self.file.seek(0)
+
     def close(self):
         if self.file:
             self.file.close()

@@ -2,25 +2,37 @@ import socket, logging
 from glob import glob
 from py2030.base_component import BaseComponent
 
-try:
-    from scp import SCPClient, SCPException
-except ImportError as err:
-    SCPClient = False
-    SCPException = False
-    logging.getLogger(__name__).warning("importing of SCP classes failed, SshRemote component will not work.")
+deps = {}
+def loadDeps():
+    global deps
+    if deps:
+        return deps
 
-try:
-    import paramiko
-except ImportError as err:
-    paramiko = False
-    logging.getLogger(__name__).warning("importing of paramiko failed, SshRemote component will not work.")
+    try:
+        from scp import SCPClient, SCPException
+    except ImportError as err:
+        SCPClient = False
+        SCPException = False
+        logging.getLogger(__name__).warning("importing of SCP classes failed, SshRemote component will not work.")
 
+    try:
+        import paramiko
+    except ImportError as err:
+        paramiko = False
+        logging.getLogger(__name__).warning("importing of paramiko failed, SshRemote component will not work.")
 
+    deps = {'SCPClient': SCPClient, 'SCPException': SCPException, 'paramiko': paramiko}
+    return deps
 
 class SshRemote(BaseComponent):
     config_name = 'ssh_remotes'
 
     def __init__(self, options = {}):
+        deps = loadDeps()
+        self.SCPClient = deps['SCPClient']
+        self.SCPException = deps['SCPException']
+        self.paramiko = deps['paramiko']
+
         self.options = options
         self.ip = self.options['ip'] if 'ip' in options else None
         self.hostname = self.options['hostname'] if 'hostname' in self.options else None
@@ -87,7 +99,7 @@ class SshRemote(BaseComponent):
         return len(self._operations) <= 0
 
     def connect(self):
-        if not paramiko:
+        if not self.paramiko:
             self.logger.warning("Paramiko not loaded, can't connect")
             return False
 
@@ -95,11 +107,11 @@ class SshRemote(BaseComponent):
             self.logger.warning("Can't connect without ip")
             return False
 
-        self.client = paramiko.SSHClient()
-        self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        self.client = self.paramiko.SSHClient()
+        self.client.set_missing_host_key_policy(self.paramiko.AutoAddPolicy())
         try:
             self.client.connect(self.ip, username=self.username, password=self.password)
-        except paramiko.ssh_exception.AuthenticationException as err:
+        except self.paramiko.ssh_exception.AuthenticationException as err:
             self.logger.error("ssh authentication failed with host {0}".format(self.hostname if self.hostname else self.ip))
             return False
 
@@ -136,24 +148,24 @@ class SshRemote(BaseComponent):
     def put(self, local_file_path, remote_file_name):
         self.logger.debug('PUT ({2}) {0} -> {1} '.format(local_file_path, remote_file_name, self.ip if self.ip else self.hostname))
 
-        if not SCPClient:
+        if not self.SCPClient:
             self.logger.warning("SCPClient not available, cannot perform SCP-PUT operation")
             return
 
-        with SCPClient(self.client.get_transport()) as scp:
+        with self.SCPClient(self.client.get_transport()) as scp:
             try:
                 scp.put(local_file_path, remote_file_name)
-            except SCPException as exception:
+            except self.SCPException as exception:
                 self.logger.error('File transfer error:\n\n'+str(exception))
 
     def get(self, remote_file_name):
         self.logger.debug('Performing get command with remote file path {0}'.format(remote_file_name))
 
-        if not SCPClient:
+        if not self.SCPClient:
             self.logger.warning("SCPClient not available, cannot perform SCP-GET operation")
             return
 
-        with SCPClient(self.client.get_transport()) as scp:
+        with self.SCPClient(self.client.get_transport()) as scp:
             scp.get(remote_file_name)
 
     def process(self, local_path, remote_path):

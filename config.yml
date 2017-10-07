@@ -145,6 +145,22 @@ py2030:
     MarkBookProRetina_local:
       start_event_DISABLED: 'cmd-reset-up'
 
+      lightCeremonyAnimReaders:
+        showPerformance:
+          verbose: true
+          file: 'show1.csv'
+          loop: false
+          autoStart: true
+          sync: true
+          input_events:
+            start: 'cmd-anim1-start'
+            stop: 'cmd-anim1-stop'
+            play: 'cmd-anim1-play'
+            pause: 'cmd-anim1-pause'
+          output_events:
+            frame: 'csv-frame'
+            end: 'csv-end'
+
       lightCeremonyControllers:
         theOne:
           verbose: true

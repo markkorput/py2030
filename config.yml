@@ -150,7 +150,7 @@ py2030:
           loglevel: DEBUG
           file: 'show1.csv'
           loop: false
-          autoStart: true
+          autoStart: false
           sync: true
           input_events:
             start: 'cmd-anim1-start'
@@ -194,6 +194,7 @@ py2030:
           loglevel: INFO
           ip: ''
           port: 2031
+          threaded: true # default
           output_events:
             '/light/ctrl-start': 'cmd-anim1-toggle'
             '/light/ctrl-stop': 'cmd-anim1-stop'

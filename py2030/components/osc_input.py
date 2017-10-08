@@ -1,4 +1,4 @@
-import logging
+import logging, threading
 from py2030.base_component import BaseComponent
 
 try:
@@ -21,6 +21,8 @@ class OscInput(BaseComponent):
         self.connected = False
         self.running = False
         self.osc_map = None
+        self.threaded = self.getOption('threaded', True)
+        self.thread = None
 
     def __del__(self):
         self.destroy()
@@ -54,9 +56,11 @@ class OscInput(BaseComponent):
         self.running = False
 
     def update(self):
-        if not self.connected:
-            return
+        if self.connected:
+            if not self.threaded:
+                self._processIncomingMessages()
 
+    def _processIncomingMessages(self):
         # we'll enforce a limit to the number of osc requests
         # we'll handle in a single iteration, otherwise we might
         # get stuck in processing an endless stream of data
@@ -110,9 +114,24 @@ class OscInput(BaseComponent):
         # notify
         self.connectEvent(self)
         self.logger.info("OSC Server running @ {0}:{1}".format(self.host(), str(self.port())))
+
+        if self.threaded:
+            self._threadStopFlag = False
+            self.thread = threading.Thread(target=self._threadMethod, args=())
+            self.thread.start()
+            self.logger.info("started separate OSC-listener thread")
+
         return True
 
     def _disconnect(self):
+        if self.threaded:
+            self._threadStopFlag = True
+            self.logger.info("stopping separate OSC-listener thread...")
+            while self.thread and self.thread.isAlive():
+                pass
+            self.logger.info('done')
+            self.thread = None
+
         if self.osc_server:
             self.osc_server.close()
             self.connected = False
@@ -139,3 +158,7 @@ class OscInput(BaseComponent):
         elif self.autoAddrToEvent:
             self.logger.debug('triggering auto-output event: {0}'.format(addr))
             self.event_manager.fire(addr)
+
+    def _threadMethod(self):
+        while not self._threadStopFlag:
+            self._processIncomingMessages()

@@ -75,6 +75,7 @@ class LightCeremonyController(BaseComponent):
             self.pendingFrame = None
 
     def _start(self):
+        self.logger.info("anim reader start")
         if self.bPlaying or self.bPaused:
             self._stop() # and rewind
 
@@ -86,18 +87,21 @@ class LightCeremonyController(BaseComponent):
         self.bPlaying = True
 
     def _stop(self):
+        self.logger.info("anim reader stop")
         self.bPlaying = False
         self.bPaused = False
         self.framesReader.rewind()
 
     def _pause(self):
         if self.bPlaying:
+            self.logger.info("anim reader pause")
             self.bPaused = True
             self.pauseTime = time.time()
             self.bPlaying = False
 
     def _resume(self):
         if self.bPaused:
+            self.logger.info("anim reader resume")
             self.lastUpdateTime = time.time() - (self.pauseTime - self.lastUpdateTime)
             self.pauseTime = None
             self.bPaused = False
@@ -108,3 +112,5 @@ class LightCeremonyController(BaseComponent):
             self._resume()
         elif self.bPlaying:
             self._pause()
+        else:
+            self._start()

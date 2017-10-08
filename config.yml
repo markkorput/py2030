@@ -147,10 +147,10 @@ py2030:
 
       lightCeremonyAnimReaders:
         showPerformance:
-          loglevel: INFO
+          loglevel: DEBUG
           file: 'show1.csv'
           loop: false
-          autoStart: false
+          autoStart: true
           sync: true
           input_events:
             start: 'cmd-anim1-start'
@@ -195,7 +195,8 @@ py2030:
           ip: ''
           port: 2031
           output_events:
-            '/light/ctrl-start': 'cmd-anim1-start'
+            '/light/ctrl-start': 'cmd-anim1-toggle'
+            '/light/ctrl-stop': 'cmd-anim1-stop'
 
       lightCeremonyDmxOutputs_DIS:
         theOne:

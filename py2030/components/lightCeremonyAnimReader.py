@@ -14,14 +14,10 @@ class LightCeremonyController(BaseComponent):
     config_name = 'lightCeremonyAnimReaders'
 
     def __init__(self, options = {}):
-        self.options = options
-        self.event_manager = None
+        BaseComponent.__init__(self, options)
+
         self.maxFramesPerCycle = self.getOption('maxFramesPerCycle', 5)
         self.sync = self.getOption('sync', True)
-
-        self.logger = logging.getLogger(__name__)
-        if self.getOption('verbose', False):
-            self.logger.setLevel(logging.DEBUG)
 
         self.bPlaying = False
         self.bPaused = False

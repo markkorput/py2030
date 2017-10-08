@@ -7,6 +7,7 @@ class BaseComponent:
     def __init__(self, options):
         self.options = options
         self.name = ''
+        self.event_manager = None # TODO: also pass this in through event_manager and call setup at end of __init__
 
         # setup logging
         self.verbose = self.getOption('verbose', False)
@@ -17,6 +18,8 @@ class BaseComponent:
             self.logger.setLevel(loglevelmapping[loglevel])
         elif self.verbose:
             self.logger.setLevel(logging.DEBUG)
+        else:
+            self.logger.setLevel(logging.INFO)
 
     def setup(self, event_manager):
         self.event_manager = event_manager

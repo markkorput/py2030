@@ -147,7 +147,7 @@ py2030:
 
       lightCeremonyAnimReaders:
         showPerformance:
-          verbose: false
+          loglevel: INFO
           file: 'show1.csv'
           loop: false
           autoStart: false

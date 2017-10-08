@@ -13,15 +13,11 @@ class LightCeremonyController(BaseComponent):
     config_name = 'lightCeremonyControllers'
 
     def __init__(self, options = {}):
-        self.options = options
-        self.event_manager = None
+        BaseComponent.__init__(self, options)
+
         self.output_events = None
         self.input_events = self.options['input_events'] if 'input_events' in self.options else {}
         self.resetUpMaxDuration = self.getOption('resetUpMaxDuration', 10.0)
-
-        self.logger = logging.getLogger(__name__)
-        if 'verbose' in options and options['verbose']:
-            self.logger.setLevel(logging.DEBUG)
 
         self.bResetUpActive = False
         self.bResetDownActive = False
@@ -30,7 +26,7 @@ class LightCeremonyController(BaseComponent):
         self.bPlaying2 = False
 
     def setup(self, event_manager=None):
-        self.event_manager = event_manager
+        BaseComponent.setup(self, event_manager)
         self.getInputEvent('resetUp').subscribe(self._onResetUpCmd)
         self.getInputEvent('resetDown').subscribe(self._onResetDownCmd)
         self.getInputEvent('play1').subscribe(self._onPlay1)

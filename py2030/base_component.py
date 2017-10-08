@@ -6,6 +6,7 @@ class BaseComponent:
 
     def __init__(self, options):
         self.options = options
+        self.name = ''
         self.verbose = self.getOption('verbose', False)
         self.logger = logging.getLogger(self.config_name)
         if self.verbose:
@@ -13,13 +14,15 @@ class BaseComponent:
 
     def setup(self, event_manager):
         self.event_manager = event_manager
+        self.logger.warn("SETUP instance: "+self.config_name+"#"+self.name)
 
     @classmethod
     def create_components(cls, config, context):
         comps = []
 
-        for data in config.values():
-            comp = cls(data)
+        for key in config:
+            comp = cls(config[key])
+            comp.name = key
             comp.setup(context.event_manager)
             comps.append(comp)
 

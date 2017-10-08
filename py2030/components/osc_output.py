@@ -72,8 +72,10 @@ class OscOutput(BaseComponent):
         self.destroy()
 
     def setup(self, event_manager=None):
+        BaseComponent.setup(self, event_manager)
+
         self._connect()
-        self.event_manager = event_manager
+
         if event_manager != None:
             self._registerCallbacks()
 

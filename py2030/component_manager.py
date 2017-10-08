@@ -16,7 +16,7 @@ class ComponentManager:
         self.options = options
 
         logging.basicConfig()
-        logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+        # logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
         self.logger = logging.getLogger(__name__)
         if 'verbose' in self.options and self.options['verbose']:

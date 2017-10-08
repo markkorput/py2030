@@ -27,7 +27,8 @@ class LightCeremonyController(BaseComponent):
         self.pendingFrame = None
 
     def setup(self, event_manager):
-        self.event_manager = event_manager
+        BaseComponent.setup(self, event_manager)
+
         self.framesReader = CsvFramesFile(path=self.getOption('file'), loop=self.getOption('loop', False), verbose=self.getOption('verbose', False))
         self.framesReader.open()
 

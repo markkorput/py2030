@@ -147,7 +147,7 @@ py2030:
 
       lightCeremonyAnimReaders:
         showPerformance:
-          verbose: true
+          verbose: false
           file: 'show1.csv'
           loop: false
           autoStart: true
@@ -178,7 +178,7 @@ py2030:
 
       lightCeremonyOscOutputs:
         debug:
-          verbose: verbose
+          verbose: false
           ip: 127.0.0.1
           port: 2030
           events:

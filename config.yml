@@ -184,9 +184,10 @@ py2030:
           events:
             frame: 'csv-frame'
           input_events:
-            'osc-winchVel': '/light/winchVel'
-            'osc-rotVel': '/light/rotVel'
-            'osc-lightBright': '/light/lightBright'
+            'osc-winchVel_OFF': '/light/winchVel'
+            'osc-rotVel_OFF': '/light/rotVel'
+            'osc-lightBright_OFF': '/light/lightBright'
+            'osc-frame': '/light/frame'
 
       lightCeremonyDmxOutputs_DIS:
         theOne:

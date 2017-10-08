@@ -7,14 +7,20 @@ class BaseComponent:
     def __init__(self, options):
         self.options = options
         self.name = ''
+
+        # setup logging
         self.verbose = self.getOption('verbose', False)
         self.logger = logging.getLogger(self.config_name)
-        if self.verbose:
+        loglevel = self.getOption('loglevel', None)
+        loglevelmapping = {'CRITICAL':logging.CRITICAL, 'ERROR':logging.CRITICAL, 'WARNING':logging.WARNING, 'INFO':logging.INFO, 'DEBUG':logging.DEBUG, 'NOTSET':logging.NOTSET}
+        if loglevel and loglevel in loglevelmapping:
+            self.logger.setLevel(loglevelmapping[loglevel])
+        elif self.verbose:
             self.logger.setLevel(logging.DEBUG)
 
     def setup(self, event_manager):
         self.event_manager = event_manager
-        self.logger.warn("SETUP instance: "+self.config_name+"#"+self.name)
+        self.logger.info("SETUP instance: "+self.config_name+"#"+self.name)
 
     @classmethod
     def create_components(cls, config, context):

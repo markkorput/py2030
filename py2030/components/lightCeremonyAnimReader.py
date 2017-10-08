@@ -24,6 +24,7 @@ class LightCeremonyController(BaseComponent):
             self.logger.setLevel(logging.DEBUG)
 
         self.bPlaying = False
+        self.bPaused = False
         self.pendingFrame = None
 
     def setup(self, event_manager):
@@ -78,6 +79,9 @@ class LightCeremonyController(BaseComponent):
             self.pendingFrame = None
 
     def _start(self):
+        if self.bPlaying or self.bPaused:
+            self._stop() # and rewind
+
         self.pendingFrame = None
         self.playTime = 0L
         self.frameCount = 0L

@@ -150,7 +150,7 @@ py2030:
           verbose: false
           file: 'show1.csv'
           loop: false
-          autoStart: true
+          autoStart: false
           sync: true
           input_events:
             start: 'cmd-anim1-start'
@@ -178,7 +178,7 @@ py2030:
 
       lightCeremonyOscOutputs:
         debug:
-          verbose: false
+          loglevel: INFO
           ip: 127.0.0.1
           port: 2030
           events:
@@ -188,6 +188,14 @@ py2030:
             'osc-rotVel_OFF': '/light/rotVel'
             'osc-lightBright_OFF': '/light/lightBright'
             'osc-frame': '/light/frame'
+
+      osc_inputs:
+        debug:
+          loglevel: INFO
+          ip: ''
+          port: 2031
+          output_events:
+            '/light/ctrl-start': 'cmd-anim1-start'
 
       lightCeremonyDmxOutputs_DIS:
         theOne:

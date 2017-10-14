@@ -1,0 +1,16 @@
+py2030:
+  profiles:
+    default:
+      stop_event: 'mouse-click'
+
+      mouse_inputs:
+        mouse1:
+          verbose: true
+          output_events:
+            click: 'mouse-click'
+            click_left: 'mouse-click-left'
+            click_right: 'mouse-click-left'
+            move: 'mouse-move'
+            scroll: 'mouse-scroll'
+            scroll_up: 'mouse-scroll-up'
+            scroll_down: 'mouse-scroll-down'

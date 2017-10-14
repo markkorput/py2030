@@ -5,10 +5,13 @@ import time
 def on_click(x,y,btn,pressed):
     print("CLICK: " + str(x)+','+str(y)+' - btn: '+str(btn)+', pressed: '+str(pressed))
 
+def on_scroll(x,y,dx,dy):
+    print("SCROLL: " + str(x)+','+str(y)+' - '+str(dx)+','+str(dy))
+
 if __name__ == '__main__':
     mouse = pynput.mouse.Controller()
 
-    with pynput.mouse.Listener(on_click=on_click) as listener:
+    with pynput.mouse.Listener(on_click=on_click, on_scroll=on_scroll) as listener:
         try:
             while True:
                 # Read pointer position

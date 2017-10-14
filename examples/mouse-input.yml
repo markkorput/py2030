@@ -1,7 +1,8 @@
 py2030:
   profiles:
     default:
-      stop_event: 'mouse-click'
+      restart_event: 'mouse-click'
+      stop_event: 'mouse-scroll'
 
       mouse_inputs:
         mouse1:

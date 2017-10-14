@@ -32,6 +32,7 @@ class ComponentManager:
         self._profile_data = None
         self.gotNextUpdateOps = False
         self.running = False
+        self.restart = False
         self.shutdown_message = "py2030, over and out.\n"
 
     def __del__(self):
@@ -64,6 +65,9 @@ class ComponentManager:
         if 'stop_event' in self._profile_data:
             self.context.event_manager.get(self._profile_data['stop_event']).subscribe(self._onStopEvent)
 
+        if 'restart_event' in self._profile_data:
+            self.context.event_manager.get(self._profile_data['restart_event']).subscribe(self._onRestartEvent)
+
         if len(self.components) > 0:
             self.running = True
         else:
@@ -78,6 +82,11 @@ class ComponentManager:
 
     def _onStopEvent(self):
         self.logger.debug('stop_event triggered')
+        self.running = False
+
+    def _onRestartEvent(self):
+        self.logger.debug('restart_event triggered')
+        self.restart = True
         self.running = False
 
     def _onReloadEvent(self):

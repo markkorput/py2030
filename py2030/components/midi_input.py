@@ -75,6 +75,13 @@ class MidiInput(BaseComponent):
             self.port_name = None
             self.connected = False
             return
+        except:
+            print("Failed to initialize MIDI interface")
+            self.midiin = None
+            self.port_name = None
+            self.connected = False
+            return
+
         print("Midi input initialized on port: " + self.port_name)
         self.connected = True
 

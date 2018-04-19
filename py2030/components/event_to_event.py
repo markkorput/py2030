@@ -4,14 +4,13 @@ class EventToEvent(BaseComponent):
     config_name = 'event_to_event'
 
     def __init__(self, options = {}):
-        self.options = options
-        self.event_manager = None
+        BaseComponent.__init__(self, options)
 
     def __del__(self):
         self.destroy()
 
     def setup(self, event_manager):
-        self.event_manager = event_manager
+        BaseComponent.setup(self, event_manager)
         self._connect_events()
 
     def destroy(self):

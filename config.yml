@@ -1,0 +1,250 @@
+py2030:
+  profiles:
+    raspberrypi: # default
+      start_event_DISABLED: 'cmd-reset-up'
+
+      lightCeremonyAnimReaders:
+        showPerformance:
+          verbose: true
+          file: '/home/pi/animPerformance.csv'
+          input_events:
+            start: 'cmd-anim1-start'
+            stop: 'cmd-anim1-stop'
+            play: 'cmd-anim1-play'
+            pause: 'cmd-anim1-pause'
+
+        showInstallation:
+          verbose: true
+          file: '/home/pi/animInstallation.csv'
+          input_events:
+            start: 'cmd-anim2-start'
+            stop: 'cmd-anim2-stop'
+            play: 'cmd-anim2-play'
+            pause: 'cmd-anim2-pause'
+
+      lightCeremonyControllers:
+        theOne:
+          verbose: true
+          resetUpMaxDuration: 15.0 # seconds
+          resetUpVelocity: 0.5
+          resetDownMaxDuration: 30.0 # seconds
+          resetDownVelocity: 0.5
+          resetDownDeltaPos: 0.001
+
+          input_events:
+            resetUp: 'cmd-reset-up'
+            resetDown: 'cmd-reset-down'
+            togglePlayShow: 'cmd-play-pause'
+            stopShow: 'cmd-stop'
+            play1: 'cmd-play1'
+            play2: 'cmd-play2'
+
+      lightCeremonyDmxOutputs:
+        theOne:
+          verbose: false
+          fps: 10.0
+          deviceName: '/dev/ttyUSB0'
+          bottomPosition: 0.522
+          channel_event_prefix: 'ch'
+          num_channels: 24
+          winchStartChannel: 1
+          rotatorStartChannel: 10
+          resetDownDeltaPos: 0.05
+          winchVelEasing: 7.0
+          winchEaseDoneAt: 0.05
+          input_events:
+            winchVelocity: 'winchVel'
+            winchResetUpVelocity: 'winchResetUpVel'
+            winchResetDownVelocity: 'winchResetDownVel'
+            rotatorVelocity: 'rotVel'
+            black: 'dmxBlack'
+
+      midi_inputs:
+        midi_in_1:
+          verbose: false
+          port: 1
+          output_events:
+            179:
+              10: 'cmd-play1'
+              11: 'cmd-play2'
+              12: '_foo_'
+              13: '_foo_'
+              14: '_foo_'
+              15: '_foo_'
+              16: '_foo_'
+              17: 'cmd-reset-down'
+              18: 'cmd-reset-up'
+
+      midi_outputs:
+        midi1:
+          verbose: false
+          port: 1
+          input_events:
+            channel_percentages:
+              '179':
+                '1': '__foo__'
+                '2': '__foo__'
+                '3': '__foo__'
+                '4': '__foo__'
+                '5': '__foo__'
+                '6': '__foo__'
+                '7': '__foo__'
+                '8': 'resetDownPos'
+                '9': 'resetUpActive'
+
+      audio_inputs:
+        audio1:
+          verbose: true
+          device_index_: 3
+          device_name: 'USB Audio device'
+          frame_size_: 1024
+          output_events:
+            level: 'audio-level'
+
+      sines:
+        sineLight:
+          verbose: true
+          frequency: 0.2
+          sleep_DISABLED_BLOCKING: 1.0
+          amplitude: 0.3
+          base: 0.3
+          cursorStart: -0.5
+          output_events:
+            'value': 'ch23'
+
+        sineWinchVelocity:
+          verbose: true
+          frequency: 0.1
+          sleep_DISABLED_BLOCKING: 1.0
+          amplitude: 1.0
+          base: 0
+          cursorStart: 0.0
+          output_events:
+            'value': 'play-winchVel'
+
+        sineRotatorVelocity:
+          verbose: true
+          frequency: 0.1
+          sleep_DISABLED_BLOCKING: 1.0
+          amplitude: 0.8
+          base: 0
+          cursorStart: 0.0
+          output_events:
+            'value': 'play-rotVel'
+
+        sineWinchVelocity_almost_in_balance:
+          verbose: true
+          frequency: 0.1
+          sleep_DISABLED_BLOCKING: 1.0
+          amplitude: 0.1
+          base: -0.032
+          cursorStart: 3.0
+          output_events:
+            'value': 'winchVel_DISABLED'
+
+    MarkBookProRetina_local:
+      start_event_DISABLED: 'cmd-reset-up'
+
+      lightCeremonyAnimReaders:
+        showPerformance:
+          loglevel: INFO
+          file: 'show1.csv'
+          loop: false
+          autoStart: false
+          sync: true
+          input_events:
+            start: 'cmd-anim1-start'
+            stop: 'cmd-anim1-stop'
+            resume: 'cmd-anim1-play'
+            pause: 'cmd-anim1-pause'
+            togglePaused: 'cmd-anim1-toggle'
+          output_events:
+            frame: 'csv-frame'
+            end: 'csv-end'
+
+      lightCeremonyControllers_:
+        theOne:
+          verbose: true
+          resetUpMaxDuration: 10.0 # seconds
+          resetUpVelocity: 0.25
+          resetDownMaxDuration: 20.0 # seconds
+          resetDownVelocity: 0.2
+
+          input_events:
+            resetUp: 'cmd-reset-up'
+            resetDown: 'cmd-reset-down'
+            togglePlayShow: 'cmd-play-pause'
+            stopShow: 'cmd-stop'
+
+      lightCeremonyOscOutputs:
+        debug:
+          loglevel: INFO
+          ip: 127.0.0.1
+          port: 2030
+          events:
+            frame: 'csv-frame'
+          input_events:
+            'osc-winchVel_OFF': '/light/winchVel'
+            'osc-rotVel_OFF': '/light/rotVel'
+            'osc-lightBright_OFF': '/light/lightBright'
+            'osc-frame': '/light/frame'
+
+      osc_inputs:
+        debug:
+          loglevel: INFO
+          ip: ''
+          port: 2031
+          threaded: true # default
+          output_events:
+            '/light/ctrl-start': 'cmd-anim1-toggle'
+            '/light/ctrl-stop': 'cmd-anim1-stop'
+
+      lightCeremonyDmxOutputs_DIS:
+        theOne:
+          verbose: true
+          fps: 10.0
+          deviceName: '/dev/cu.usbserial-EN114902'
+          bottomPosition: 0.5
+          channel_event_prefix: 'ch'
+          num_channels: 24
+          winchStartChannel: 1
+          rotatorStartChannel: 10
+          resetDownDeltaPos: 0.05
+          input_events:
+            winchVelocity: 'winchVel'
+            winchResetUpVelocity: 'winchResetUpVel'
+            winchResetDownVelocity: 'winchResetDownVel'
+            rotatorVelocity: 'rotVel'
+
+      midi_inputs_DIS:
+        midi_in_1:
+          verbose: false
+          port: 1
+          output_events:
+            179:
+              10: '_foo_'
+              11: '_foo_'
+              12: '_foo_'
+              13: '_foo_'
+              14: '_foo_'
+              15: '_foo_'
+              16: '_foo_'
+              17: 'cmd-reset-down'
+              18: 'cmd-reset-up'
+
+      midi_outputs_DIS:
+        midi1:
+          verbose: false
+          port: 1
+          input_events:
+            channel_percentages:
+              '179':
+                '1': '__foo__'
+                '2': '__foo__'
+                '3': '__foo__'
+                '4': '__foo__'
+                '5': '__foo__'
+                '6': '__foo__'
+                '7': '__foo__'
+                '8': 'resetDownPos'
+                '9': 'resetUpActive'

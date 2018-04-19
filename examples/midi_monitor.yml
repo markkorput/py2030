@@ -1,0 +1,78 @@
+py2030:
+  profiles:
+    default:
+      midi_inputs:
+        midi1:
+          verbose: false
+          port: 1
+          output_events:
+            179:
+              10: 'midi10'
+              11: 'midi11'
+
+          # BTNS
+          # DEBUG:py2030.components.midi_input:midi message: ([177, 10, 127], 14.760130298000002)
+          # DEBUG:py2030.components.midi_input:midi message: ([177, 11, 127], 0.25812145200000003)
+          # DEBUG:py2030.components.midi_input:midi message: ([177, 12, 127], 0.257519172)
+          # DEBUG:py2030.components.midi_input:midi message: ([177, 13, 127], 0.246643523)
+          # DEBUG:py2030.components.midi_input:midi message: ([177, 14, 127], 0.24721736000000002)
+          # DEBUG:py2030.components.midi_input:midi message: ([177, 15, 127], 0.23224302000000002)
+          # DEBUG:py2030.components.midi_input:midi message: ([177, 16, 127], 0.25887939000000004)
+          # DEBUG:py2030.components.midi_input:midi message: ([177, 17, 127], 0.239752666)
+          # DEBUG:py2030.components.midi_input:midi message: ([177, 18, 127], 0.244493493)
+          # DIALS
+          # DEBUG:py2030.components.midi_input:midi message: ([179, 3, 73], 0.041248671)
+          # DEBUG:py2030.components.midi_input:midi message: ([179, 4, 1], 0.030220664)
+
+      midi_outputs:
+        midi1:
+          verbose: false
+          port: 1
+          input_events:
+            channel_values:
+              '179':
+                '1': 'sine1'
+                '2': 'sine1'
+                '3': 'sine1'
+                '4': 'sine1'
+                '5': 'sine1'
+                '6': 'sine1'
+                '7': 'sine1'
+                '8': 'sine1'
+                '9': 'sine1'
+            channel_percentages:
+              '179':
+                '1': 'sine2'
+                '2': 'sine2'
+                '3': 'sine2'
+                '4': 'sine2'
+                '5': 'sine2'
+                '6': 'sine2'
+                '7': 'sine2'
+                '8': 'sine2'
+                '9': 'sine2'
+
+      osc_outputs: # just for debugging; to see if midi event are actually triggered
+        osc1:
+          verbose: true
+          ip: 127.0.0.1
+          input_events:
+            'midi10': '/midi/10'
+            'midi11': '/midi/11'
+
+      sines:
+        sine1:
+          verbose: false
+          frequency: 2.0
+          amplitude: 100
+          base: 64
+          output_events:
+            'value': 'sine1'
+
+        sine2:
+          verbose: false
+          frequency: 0.2
+          amplitude: 0.5
+          base: 0.5
+          output_events:
+            'value': 'sine2'

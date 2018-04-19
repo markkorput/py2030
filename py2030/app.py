@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import time
 from optparse import OptionParser
 from .component_manager import ComponentManager
 
@@ -22,13 +23,21 @@ if __name__ == '__main__':
         'config_file': opts.config_file
     }
 
-    cm = ComponentManager(options)
-    cm.setup()
+    while True:
+        cm = ComponentManager(options)
+        cm.setup()
 
-    try:
-        while cm.running:
-            cm.update()
-    except KeyboardInterrupt:
-        print('KeyboardInterrupt. Quitting.')
+        try:
+            while cm.running:
+                cm.update()
+        except KeyboardInterrupt:
+            print('KeyboardInterrupt. Quitting.')
 
-    cm.destroy()
+        cm.destroy()
+
+        if not cm.restart:
+            print(cm.shutdown_message)
+            break
+
+        print('restarting...')
+        time.sleep(1.0)

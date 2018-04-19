@@ -1,0 +1,16 @@
+py2030:
+  profiles:
+    default:
+      audio_inputs:
+        audio1:
+          verbose: true
+          device_index_: 3
+          device_name: 'USB Audio device'
+          frame_size_: 1024
+          output_events:
+            level: 'audio-level'
+
+      midi_inputs:
+        midi_in_1:
+          verbose: true
+          port: 1

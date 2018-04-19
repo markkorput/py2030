@@ -45,3 +45,17 @@ class TestOscOutputInputEvents(unittest.TestCase):
 
     def _onMessage(self, msg, osc_output):
         self.message_addresses.append(msg.address)
+
+    def test_input_event_with_params(self):
+        oscoutput = OscOutput({'input_events': {'params_event': '/some/message'}})
+        oscoutput.setup(EventManager())
+
+        # capture all outgoing messages
+        self._messages = []
+        oscoutput.messageEvent += self._onMessage2
+
+        oscoutput.event_manager.get('params_event').fire('param1', 2, 3.0)
+        self.assertEqual(self._messages[-1].values(), ['param1', 2, 3.0])
+
+    def _onMessage2(self, msg, osc_output):
+        self._messages.append(msg)

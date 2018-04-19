@@ -1,0 +1,22 @@
+py2030:
+  profiles:
+    default:
+      # component for sending OSC message
+      osc_outputs:
+        osc1:
+          verbose: true
+          port: 9000
+          ip: 127.0.0.1
+          input_events:
+            'sineValue': '/yaw'
+
+      # component that produces sine-wave values
+      sines:
+        sine1:
+          verbose: false
+          frequency: 0.02
+          amplitude: 0.5
+          base: 0.5
+          sleep: 0.1
+          output_events:
+            'value': 'sineValue'

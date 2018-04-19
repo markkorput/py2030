@@ -2,11 +2,7 @@ import logging
 from evento import Event
 from py2030.base_component import BaseComponent
 
-try:
-    from omxplayer import OMXPlayer
-except:
-    print("Could not load OMXPlayer")
-    OMXPlayer = None
+OMXPlayer = None
 
 class OmxVideo(BaseComponent):
   config_name = 'omxvideos'
@@ -46,6 +42,11 @@ class OmxVideo(BaseComponent):
   def setup(self, _event_manager = None):
       self.event_manager = _event_manager
       self._registerCallbacks()
+
+      try:
+        from omxplayer import OMXPlayer
+      except:
+        print("Could not load OMXPlayer")
 
   def destroy(self):
     self._registerCallbacks(False)

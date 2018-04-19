@@ -1,0 +1,17 @@
+py2030:
+  profiles:
+    MarkBookProRetina_local:
+      osc_outputs:
+        osc1:
+          verbose: true
+          port: 7000
+          ip: 127.0.0.1
+          input_events:
+            'sineValue': '/composition/layers/1/clips/1/video/source/params/text'
+      sines:
+        sine1:
+          verbose: true
+          frequency: 3.0
+          sleep: 0.1
+          output_events:
+            'value': 'sineValue'

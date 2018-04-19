@@ -13,7 +13,8 @@ setup(name='py2030',
       test_suite='tests',
       install_requires=[
         'evento==1.0.1',
-        'pyOSC==0.3.5b-5294',
+        #'pyOSC==0.3.5b-5294', # python2
+        'python-osc==1.6.6',
         'PyYAML==3.11',
         'omxplayer-wrapper==0.0.2',
         'omxsync==0.1.1'])

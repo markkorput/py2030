@@ -1,5 +1,4 @@
-import logging
-from evento import Event
+import logging, threading
 from py2030.base_component import BaseComponent
 
 try:
@@ -15,47 +14,35 @@ class OscInput(BaseComponent):
     config_name = 'osc_inputs'
 
     def __init__(self, options = {}):
+        BaseComponent.__init__(self, options)
+
         # attributes
         self.osc_server = None
         self.connected = False
         self.running = False
         self.osc_map = None
-        self.logger = logging.getLogger(__name__)
-        self.event_manager = None
-
-        if 'verbose' in options and options['verbose']:
-            self.logger.setLevel(logging.DEBUG)
-
-        # events
-        self.connectEvent = Event()
-        self.disconnectEvent = Event()
-        self.messageEvent = Event()
-
-        # configuration
-        self.options = {}
-        self.configure(options)
+        self.threaded = self.getOption('threaded', True)
+        self.thread = None
 
     def __del__(self):
         self.destroy()
 
-    def configure(self, options):
-        previous_options = self.options
-        self.options.update(options)
-
-        if 'verbose' in options:
-            if options['verbose']:
-                self.logger.setLevel(logging.DEBUG)
-            else:
-                self.logger.setLevel(logging.INFO)
-
     def setup(self, event_manager=None):
-        self.event_manager = event_manager
-        if self.event_manager:
-            self.output_events = self.options['output_events'] if 'output_events' in self.options else {}
-        self.start()
+        BaseComponent.setup(self, event_manager)
+
+        self.msgEventMapping = self.getOption('output_events', {})
+        self.autoAddrToEvent = 'auto' in self.msgEventMapping and self.msgEventMapping['auto']
+
+        # events
+        self.connectEvent = self.getOutputEvent('connect')
+        self.disconnectEvent = self.getOutputEvent('disconnect')
+        self.messageEvent = self.getOutputEvent('message', dummy=False) # can be None if not configured
+
+        if self.getOption('autoStart', True):
+            self.start()
 
     def destroy(self):
-        self.output_events = None
+        self.msgEventMapping = None
         self.event_manager = None
         self.stop()
 
@@ -69,9 +56,11 @@ class OscInput(BaseComponent):
         self.running = False
 
     def update(self):
-        if not self.connected:
-            return
+        if self.connected:
+            if not self.threaded:
+                self._processIncomingMessages()
 
+    def _processIncomingMessages(self):
         # we'll enforce a limit to the number of osc requests
         # we'll handle in a single iteration, otherwise we might
         # get stuck in processing an endless stream of data
@@ -95,12 +84,10 @@ class OscInput(BaseComponent):
                 self.logger.error(exc)
 
     def port(self):
-        # default is 2030
-        return int(self.options['port']) if 'port' in self.options else DEFAULT_PORT
+        return self.getOption('port', DEFAULT_PORT)
 
     def host(self):
-        # default is localhost
-        return self.options['ip'] if 'ip' in self.options else DEFAULT_IP
+        return self.getOption('ip', DEFAULT_IP)
 
     def _connect(self):
         if self.connected:
@@ -114,22 +101,37 @@ class OscInput(BaseComponent):
             self.connected = False
             self.osc_server = None
             # notify
-            self.logger.error("{0}\nOSC Server could not start @ {1}:{2}".format(err, self.host(), str(self.port())))
+            self.logger.error("{0}\n\tOSC Server could not start @ {1}:{2}".format(err, self.host(), str(self.port())))
             # abort
             return False
 
         # register time out callback
         self.osc_server.handle_timeout = self._onTimeout
-        self.osc_server.addMsgHandler('default', self._onDefault)
+        self.osc_server.addMsgHandler('default', self._onOscMsg)
 
         # set internal connected flag
         self.connected = True
         # notify
         self.connectEvent(self)
         self.logger.info("OSC Server running @ {0}:{1}".format(self.host(), str(self.port())))
+
+        if self.threaded:
+            self._threadStopFlag = False
+            self.thread = threading.Thread(target=self._threadMethod, args=())
+            self.thread.start()
+            self.logger.info("started separate OSC-listener thread")
+
         return True
 
     def _disconnect(self):
+        if self.threaded:
+            self._threadStopFlag = True
+            self.logger.info("stopping separate OSC-listener thread...")
+            while self.thread and self.thread.isAlive():
+                pass
+            self.logger.info('done')
+            self.thread = None
+
         if self.osc_server:
             self.osc_server.close()
             self.connected = False
@@ -141,17 +143,22 @@ class OscInput(BaseComponent):
         if self.osc_server:
             self.osc_server.timed_out = True
 
-    def _onDefault(self, addr, tags=[], data=[], client_address=''):
+    def _onOscMsg(self, addr, tags=[], data=[], client_address=''):
         # skip touch osc touch-up events
         # if len(data) == 1 and data[0] == 0.0:
         #     return
         self.logger.debug('osc-in {0}:{1} {2} [{3}] from {4}'.format(self.host(), self.port(), addr, ", ".join(map(lambda x: str(x), data)), client_address))
-        self.messageEvent(addr, tags, data, client_address)
+        if self.messageEvent:
+            self.messageEvent(addr, tags, data, client_address)
 
         # trigger events based on incoming messages if configured
-        if addr in self.output_events:
-            self.logger.debug('triggering output event: {0}'.format(self.output_events[addr]))
-            self.event_manager.fire(self.output_events[addr])
-        elif 'auto' in self.output_events and self.output_events['auto'] == True:
+        if addr in self.msgEventMapping:
+            self.logger.debug('triggering output event: {0}'.format(self.msgEventMapping[addr]))
+            self.event_manager.fire(self.msgEventMapping[addr])
+        elif self.autoAddrToEvent:
             self.logger.debug('triggering auto-output event: {0}'.format(addr))
             self.event_manager.fire(addr)
+
+    def _threadMethod(self):
+        while not self._threadStopFlag:
+            self._processIncomingMessages()

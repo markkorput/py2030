@@ -1,6 +1,6 @@
 py2030:
   profiles:
-    raspberrypi:
+    raspberrypi: # default
       start_event_DISABLED: 'cmd-reset-up'
 
       lightCeremonyAnimReaders:
@@ -142,10 +142,27 @@ py2030:
           output_events:
             'value': 'winchVel_DISABLED'
 
-    default:
+    MarkBookProRetina_local:
       start_event_DISABLED: 'cmd-reset-up'
 
-      lightCeremonyControllers:
+      lightCeremonyAnimReaders:
+        showPerformance:
+          loglevel: INFO
+          file: 'show1.csv'
+          loop: false
+          autoStart: false
+          sync: true
+          input_events:
+            start: 'cmd-anim1-start'
+            stop: 'cmd-anim1-stop'
+            resume: 'cmd-anim1-play'
+            pause: 'cmd-anim1-pause'
+            togglePaused: 'cmd-anim1-toggle'
+          output_events:
+            frame: 'csv-frame'
+            end: 'csv-end'
+
+      lightCeremonyControllers_:
         theOne:
           verbose: true
           resetUpMaxDuration: 10.0 # seconds
@@ -159,7 +176,30 @@ py2030:
             togglePlayShow: 'cmd-play-pause'
             stopShow: 'cmd-stop'
 
-      lightCeremonyDmxOutputs:
+      lightCeremonyOscOutputs:
+        debug:
+          loglevel: INFO
+          ip: 127.0.0.1
+          port: 2030
+          events:
+            frame: 'csv-frame'
+          input_events:
+            'osc-winchVel_OFF': '/light/winchVel'
+            'osc-rotVel_OFF': '/light/rotVel'
+            'osc-lightBright_OFF': '/light/lightBright'
+            'osc-frame': '/light/frame'
+
+      osc_inputs:
+        debug:
+          loglevel: INFO
+          ip: ''
+          port: 2031
+          threaded: true # default
+          output_events:
+            '/light/ctrl-start': 'cmd-anim1-toggle'
+            '/light/ctrl-stop': 'cmd-anim1-stop'
+
+      lightCeremonyDmxOutputs_DIS:
         theOne:
           verbose: true
           fps: 10.0
@@ -176,7 +216,7 @@ py2030:
             winchResetDownVelocity: 'winchResetDownVel'
             rotatorVelocity: 'rotVel'
 
-      midi_inputs:
+      midi_inputs_DIS:
         midi_in_1:
           verbose: false
           port: 1
@@ -192,7 +232,7 @@ py2030:
               17: 'cmd-reset-down'
               18: 'cmd-reset-up'
 
-      midi_outputs:
+      midi_outputs_DIS:
         midi1:
           verbose: false
           port: 1
@@ -208,45 +248,3 @@ py2030:
                 '7': '__foo__'
                 '8': 'resetDownPos'
                 '9': 'resetUpActive'
-
-
-      sines:
-        sineLight:
-          verbose: true
-          frequency: 0.2
-          sleep_DISABLED_BLOCKING: 1.0
-          amplitude: 0.3
-          base: 0.3
-          cursorStart: -0.5
-          output_events:
-            'value': 'ch23'
-
-        sineWinchVelocity:
-          verbose: true
-          frequency: 0.1
-          sleep_DISABLED_BLOCKING: 1.0
-          amplitude: 1.0
-          base: 0
-          cursorStart: 0.0
-          output_events:
-            'value': 'play-winchVel'
-
-        sineRotatorVelocity:
-          verbose: true
-          frequency: 0.1
-          sleep_DISABLED_BLOCKING: 1.0
-          amplitude: 0.8
-          base: 0
-          cursorStart: 0.0
-          output_events:
-            'value': 'play-rotVel'
-
-        sineWinchVelocity_almost_in_balance:
-          verbose: true
-          frequency: 0.1
-          sleep_DISABLED_BLOCKING: 1.0
-          amplitude: 0.1
-          base: -0.032
-          cursorStart: 3.0
-          output_events:
-            'value': 'winchVel_DISABLED'

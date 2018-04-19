@@ -1,18 +1,43 @@
+import logging
 from evento import Event
 
 class BaseComponent:
     config_name = None
 
+    def __init__(self, options):
+        self.options = options
+        self.name = ''
+        self.event_manager = None # TODO: also pass this in through event_manager and call setup at end of __init__
+
+        # setup logging
+        self.verbose = self.getOption('verbose', False)
+        self.logger = logging.getLogger(self.config_name)
+        loglevel = self.getOption('loglevel', None)
+        loglevelmapping = {'CRITICAL':logging.CRITICAL, 'ERROR':logging.CRITICAL, 'WARNING':logging.WARNING, 'INFO':logging.INFO, 'DEBUG':logging.DEBUG, 'NOTSET':logging.NOTSET}
+        if loglevel and loglevel in loglevelmapping:
+            self.logger.setLevel(loglevelmapping[loglevel])
+        elif self.verbose:
+            self.logger.setLevel(logging.DEBUG)
+        else:
+            self.logger.setLevel(logging.INFO)
+
+    def setup(self, event_manager):
+        self.event_manager = event_manager
+        self.logger.info("SETUP instance: "+self.config_name+"#"+self.name)
+
     @classmethod
     def create_components(cls, config, context):
         comps = []
 
-        for data in config.values():
-            comp = cls(data)
+        for key in config:
+            comp = cls(config[key])
+            comp.name = key
             comp.setup(context.event_manager)
             comps.append(comp)
 
         return comps
+
+    # helper methods
 
     def getOption(self, optName, default=None):
         if optName in self.options:
@@ -21,7 +46,14 @@ class BaseComponent:
         return default
 
     def getInputEvent(self, eventName, dummy=True):
-        if 'input_events' in self.options and eventName in self.options['input_events'] and self.event_manager:
-            return self.event_manager.get(self.options['input_events'][eventName])
+        return self.getEventFrom('input_events', eventName, dummy)
+
+    def getOutputEvent(self, eventName, dummy=True):
+        return self.getEventFrom('output_events', eventName, dummy)
+
+    def getEventFrom(self, configName, eventName, dummy=True):
+        if configName in self.options and eventName in self.options[configName] and self.event_manager:
+            return self.event_manager.get(self.options[configName][eventName])
+
         # else
         return Event() if dummy else None

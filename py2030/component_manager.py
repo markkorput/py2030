@@ -1,4 +1,4 @@
-import copy
+import copy, sys
 from datetime import datetime
 import logging
 logging.basicConfig(level=logging.WARNING)
@@ -16,6 +16,8 @@ class ComponentManager:
         self.options = options
 
         logging.basicConfig()
+        # logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+
         self.logger = logging.getLogger(__name__)
         if 'verbose' in self.options and self.options['verbose']:
             self.logger.setLevel(logging.DEBUG)
@@ -28,8 +30,9 @@ class ComponentManager:
         self.destroy_components = []
         self.context = Context(EventManager())
         self._profile_data = None
-        self._operation_queue = []
+        self.gotNextUpdateOps = False
         self.running = False
+        self.restart = False
         self.shutdown_message = "py2030, over and out.\n"
 
     def __del__(self):
@@ -62,6 +65,9 @@ class ComponentManager:
         if 'stop_event' in self._profile_data:
             self.context.event_manager.get(self._profile_data['stop_event']).subscribe(self._onStopEvent)
 
+        if 'restart_event' in self._profile_data:
+            self.context.event_manager.get(self._profile_data['restart_event']).subscribe(self._onRestartEvent)
+
         if len(self.components) > 0:
             self.running = True
         else:
@@ -78,9 +84,14 @@ class ComponentManager:
         self.logger.debug('stop_event triggered')
         self.running = False
 
+    def _onRestartEvent(self):
+        self.logger.debug('restart_event triggered')
+        self.restart = True
+        self.running = False
+
     def _onReloadEvent(self):
         self.logger.debug('reload_event triggered')
-        self._operation_queue.append(self._reload)
+        self.nextUpdate(self._reload)
 
     def _reload(self):
         self.logger.info('-- Reloading --')
@@ -106,9 +117,11 @@ class ComponentManager:
         for comp in self.update_components:
             comp.update()
 
-        for op in self._operation_queue:
-            op()
-        self._operation_queue = []
+        if self.gotNextUpdateOps:
+            for op in self._op_queue:
+                op()
+            del self._op_queue
+            self.gotNextUpdateOps = False
 
     def _found_component_classes(self):
         klasses = []
@@ -165,3 +178,11 @@ class ComponentManager:
             self.destroy_components.append(comp)
 
         self.components.append(comp)
+
+    # operation
+
+    def nextUpdate(self, func):
+        if not hasattr(self, '_op_queue'):
+            self._op_queue = []
+        self._op_queue.append(func)
+        self.gotNextUpdateOps = True

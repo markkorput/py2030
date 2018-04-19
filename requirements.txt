@@ -3,7 +3,18 @@ evento==1.0.1
 pyOSC==0.3.5b-5294
 
 # option component-specific requirements
+
+# omx video player
 omxplayer-wrapper==0.0.2
 omxsync==0.1.1
+
+# dmx output
 pysimpledmx==0.1.1
+
+# midi in/output
 python-rtmidi==1.1.0 #0.5b1
+
+# audio
+# requires on OSX: brew install portaudio
+# required on raspi: sudo apt-get install python-pyaudio python3-pyaudio portaudio19-dev
+pyaudio==0.2.11

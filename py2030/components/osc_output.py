@@ -1,6 +1,5 @@
 import socket
 import logging
-from evento import Event
 from py2030.base_component import BaseComponent
 
 try:
@@ -49,33 +48,29 @@ class OscOutput(BaseComponent):
     config_name = 'osc_outputs'
 
     def __init__(self, options = {}):
-        # config
-        self.options = options
-
-        # attributes
-        self.logger = logging.getLogger(__name__)
-        if 'verbose' in options and options['verbose']:
-            self.logger.setLevel(logging.DEBUG)
+        BaseComponent.__init__(self, options)
 
         self.client = None
         self.connected = False
         self.host_cache = None
-        self.event_manager = None
         self._event_messages = []
-
-        # events
-        self.connectEvent = Event()
-        self.disconnectEvent = Event()
-        self.messageEvent = Event()
 
     def __del__(self):
         self.destroy()
 
     def setup(self, event_manager=None):
-        self._connect()
-        self.event_manager = event_manager
+        BaseComponent.setup(self, event_manager)
+
+        # events
+        self.connectEvent = self.getOutputEvent('connect')
+        self.disconnectEvent = self.getOutputEvent('disconnect')
+        self.messageEvent = self.getOutputEvent('message', dummy=False)
+
         if event_manager != None:
             self._registerCallbacks()
+
+        if self.getOption('autoStart', True):
+            self._connect()
 
     def destroy(self):
         if self.event_manager != None:
@@ -98,7 +93,10 @@ class OscOutput(BaseComponent):
             return
 
         for event_id, message in self.options['input_events'].items():
-            self._event_messages.append(EventMessage(self, self.event_manager.get(event_id), message))
+            self._registerEventMessage(event_id, message)
+
+    def _registerEventMessage(self, event_id, message):
+        self._event_messages.append(EventMessage(self, self.event_manager.get(event_id), message))
 
     def _onEvent(self, event_id):
         if event_id in self.options['input_events']:
@@ -174,4 +172,5 @@ class OscOutput(BaseComponent):
                 # self.stop()
 
         self.logger.debug('osc-out {0}:{1} - {2} [{3}]'.format(self.host(), self.port(), addr, ", ".join(map(lambda x: str(x), data))))
-        self.messageEvent(msg, self)
+        if self.messageEvent:
+            self.messageEvent(msg, self)

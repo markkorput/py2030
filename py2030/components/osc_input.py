@@ -45,6 +45,7 @@ class OscInput(BaseComponent):
         self.connectEvent = self.getOutputEvent('connect')
         self.disconnectEvent = self.getOutputEvent('disconnect')
         self.messageEvent = self.getOutputEvent('message', dummy=False) # can be None if not configured
+        self.argEvents = self.getOption('argEvents', {})
 
         if self.getOption('autoStart', True):
             self.start()
@@ -119,3 +120,8 @@ class OscInput(BaseComponent):
         elif self.autoAddrToEvent:
             self.logger.debug('triggering auto-output event: {0}'.format(addr))
             self.event_manager.fire(addr)
+
+        # this doesnt work yet?!
+        if addr in self.argEvents.keys():
+            print('triggering argEvent:', addr)
+            self.event_manager.get(self.argEvents[addr]).fire(args)

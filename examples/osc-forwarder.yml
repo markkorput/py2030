@@ -2,16 +2,17 @@ py2030:
   profiles:
     MarkBookProRetina_local:
       osc_outputs:
-        osc1:
+        osc_output1:
           verbose: true
-          port: 8080
+          port: 8081
           ip: 127.0.0.1
           input_events:
-            'sineValue': '/composition/layers/1/clips/1/video/source/params/text'
-      sines:
-        sine1:
-          verbose: false
-          frequency: 3.0
-          sleep: 0.1
-          output_events:
-            'value': 'sineValue'
+            'oscMsg1': '/forward/ed'
+
+      osc_inputs:
+        osc_input1:
+          verbose: true
+          ip: ''
+          port: 8080
+          argEvents:
+            /sin/value: 'oscMsg1'

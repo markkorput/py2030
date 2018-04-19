@@ -10,7 +10,7 @@ py2030:
             'sineValue': '/composition/layers/1/clips/1/video/source/params/text'
       sines:
         sine1:
-          verbose: true
+          verbose: false
           frequency: 3.0
           sleep: 0.1
           output_events:

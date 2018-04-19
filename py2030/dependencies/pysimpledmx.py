@@ -40,7 +40,7 @@ class DMXConnection(object):
       raise RuntimeError("Could not open device %s." % com_name)
       return
 
-    print "Opened %s." % (self.com.portstr)
+    print("Opened %s." % (self.com.portstr))
 
 
   def setChannel(self, chan, val, autorender = False):
@@ -49,7 +49,7 @@ class DMXConnection(object):
     DMX frame, to be rendered the next time the render() method is called.
     '''
     if not 1 <= chan-1 <= DMX_SIZE:
-      print 'Invalid channel specified: %s' % chan-1
+      print('Invalid channel specified: %s' % chan-1)
       return
     # clamp value
     val = max(0, min(val, 255))

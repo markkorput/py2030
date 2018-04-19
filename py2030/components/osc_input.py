@@ -2,10 +2,17 @@ import logging, threading
 from py2030.base_component import BaseComponent
 
 try:
-    from OSC import OSCServer, NoCallbackError
+    from pythonosc import osc_server
 except ImportError:
-    logging.getLogger(__name__).warning("importing embedded version of pyOSC library")
-    from py2030.dependencies.OSC import OSCServer, NoCallbackError
+    logging.getLogger(__name__).warning("failed to load pythonosc dependency; osc_input component will not work")
+    osc_server = None
+
+# try:
+#     from OSC import OSCServer, NoCallbackError
+# except ImportError:
+#     logging.getLogger(__name__).warning("importing embedded version of pyOSC library")
+#     # from py2030.dependencies.OSC import OSCServer, NoCallbackError
+
 
 DEFAULT_PORT = 2030
 DEFAULT_IP = ''
@@ -94,20 +101,31 @@ class OscInput(BaseComponent):
             self.logger.warning('already connected')
             return False
 
-        try:
-            self.osc_server = OSCServer((self.host(), self.port()))
-        except Exception as err:
-            # something went wrong, cleanup
-            self.connected = False
-            self.osc_server = None
-            # notify
-            self.logger.error("{0}\n\tOSC Server could not start @ {1}:{2}".format(err, self.host(), str(self.port())))
-            # abort
+        if osc_server == None:
+            self.logger.warning('No pythonosc')
             return False
 
-        # register time out callback
-        self.osc_server.handle_timeout = self._onTimeout
-        self.osc_server.addMsgHandler('default', self._onOscMsg)
+        dispatcher = dispatcher.Dispatcher()
+        dispatcher.map("*", self._onOscMsg, "Volume")
+        # dispatcher.map("/logvolume", print_compute_handler, "Log volume", math.log)
+
+        self.osc_server = osc_server.ThreadingOSCUDPServer((self.host(), self.port()), dispatcher)
+        self.osc_server.serve_forever()
+
+        # try:
+        #     self.osc_server = OSCServer((self.host(), self.port()))
+        # except Exception as err:
+        #     # something went wrong, cleanup
+        #     self.connected = False
+        #     self.osc_server = None
+        #     # notify
+        #     self.logger.error("{0}\n\tOSC Server could not start @ {1}:{2}".format(err, self.host(), str(self.port())))
+        #     # abort
+        #     return False
+        #
+        # # register time out callback
+        # self.osc_server.handle_timeout = self._onTimeout
+        # self.osc_server.addMsgHandler('default', self._onOscMsg)
 
         # set internal connected flag
         self.connected = True
@@ -133,32 +151,35 @@ class OscInput(BaseComponent):
             self.thread = None
 
         if self.osc_server:
-            self.osc_server.close()
+            self.osc_server.shutdown()
             self.connected = False
             self.osc_server = None
             self.disconnectEvent(self)
             self.logger.info('OSC Server ({0}:{1}) stopped'.format(self.host(), str(self.port())))
 
-    def _onTimeout(self):
-        if self.osc_server:
-            self.osc_server.timed_out = True
+    def _onOscMsg(self, a,b,c):
+        print('_onOscMsg',a,b,c)
 
-    def _onOscMsg(self, addr, tags=[], data=[], client_address=''):
-        # skip touch osc touch-up events
-        # if len(data) == 1 and data[0] == 0.0:
-        #     return
-        self.logger.debug('osc-in {0}:{1} {2} [{3}] from {4}'.format(self.host(), self.port(), addr, ", ".join(map(lambda x: str(x), data)), client_address))
-        if self.messageEvent:
-            self.messageEvent(addr, tags, data, client_address)
+    # def _onTimeout(self):
+    #     if self.osc_server:
+    #         self.osc_server.timed_out = True
 
-        # trigger events based on incoming messages if configured
-        if addr in self.msgEventMapping:
-            self.logger.debug('triggering output event: {0}'.format(self.msgEventMapping[addr]))
-            self.event_manager.fire(self.msgEventMapping[addr])
-        elif self.autoAddrToEvent:
-            self.logger.debug('triggering auto-output event: {0}'.format(addr))
-            self.event_manager.fire(addr)
+    # def _onOscMsg(self, addr, tags=[], data=[], client_address=''):
+    #     # skip touch osc touch-up events
+    #     # if len(data) == 1 and data[0] == 0.0:
+    #     #     return
+    #     self.logger.debug('osc-in {0}:{1} {2} [{3}] from {4}'.format(self.host(), self.port(), addr, ", ".join(map(lambda x: str(x), data)), client_address))
+    #     if self.messageEvent:
+    #         self.messageEvent(addr, tags, data, client_address)
+    #
+    #     # trigger events based on incoming messages if configured
+    #     if addr in self.msgEventMapping:
+    #         self.logger.debug('triggering output event: {0}'.format(self.msgEventMapping[addr]))
+    #         self.event_manager.fire(self.msgEventMapping[addr])
+    #     elif self.autoAddrToEvent:
+    #         self.logger.debug('triggering auto-output event: {0}'.format(addr))
+    #         self.event_manager.fire(addr)
 
-    def _threadMethod(self):
-        while not self._threadStopFlag:
-            self._processIncomingMessages()
+    # def _threadMethod(self):
+    #     while not self._threadStopFlag:
+    #         self._processIncomingMessages()

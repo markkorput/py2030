@@ -2,11 +2,18 @@ import socket
 import logging
 from py2030.base_component import BaseComponent
 
+# try:
+#     import OSC
+# except ImportError:
+#     logging.getLogger(__name__).warning("importing embedded version of pyOSC library")
+#     import py2030.dependencies.OSC as OSC
+
 try:
-    import OSC
+    from pythonosc import osc_message_builder
+    from pythonosc import udp_client
 except ImportError:
-    logging.getLogger(__name__).warning("importing embedded version of pyOSC library")
-    import py2030.dependencies.OSC as OSC
+    osc_message_builder = None
+    udp_client = None
 
 DEFAULT_PORT = 2030
 DEFAULT_HOST = '255.255.255.255'
@@ -93,14 +100,7 @@ class OscOutput(BaseComponent):
             return
 
         for event_id, message in self.options['input_events'].items():
-            self._registerEventMessage(event_id, message)
-
-    def _registerEventMessage(self, event_id, message):
-        self._event_messages.append(EventMessage(self, self.event_manager.get(event_id), message))
-
-    def _onEvent(self, event_id):
-        if event_id in self.options['input_events']:
-            self.send(self.options['input_events'][event_id])
+            self._event_messages.append(EventMessage(self, self.event_manager.get(event_id), [message]))
 
     def port(self):
         return int(self.options['port']) if 'port' in self.options else DEFAULT_PORT
@@ -130,16 +130,15 @@ class OscOutput(BaseComponent):
             self.logger.warning("no host, can't connect")
             return
 
-        try:
-            self.client = OSC.OSCClient()
-            if target.endswith('.255'):
-                self.logger.info('broadcast target detected')
-                self.client.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-            self.client.connect((target, self.port()))
-        except OSC.OSCClientError as err:
-            self.logger.error("OSC connection failure: {0}".format(err))
-            return False
-
+        # try:
+        #     # self.client = OSC.OSCClient()
+        #     # if target.endswith('.255'):
+        #     #     self.logger.info('broadcast target detected')
+        #     #     self.client.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        # except OSC.OSCClientError as err:
+        #     self.logger.error("OSC connection failure: {0}".format(err))
+        #     return False
+        self.client = udp_client.SimpleUDPClient(target, self.port())
         self.connected = True
         self.connectEvent(self)
         self.logger.info("OSC client connected to {0}:{1} (hostname: {2})".format(self.host(), str(self.port()), self.hostname()))
@@ -147,7 +146,7 @@ class OscOutput(BaseComponent):
 
     def _disconnect(self):
         if self.client:
-            self.client.close()
+            # self.client.close()
             self.client = None
             self.disconnectEvent(self)
             self.logger.info("OSC client ({0}:{1}) closed".format(self.host(), self.port()))
@@ -155,15 +154,16 @@ class OscOutput(BaseComponent):
         self.connected = False
 
     def send(self, addr, data=[]):
-        msg = OSC.OSCMessage()
-        msg.setAddress(addr) # set OSC address
-
-        for item in data:
-            msg.append(item)
+        # msg = OSC.OSCMessage()
+        # msg.setAddress(addr) # set OSC address
+        #
+        # for item in data:
+        #     msg.append(item)
 
         if self.connected:
             try:
-                self.client.send(msg)
+                self.client.send_message(addr, data)
+                # self.client.send(msg)
             except OSC.OSCClientError as err:
                 pass
             except AttributeError as err:

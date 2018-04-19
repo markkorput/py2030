@@ -150,6 +150,8 @@ class ComponentManager:
         del comp_modules
         del BaseComponent
 
+        # print(klasses)
+
         return klasses
 
     def _load_components(self, profile_data = None):
@@ -158,24 +160,30 @@ class ComponentManager:
         # loop over all configurations in our profile
         for config_name, config_data in profile_data.items():
             # let all classes that say they are responsible for this piece of configuration generate component(s)
-            for klass in filter(lambda cls: cls.config_name == config_name, klasses):
-                comps = klass.create_components(config_data, self.context)
+            for klass in klasses:
+                if klass.config_name == config_name:
+                    comps = klass.create_components(config_data, self.context)
 
-                if not hasattr(comps, '__iter__'):
-                    self.logger.warning("Module with component_config_name {0} returned non-iterable components list".format(config_name))
-                    continue
+                    if not hasattr(comps, '__iter__'):
+                        self.logger.warning("Module with component_config_name {0} returned non-iterable components list".format(config_name))
+                        continue
 
-                for comp in comps:
-                    self._add_component(comp)
+                    for comp in comps:
+                        self._add_component(comp)
+
+                    break
+
 
         return
 
     def _add_component(self, comp):
-        if hasattr(comp, 'update') and type(comp.update).__name__ == 'instancemethod':
-            self.update_components.append(comp)
+        if hasattr(comp, 'update'):
+            if type(comp.update).__name__ == 'instancemethod' or type(comp.update).__name__ == 'method':
+                self.update_components.append(comp)
 
-        if hasattr(comp, 'destroy') and type(comp.destroy).__name__ == 'instancemethod':
-            self.destroy_components.append(comp)
+        if hasattr(comp, 'destroy'):
+            if type(comp.destroy).__name__ == 'instancemethod' or type(comp.destroy).__name__ == 'method':
+                self.destroy_components.append(comp)
 
         self.components.append(comp)
 

@@ -6,19 +6,15 @@ class Sine(BaseComponent):
     config_name = 'sines'
 
     def __init__(self, options = {}):
+        BaseComponent.__init__(self, options)
         self.options = options
         self.amplitude = options['amplitude'] if 'amplitude' in options else 1.0
         self.frequency = options['frequency'] if 'frequency' in options else 1.0
         self.base = self.options['base'] if 'base' in self.options else 0.0
 
-        # attributes
-        self.logger = logging.getLogger(__name__)
-        if 'verbose' in options and options['verbose']:
-            self.logger.setLevel(logging.DEBUG)
-
     def setup(self, event_manager=None):
+        BaseComponent.setup(self, event_manager)
         self.event_manager = event_manager
-
 
         self.cursor = float(self.options['cursorStart']) if 'cursorStart' in self.options else 0.0
         self.cursorSpeed = self.frequency * math.pi * 2.0
@@ -35,7 +31,6 @@ class Sine(BaseComponent):
         if 'sleep' in self.options:
             self.sleep = self.options['sleep']
 
-
         self.lastUpdateTime = time.time()
 
     def update(self, dt=None):
@@ -47,7 +42,7 @@ class Sine(BaseComponent):
         self.cursor += self.cursorSpeed * dt
         self._lastValue = self.base + math.sin(self.cursor) * self.amplitude
         self.valueEvent(self._lastValue)
-        # self.logger.debug("sine value: "+str(self._lastValue))
+        self.logger.debug("sine value: "+str(self._lastValue))
 
         if self.sleep:
             time.sleep(self.sleep)

@@ -80,8 +80,8 @@ class LightCeremonyController(BaseComponent):
             self._stop() # and rewind
 
         self.pendingFrame = None
-        self.playTime = 0L
-        self.frameCount = 0L
+        self.playTime = long(0)
+        self.frameCount = long(0)
         self.lastUpdateTime = time.time()
         self.bPaused = False
         self.bPlaying = True

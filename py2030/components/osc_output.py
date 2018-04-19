@@ -19,20 +19,11 @@ DEFAULT_PORT = 2030
 DEFAULT_HOST = '255.255.255.255'
 
 class EventMessage:
-    def __init__(self, osc_output, event, message):
+    def __init__(self, osc_output, event, addr, *args):
         self.event = event
         self.osc_output = osc_output
-
-        # if type(message) == type([]) or type(message) == type(()):
-        if hasattr(message, '__iter__'):
-            tmp = self
-            if len(message) > 0:
-                self.message = message[0] # first one is the OSC-message
-                self.arguments= message[1:] # all except first one are the OSC arguments
-        else:
-            self.message = message # only a message
-            self.arguments = [] # no arguments
-
+        self.addr = addr
+        self.arguments = args
         self.event += self._send
 
     def __del__(self):
@@ -46,10 +37,10 @@ class EventMessage:
     def _send(self, *args, **kargs):
         if len(args) == 0:
             # take arguments from the initial configuration
-            self.osc_output.send(self.message, self.arguments)
+            self.osc_output.send(self.addr, self.arguments)
         else:
             # take arguments from the triggered event
-            self.osc_output.send(self.message, args)
+            self.osc_output.send(self.addr, args)
 
 class OscOutput(BaseComponent):
     config_name = 'osc_outputs'
@@ -100,7 +91,7 @@ class OscOutput(BaseComponent):
             return
 
         for event_id, message in self.options['input_events'].items():
-            self._event_messages.append(EventMessage(self, self.event_manager.get(event_id), [message]))
+            self._event_messages.append(EventMessage(self, self.event_manager.get(event_id), message))
 
     def port(self):
         return int(self.options['port']) if 'port' in self.options else DEFAULT_PORT
@@ -159,13 +150,12 @@ class OscOutput(BaseComponent):
         #
         # for item in data:
         #     msg.append(item)
-
         if self.connected:
             try:
                 self.client.send_message(addr, data)
-                # self.client.send(msg)
-            except OSC.OSCClientError as err:
-                pass
+            #     # self.client.send(msg)
+            # except OSC.OSCClientError as err:
+            #     pass
             except AttributeError as err:
                 self.logger.error('[osc-out {0}:{1}] error:'.format(self.host(), self.port()))
                 self.logger.error(str(err))

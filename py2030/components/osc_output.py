@@ -35,12 +35,40 @@ class EventMessage:
             self.event = None
 
     def _send(self, *args, **kargs):
+        # preconfigured args?
+        arglessaddr, args = EventMessage._processAddr(self.addr)
+
+        if args:
+            self.osc_output.send(arglessaddr, args)
+            return
+
         if len(args) == 0:
             # take arguments from the initial configuration
             self.osc_output.send(self.addr, self.arguments)
         else:
             # take arguments from the triggered event
             self.osc_output.send(self.addr, args)
+
+    def _processAddr(addr):
+        # preconfigured args?
+        if not '?' in addr:
+            return addr, None
+
+        argless_addr, args_part = addr.split('?')
+
+        converted_args = []
+
+        for arg in args_part.split(','):
+            # int?
+            try:
+                # an int?
+                no = int(arg)
+                converted_args.append(no)
+            except ValueError:
+                # not an int
+                converted_args.append(arg)
+
+        return argless_addr, converted_args
 
 class OscOutput(BaseComponent):
     config_name = 'osc_outputs'

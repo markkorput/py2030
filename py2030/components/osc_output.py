@@ -36,10 +36,10 @@ class EventMessage:
 
     def _send(self, *args, **kargs):
         # preconfigured args?
-        arglessaddr, args = EventMessage._processAddr(self.addr)
+        arglessaddr, addrargs = EventMessage._processAddr(self.addr)
 
-        if args:
-            self.osc_output.send(arglessaddr, args)
+        if addrargs:
+            self.osc_output.send(arglessaddr, addrargs)
             return
 
         if len(args) == 0:
@@ -59,14 +59,27 @@ class EventMessage:
         converted_args = []
 
         for arg in args_part.split(','):
-            # int?
+
             try:
                 # an int?
                 no = int(arg)
                 converted_args.append(no)
+                continue
             except ValueError:
                 # not an int
-                converted_args.append(arg)
+                pass
+
+            try:
+                # a float?
+                no = float(arg)
+                converted_args.append(no)
+                continue
+            except ValueError:
+                # not a float
+                pass
+
+            # simply treat as string
+            converted_args.append(arg)
 
         return argless_addr, converted_args
 

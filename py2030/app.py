@@ -20,7 +20,8 @@ if __name__ == '__main__':
     options = {
         'verbose': opts.verbose,
         'profile': opts.profile,
-        'config_file': opts.config_file
+        'config_file': opts.config_file,
+        'args': args
     }
 
     while True:

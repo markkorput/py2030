@@ -73,12 +73,17 @@ class ComponentManager:
         else:
             self.logger.warning('No components loaded. Abort.')
 
+        if 'shutdown_message' in self._profile_data:
+            self.shutdown_message = self._profile_data['shutdown_message']
+
         if 'start_event' in self._profile_data:
             self.logger.debug('triggering start_event: ' + str(self._profile_data['start_event']))
             self.context.event_manager.get(self._profile_data['start_event']).fire()
-
-        if 'shutdown_message' in self._profile_data:
-            self.shutdown_message = self._profile_data['shutdown_message']
+        else:
+            if 'args' in self.options and self.options['args'] and len(self.options['args']) == 1:
+                arg = self.options['args'][0]
+                self.logger.debug('triggering arg: ' + arg)
+                self.context.event_manager.get(arg).fire()
 
     def _onStopEvent(self):
         self.logger.debug('stop_event triggered')

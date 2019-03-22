@@ -1,6 +1,6 @@
 PyYAML==3.11
 evento==1.0.1
-pyOSC==0.3.5b-5294
+python-osc==1.7.0
 
 # option component-specific requirements
 

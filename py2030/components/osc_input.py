@@ -56,10 +56,15 @@ class OscInput(BaseComponent):
         self.stop()
 
     def start(self):
+        if self.running:
+            return
+
         if self._connect():
             self.running = True
 
     def stop(self):
+        if not self.running:
+            return
         if self.connected:
             self._disconnect()
         self.running = False
@@ -83,8 +88,22 @@ class OscInput(BaseComponent):
         disp.map("*", self._onOscMsg)
         # disp.map("/logvolume", print_compute_handler, "Log volume", math.log)
 
-        self.osc_server = osc_server.ThreadingOSCUDPServer((self.host(), self.port()), disp)
-        self.osc_server.serve_forever()
+        try:
+            self.osc_server = osc_server.ThreadingOSCUDPServer((self.host(), self.port()), disp)
+            self.osc_server.daemon_threads = True
+            self.osc_server.timeout = 1.0
+            # self.osc_server = osc_server.BlockingOSCUDPServer((self.host(), self.port()), disp)
+            def threadFunc():
+                try:
+                    self.osc_server.serve_forever()
+                except KeyboardInterrupt:
+                    pass
+                self.osc_server.server_close()
+
+            self.thread = threading.Thread(target = threadFunc);
+            self.thread.start()
+        except OSError as err:
+            self.logger.warning("Could not start OSC server: "+str(err))
 
         # set internal connected flag
         self.connected = True
@@ -96,10 +115,12 @@ class OscInput(BaseComponent):
 
     def _disconnect(self):
         if self.osc_server:
+            self.osc_server._BaseServer__shutdown_request = True
             self.osc_server.shutdown()
             self.connected = False
             self.osc_server = None
             self.disconnectEvent(self)
+
             self.logger.info('OSC Server ({0}:{1}) stopped'.format(self.host(), str(self.port())))
 
     def _onOscMsg(self, addr, *args):

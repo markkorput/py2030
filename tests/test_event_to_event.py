@@ -22,7 +22,6 @@ class TestEventToEvent(unittest.TestCase):
         e2e.setup(event_manager)
         self.assertEqual(event_manager.get('abc').getSubscriberCount(), 1)
         e2e.destroy()
-        self.assertIsNone(e2e.event_manager)
         self.assertEqual(event_manager.get('abc').getSubscriberCount(), 0)
 
     def test_events_triggers_other_events(self):

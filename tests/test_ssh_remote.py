@@ -62,7 +62,7 @@ class TestSshRemote(unittest.TestCase):
 
         sr = SshRemote({'files': {'./tests/test_*.py': 'remote/folder/'}})
         sr.setup()
-        a = sr._operations.keys()
+        a = list(sr._operations.keys())
         a.sort()
         b = glob('./tests/test_*.py')
         b.sort()

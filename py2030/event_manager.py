@@ -58,9 +58,7 @@ class EventManager:
     # - single string value, interpreted as event ID
     # - list of string values, interpreted as multiple event IDs
     def config_to_events(self, config_data):
-        events = []
-
-        if config_data.__class__ == {}.__class__ and 'event' in config_data: # we got a dict?
+        if config_data.__class__ == {}.__class__ and 'event' in config_data: # we got a dict with an 'event' key
             if 'params' in config_data:
                 params_event = ParamsEvent()
                 params_event.setup(self.get(config_data['event'], config_data['params']))
@@ -68,11 +66,11 @@ class EventManager:
 
             config_data = config_data['event']
 
-        for event_id in self._config_to_event_ids(config_data):
-            events.append(self.get(event_id))
-        return events
+        event_ids = config_data if hasattr(config_data, '__iter__') and config_data.__class__ != ''.__class__ else [config_data]
+        result = list(map(lambda id: self.get(id), event_ids))
+        return result
 
-    def _config_to_event_ids(self, config_data):
-        if hasattr(config_data, '__iter__'):
-            return  config_data
-        return [config_data]
+    # def _config_to_event_ids(self, config_data):
+    #     if hasattr(config_data, '__iter__'):
+    #         return  config_data
+    #     return

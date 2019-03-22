@@ -128,7 +128,7 @@ class ComponentManager:
             del self._op_queue
             self.gotNextUpdateOps = False
 
-    def get_components_from(module, ignores=[]):
+    def get_components_from(self, module, ignores=[]):
         comps = []
         # find component class inside the module
         for klass in module.__dict__.values():
@@ -159,7 +159,7 @@ class ComponentManager:
 
         klasses = []
         for module in mods:
-            klasses += ComponentManager.get_components_from(module, ignores=[BaseComponent])
+            klasses += self.get_components_from(module, ignores=[BaseComponent])
 
         del comp_modules
         del BaseComponent

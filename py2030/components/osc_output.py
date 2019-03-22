@@ -18,70 +18,72 @@ except ImportError:
 DEFAULT_PORT = 2030
 DEFAULT_HOST = '255.255.255.255'
 
-class EventMessage:
-    def __init__(self, osc_output, event, addr, *args):
-        self.event = event
-        self.osc_output = osc_output
-        self.addr = addr
-        self.arguments = args
-        self.event += self._send
-
-    def __del__(self):
-        self.destroy()
-
-    def destroy(self):
-        if self.event:
-            self.event -= self._send
-            self.event = None
-
-    def _send(self, *args, **kargs):
-        # preconfigured args?
-        arglessaddr, addrargs = EventMessage._processAddr(self.addr)
-
-        if addrargs:
-            self.osc_output.send(arglessaddr, addrargs)
-            return
-
-        if len(args) == 0:
-            # take arguments from the initial configuration
-            self.osc_output.send(self.addr, self.arguments)
-        else:
-            # take arguments from the triggered event
-            self.osc_output.send(self.addr, args)
-
-    def _processAddr(addr):
-        # preconfigured args?
-        if not '?' in addr:
-            return addr, None
-
-        argless_addr, args_part = addr.split('?')
-
-        converted_args = []
-
-        for arg in args_part.split(','):
-
-            try:
-                # an int?
-                no = int(arg)
-                converted_args.append(no)
-                continue
-            except ValueError:
-                # not an int
-                pass
-
-            try:
-                # a float?
-                no = float(arg)
-                converted_args.append(no)
-                continue
-            except ValueError:
-                # not a float
-                pass
-
-            # simply treat as string
-            converted_args.append(arg)
-
-        return argless_addr, converted_args
+# class EventMessage:
+#     def __init__(self, osc_output, event, addr, *args):
+#         self.event = event
+#         self.osc_output = osc_output
+#         self.addr = addr
+#         self.arguments = args
+#         self.event += self._send
+#
+#     def __del__(self):
+#         self.destroy()
+#
+#     def destroy(self):
+#         if self.event:
+#             self.event -= self._send
+#             self.event = None
+#
+#     def _send(self, *args, **kargs):
+#         # preconfigured args?
+#         arglessaddr, addrargs = EventMessage._processAddr(self.addr)
+#
+#         if addrargs:
+#             self.osc_output.send(arglessaddr, addrargs)
+#             return
+#
+#         if len(args) == 0:
+#             # take arguments from the initial configuration
+#             self.osc_output.send(self.addr, self.arguments)
+#         else:
+#             # take arguments from the triggered event
+#             self.osc_output.send(self.addr, args)
+#
+#     __call__ = _send
+#
+#     def _processAddr(addr):
+#         # preconfigured args?
+#         if not '?' in addr:
+#             return addr, None
+#
+#         argless_addr, args_part = addr.split('?')
+#
+#         converted_args = []
+#
+#         for arg in args_part.split(','):
+#
+#             try:
+#                 # an int?
+#                 no = int(arg)
+#                 converted_args.append(no)
+#                 continue
+#             except ValueError:
+#                 # not an int
+#                 pass
+#
+#             try:
+#                 # a float?
+#                 no = float(arg)
+#                 converted_args.append(no)
+#                 continue
+#             except ValueError:
+#                 # not a float
+#                 pass
+#
+#             # simply treat as string
+#             converted_args.append(arg)
+#
+#         return argless_addr, converted_args
 
 class OscOutput(BaseComponent):
     config_name = 'osc_outputs'
@@ -92,7 +94,7 @@ class OscOutput(BaseComponent):
         self.client = None
         self.connected = False
         self.host_cache = None
-        self._event_messages = []
+        # self._event_messages = []
 
     def __del__(self):
         self.destroy()
@@ -103,22 +105,17 @@ class OscOutput(BaseComponent):
         # events
         self.connectEvent = self.getOutputEvent('connect')
         self.disconnectEvent = self.getOutputEvent('disconnect')
-        self.messageEvent = self.getOutputEvent('message', dummy=False)
+        self.messageEvent = self.getOutputEvent('message')
 
         self.getInputEvent('addressArgs').subscribe(self.onAddrArgsMessage)
         if event_manager != None:
             self._registerCallbacks()
 
-        if self.getOption('autoStart', True):
+        if self.opt('autoStart', True):
             self._connect()
 
     def destroy(self):
-        if self.event_manager != None:
-            self._registerCallbacks(False)
-            self.event_manager = None
-
-        if self.connected:
-            self._disconnect()
+        super().destroy()
 
     def _registerCallbacks(self, _register=True):
         # UNregister
@@ -132,8 +129,17 @@ class OscOutput(BaseComponent):
         if not 'input_events' in self.options:
             return
 
-        for event_id, message in self.options['input_events'].items():
-            self._event_messages.append(EventMessage(self, self.event_manager.get(event_id), message))
+        for event_id, messageUrl in self.options['input_events'].items():
+            def customSend(*args, **kwargs):
+                addr, urldata = OscOutput.messageFromUrl(messageUrl, *args, **kwargs)
+                self.send(addr, urldata if urldata != None else args)
+
+            evt = self.event_manager.get(event_id)
+            evt.subscribe(customSend)
+            # unregister on destroy
+            self.onDestroy(lambda: evt.unsubscribe(customSend))
+
+            # self._event_messages.append(EventMessage(self, self.event_manager.get(event_id), message))
 
     def port(self):
         return int(self.options['port']) if 'port' in self.options else DEFAULT_PORT
@@ -171,8 +177,13 @@ class OscOutput(BaseComponent):
         # except OSC.OSCClientError as err:
         #     self.logger.error("OSC connection failure: {0}".format(err))
         #     return False
+        if udp_client == None:
+            self.logger.warning("OscOutput missing OSC dependency")
+            return
+
         self.client = udp_client.SimpleUDPClient(target, self.port())
         self.connected = True
+        super().onDestroy(self._disconnect)
         self.connectEvent(self)
         self.logger.info("OSC client connected to {0}:{1} (hostname: {2})".format(self.host(), str(self.port()), self.hostname()))
         return True
@@ -185,6 +196,40 @@ class OscOutput(BaseComponent):
             self.logger.info("OSC client ({0}:{1}) closed".format(self.host(), self.port()))
 
         self.connected = False
+
+    @staticmethod
+    def messageFromUrl(url, *args, **kwargs):
+        # preconfigured args?
+        if not '?' in url:
+            return url, None
+
+        addr, args_part = addr.split('?')
+
+        converted_args = []
+
+        for arg in args_part.split(','):
+            try:
+                # an int?
+                no = int(arg)
+                converted_args.append(no)
+                continue
+            except ValueError:
+                # not an int
+                pass
+
+            try:
+                # a float?
+                no = float(arg)
+                converted_args.append(no)
+                continue
+            except ValueError:
+                # not a float
+                pass
+
+            # simply treat as string
+            converted_args.append(arg)
+
+        return addr, converted_args
 
     def onAddrArgsMessage(self, addr, args=[]):
         self.send(addr, args)
@@ -207,5 +252,4 @@ class OscOutput(BaseComponent):
                 # self.stop()
 
         self.logger.debug('osc-out {0}:{1} - {2} [{3}]'.format(self.host(), self.port(), addr, ", ".join(map(lambda x: str(x), data))))
-        if self.messageEvent:
-            self.messageEvent(msg, self)
+        self.messageEvent((addr, data), self)

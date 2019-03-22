@@ -14,16 +14,29 @@ class BaseComponent:
         self.logger = logging.getLogger(self.config_name)
         loglevel = self.getOption('loglevel', None)
         loglevelmapping = {'CRITICAL':logging.CRITICAL, 'ERROR':logging.CRITICAL, 'WARNING':logging.WARNING, 'INFO':logging.INFO, 'DEBUG':logging.DEBUG, 'NOTSET':logging.NOTSET}
+
         if loglevel and loglevel in loglevelmapping:
             self.logger.setLevel(loglevelmapping[loglevel])
         elif self.verbose:
             self.logger.setLevel(logging.DEBUG)
         else:
             self.logger.setLevel(logging.INFO)
+        self.destroy_funcs = []
+
+    def __del__(self):
+        self.destroy()
 
     def setup(self, event_manager):
         self.event_manager = event_manager
         self.logger.info("SETUP instance: "+self.config_name+"#"+self.name)
+
+    def destroy(self):
+        for func in self.destroy_funcs:
+            func()
+        self.destroy_funcs = []
+
+    def onDestroy(self, func):
+        self.destroy_funcs.append(func)
 
     @classmethod
     def create_components(cls, config, context):

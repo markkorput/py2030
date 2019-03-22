@@ -1,0 +1,65 @@
+py2030:
+  profiles:
+    default:
+
+      # start_event: 'doStart'
+      # start_event: 'doResults'
+      stop_event: 'quit'
+
+      event_to_event:
+        _:
+          doStart:
+            - sendCreate
+            - quit
+          doResults:
+            - sendResults
+            - quit
+          startone:
+            - unity1
+            - quit
+          starttwo:
+            - unity1
+            - unity2
+            - quit
+          info1:
+            - unity_info1
+            - quit
+          play1:
+            - unity_play1
+            - quit
+          info5:
+            - unity_info5
+            - quit
+          play4:
+            - unity_play4
+            - quit
+          results1:
+            - unity_results1
+            - quit
+
+      # components for sending OSC message
+      osc_outputs:
+        osc_out_to_interactive_table:
+          verbose: true
+          port: 7400
+          ip: '127.0.0.1'
+          input_events:
+            'sendCreate': '/interactivetable/security/create?5,2,/dummy/path'
+            'sendResults': '/interactivetable/security/create?0,0.1,0.25,0.33,0.4,0.0'
+
+        osc_out_to_unity:
+          verbose: true
+          port: 3340
+          ip: '127.0.0.1'
+          input_events:
+            'unity1': '/interactivetable/session/start?0,1,0'
+            'unity2': '/interactivetable/session/start?0,2,1'
+            'unity3': '/interactivetable/session/start?0,3,2'
+            'stop1': '/interactivetable/session/1/stop'
+            'stop2': '/interactivetable/session/2/stop'
+            'stop3': '/interactivetable/session/3/stop'
+            'unity_info1': '/interactivetable/session/1/quiz/info?0'
+            'unity_play1': '/interactivetable/session/1/quiz/play?0'
+            'unity_info5': '/interactivetable/session/1/quiz/info?4'
+            'unity_play4': '/interactivetable/session/1/quiz/play?3'
+            'unity_results1': '/interactivetable/session/1/quiz/results?0,0.1,0.22,0.33,0.4,0.0'

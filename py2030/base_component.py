@@ -39,6 +39,9 @@ class BaseComponent:
 
     # helper methods
 
+    def opt(self, optName, default=None):
+        return self.getOption(optName, default)
+
     def getOption(self, optName, default=None):
         if optName in self.options:
             return self.options[optName]
@@ -47,6 +50,9 @@ class BaseComponent:
 
     def getInputEvent(self, eventName, dummy=True):
         return self.getEventFrom('input_events', eventName, dummy)
+
+    def getOutputEventsData(self, fallback={}):
+        return self.options['output_events'] if 'output_events' in self.options else fallback
 
     def getOutputEvent(self, eventName, dummy=True):
         return self.getEventFrom('output_events', eventName, dummy)

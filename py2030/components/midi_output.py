@@ -56,7 +56,12 @@ class MidiOutput(BaseComponent):
 
     def __init__(self, options = {}):
         # params
-        self.options = options
+        # self.options = options
+        # self.logger = logging.getLogger(__name__)
+        # if 'verbose' in options and options['verbose']:
+        #     self.logger.setLevel(logging.DEBUG)
+        super().__init__(options)
+
         # attributes
         self.port = self.options['port'] if 'port' in self.options else None
         self.midi = None
@@ -65,10 +70,6 @@ class MidiOutput(BaseComponent):
         self.connected = False
         self.event_manager = None
         self.listeners = []
-
-        self.logger = logging.getLogger(__name__)
-        if 'verbose' in options and options['verbose']:
-            self.logger.setLevel(logging.DEBUG)
 
         # events
         self.messageEvent = Event()

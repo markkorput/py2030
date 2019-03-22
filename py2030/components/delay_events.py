@@ -18,6 +18,7 @@ class DelayItem(BaseComponent):
             self.logger = logging.getLogger(__name__)
             self.logger.setLevel(logging.INFO)
         self.active = True
+        self.setup()
 
     def setup(self):
         self.sourceEvent += self._onSource
@@ -25,17 +26,24 @@ class DelayItem(BaseComponent):
         if self.haltEvent != None:
             self.haltEvent += self._onHalt
 
+
         if self.pauseEvent != None:
             self.pauseEvent += self._onPause
 
+
     def destroy(self):
-        self.sourceEvent -= self._onSource
+        if self.sourceEvent:
+            self.sourceEvent -= self._onSource
+            self.sourceEvent = None
 
         if self.haltEvent != None:
             self.haltEvent -= self._onHalt
+            self.haltEvent = None
+
 
         if self.pauseEvent != None:
             self.pauseEvent -= self._onPause
+            self.pauseEvent = None
 
     def update(self, dt=None):
         if self.timer <= 0 or not self.active:
@@ -76,10 +84,6 @@ class DelayEvents:
     def setup(self, event_manager):
         self.event_manager = event_manager
         self._delay_items = self._options_to_delay_items()
-
-        for delay_item in self._delay_items:
-            delay_item.setup()
-
         self._last_update = time()
 
     def destroy(self):

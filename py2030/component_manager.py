@@ -128,34 +128,42 @@ class ComponentManager:
             del self._op_queue
             self.gotNextUpdateOps = False
 
-    def _found_component_classes(self):
-        klasses = []
+    def get_components_from(module, ignores=[]):
+        comps = []
+        # find component class inside the module
+        for klass in module.__dict__.values():
+            # skip ignored classes
+            if klass in ignores:
+                continue
 
+            # only grab the classes that have config_name and create_components attributes
+            if hasattr(klass, 'config_name') and hasattr(klass, 'create_components'):
+                comps.append(klass)
+        return comps
+
+    def _found_component_classes(self):
         import py2030.components as comp_modules
         from py2030.base_component import BaseComponent
 
+        mods = self.options['modules'].copy() if 'modules' in self.options else [] # provided modules
+
+        # got local (default py2030) modules
         for module_name in comp_modules.__all__:
             # ignore the __init__.py file
-            if module_name == '__init__':
-                continue
+            # if module_name == '__init__':
+            #     continue
 
             # import file
             mod = __import__('py2030.components.'+module_name, fromlist=['py2030.components'])
+            mods.append(mod)
 
-            # find component class inside the module
-            for klass in mod.__dict__.values():
-                # most will have BaseComponent imported, ignore that one
-                if klass == BaseComponent:
-                    continue
-
-                # only grab the classes that have config_name and create_components attributes
-                if hasattr(klass, 'config_name') and hasattr(klass, 'create_components'):
-                    klasses.append(klass)
+        klasses = []
+        for module in mods:
+            klasses += ComponentManager.get_components_from(module, ignores=[BaseComponent])
 
         del comp_modules
         del BaseComponent
-
-        # print(klasses)
+        # print('klasses: ',klasses)
 
         return klasses
 
@@ -165,6 +173,7 @@ class ComponentManager:
         # loop over all configurations in our profile
         for config_name, config_data in profile_data.items():
             # let all classes that say they are responsible for this piece of configuration generate component(s)
+            # print ('looking for component: ', config_name, config_data)
             for klass in klasses:
                 if klass.config_name == config_name:
                     comps = klass.create_components(config_data, self.context)

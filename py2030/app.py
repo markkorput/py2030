@@ -3,7 +3,7 @@ import time
 from optparse import OptionParser
 from .component_manager import ComponentManager
 
-if __name__ == '__main__':
+def run(modules=[]):
     parser = OptionParser()
     parser.add_option('-p', '--profile', dest='profile', default=None)
     # parser.add_option('-f', '--file', dest='file', default=None)
@@ -20,6 +20,7 @@ if __name__ == '__main__':
     options = {
         'verbose': opts.verbose,
         'profile': opts.profile,
+        'modules': modules,
         'config_file': opts.config_file,
         'args': args
     }
@@ -42,3 +43,6 @@ if __name__ == '__main__':
 
         print('restarting...')
         time.sleep(1.0)
+
+if __name__ == '__main__':
+  run()

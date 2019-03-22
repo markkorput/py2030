@@ -105,6 +105,7 @@ class OscOutput(BaseComponent):
         self.disconnectEvent = self.getOutputEvent('disconnect')
         self.messageEvent = self.getOutputEvent('message', dummy=False)
 
+        self.getInputEvent('addressArgs').subscribe(self.onAddrArgsMessage)
         if event_manager != None:
             self._registerCallbacks()
 
@@ -184,6 +185,9 @@ class OscOutput(BaseComponent):
             self.logger.info("OSC client ({0}:{1}) closed".format(self.host(), self.port()))
 
         self.connected = False
+
+    def onAddrArgsMessage(self, addr, args=[]):
+        self.send(addr, args)
 
     def send(self, addr, data=[]):
         # msg = OSC.OSCMessage()

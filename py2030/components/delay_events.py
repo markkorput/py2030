@@ -2,9 +2,7 @@ import logging
 from time import time
 from py2030.base_component import BaseComponent
 
-class DelayItem(BaseComponent):
-    config_name = 'delay_events'
-
+class DelayItem:
     def __init__(self, _id, source, delay, target, halt=None, pause=None, logger=None):
         self.id = _id
         self.sourceEvent = source
@@ -69,7 +67,9 @@ class DelayItem(BaseComponent):
         self.logger.debug('DelayItem with ID `{0}` toggled'.format(self.id))
         self.active = not self.active
 
-class DelayEvents:
+class DelayEvents(BaseComponent):
+    config_name = 'delay_events'
+
     def __init__(self, options = {}):
         self.options = options
         self.event_manager = None

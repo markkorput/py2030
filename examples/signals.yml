@@ -1,0 +1,10 @@
+py2030:
+  profiles:
+    default:
+      stop_event: quit
+      signals:
+        signals:
+          # verbose: true
+          output_events:
+            interrupt: 'quit'
+            terminate: 'quit'

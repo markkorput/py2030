@@ -19,13 +19,9 @@ class Sine(BaseComponent):
         self.cursor = float(self.options['cursorStart']) if 'cursorStart' in self.options else 0.0
         self.cursorSpeed = self.frequency * math.pi * 2.0
 
-        if self.event_manager and 'output_events' in self.options and 'value' in self.options['output_events']:
-            # get the event to use for distributing the sine-value during update
-            self.valueEvent = self.event_manager.get(self.options['output_events']['value'])
-            self.logger.debug('sine outputting values to event: '+self.options['output_events']['value'])
-        else:
-            # dummy event
-            self.valueEvent = Event()
+        self.valueEvent = self.getOutputEvent('value')
+        self.triggerEvent = self.getInputEvent('when', dummy=False)
+        self.sendValueOnUpdate = self.triggerEvent == None
 
         self.sleep = None
         if 'sleep' in self.options:
@@ -34,6 +30,9 @@ class Sine(BaseComponent):
         self.lastUpdateTime = time.time()
 
     def update(self, dt=None):
+        if not self.sendValueOnUpdate:
+            return
+
         if not dt:
             t = time.time()
             dt = t - self.lastUpdateTime

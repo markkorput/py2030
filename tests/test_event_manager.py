@@ -22,6 +22,19 @@ class TestEventManager(unittest.TestCase):
         self.assertTrue('subscribe' in dir(event))
         self.assertTrue('unsubscribe' in dir(event))
 
+    def test_get_treats_comma_separated_names_as_multiple_identifiers(self):
+        em = EventManager()
+        list = []
+        em.get('eventA').subscribe(lambda x: list.append('A:'+x))
+        em.get('eventB').subscribe(lambda x: list.append('B:'+x))
+        self.assertEqual(list, [])
+        em.get('eventA,eventB').fire('C')
+        self.assertTrue('A:C' in list)
+        self.assertTrue('B:C' in list)
+        # executed in requested order
+        # em.get('eventB,eventA').fire('D')
+        # self.assertEqual(list, ['A:C', 'B:C', 'B:D', 'A:D'])
+
     def test_get_returns_existing_event(self):
         em = EventManager()
         event1 = em.get('bar')

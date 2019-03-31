@@ -30,6 +30,18 @@ class EventManager:
     def get(self, _id, create=True):
         _id = str(_id)
 
+        # multiple comma-separated
+        if ',' in _id:
+            ids = _id.split(',')
+            event = Event()
+            for id in _id.split(','):
+
+                ev = self.get(id, create=create)
+                if not ev == None:
+                    event.subscribe(ev.fire)
+
+            return event
+
         # find existing
         if _id in self._events:
             return self._events[_id]

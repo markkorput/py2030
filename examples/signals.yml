@@ -4,7 +4,7 @@ py2030:
       stop_event: quit
       signals:
         signals:
-          # verbose: true
+          verbose: true
           output_events:
             interrupt: 'quit'
-            terminate: 'quit'
+            terminate: 'quitd'

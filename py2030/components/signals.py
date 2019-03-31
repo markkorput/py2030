@@ -25,6 +25,11 @@ class Signals(BaseComponent):
         if not self.terminateEvent == None:
             signal.signal(signal.SIGTERM, self.terminateHandler)
 
+        # signal.signal(signal.SIGSTOP, self.generalHandler)
+        # signal.signal(signal.SIGKILL, self.generalHandler)
+        # signal.signal(signal.SIGCONT, self.generalHandler)
+        # signal.signal(signal.SIGINFO, self.generalHandler)
+
     def destroy(self):
         pass
 
@@ -43,3 +48,6 @@ class Signals(BaseComponent):
         # the kill signal
         self.logger.debug('Signals.terminateHandler: {0}, {1}'.format(signum, frame))
         self.terminateEvent()
+
+    # def generalHandler(self, signum, frame):
+    #     self.logger.debug('Signals.generalHandler: {0}, {1}'.format(signum, frame))

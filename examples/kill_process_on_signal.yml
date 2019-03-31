@@ -1,0 +1,26 @@
+py2030:
+  profiles:
+    default:
+      stop_event: quit
+      signals:
+        signals:
+          verbose: true
+          output_events:
+            interrupt: 'findProcessIdAndKill,quit'
+            # terminate: 'findProcessId'
+
+      processes:
+        targetprocess:
+          verbose: true
+          match: 'CamOverIP'
+          input_events:
+            emitIdOn: 'findProcessIdAndKill'
+          output_events:
+            id: 'processId'
+
+      kills:
+        kill:
+          verbose: true
+          # signum: 9
+          input_events:
+            id: 'processId'
